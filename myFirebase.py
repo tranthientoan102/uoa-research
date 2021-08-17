@@ -1,3 +1,5 @@
+import datetime
+
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
@@ -28,11 +30,13 @@ class MyFirebaseService:
         return db.collection(self.collectionName)
 
     def insertData(self, data: MyTweet):
+        data.insertDbAt = datetime.datetime.now()
         self.getCollectionRef().document(data.hash).set(data.to_dict())
 
     def checkExisted(self, key):
         return self.getCollectionRef().document(key).get().exists
-    def getDoc(self,key):
+
+    def getDoc(self, key):
         return self.getCollectionRef().document(key).get().to_dict()
 
 

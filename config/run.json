@@ -1,0 +1,25 @@
+{
+    "maxScrolling": 100,
+    "scrapFrom": "twitter",
+    "twitter": {
+        "tweetLoad": 200,
+        "runMode": "account",
+        "account": [
+            "SAHealth",
+            "healthgovau",
+            ""
+        ],
+        "keyword": [
+            "covid",
+            "jab",
+            "(covid+jab)",
+            "vaccin",
+            "vaxx",
+            "mask"
+        ],
+        "hashtag": [
+            "#healthcare",
+            "#COVID19vaccine"
+        ]
+    }
+}
