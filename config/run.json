@@ -1,5 +1,5 @@
 {
-    "maxScrolling": 100,
+    "maxScrolling": 200,
     "scrapFrom": "twitter",
     "twitter": {
         "tweetLoad": 200,

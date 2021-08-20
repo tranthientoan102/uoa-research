@@ -1,10 +1,18 @@
 import json
-from fastapi import FastAPI
-
+from fastapi import Body, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import multiprocessing
 import main
 
-
 app = FastAPI()
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+)
+
 
 def getDefaultRunConfig():
     with open('./config/run.json')as f:
@@ -22,17 +30,23 @@ async def read_item(item_id):
     return {"item_id": item_id}
 
 
-@app.put("/trigger/account")
-async def triggerAccount(initConfig):
+@app.post("/trigger/account")
+async def triggerAccount(initConfig=Body(...)):
+    # initConfig = Body(...)
+    print(f'{initConfig}')
     default = getDefaultRunConfig()
-    default['twitter']['account'] = json.loads(initConfig)
-    return main.run(default)
+    # default['twitter']['account'] = json.loads(initConfig)['list']
+    default['twitter']['account'] = initConfig['list']
+    proc = multiprocessing.Process(target=main.run, args=(default,))
+    proc.start()
+    return "PROCESSING"
 
-@app.put("/trigger/keyword")
+
+@app.post("/trigger/keyword")
 async def triggerKeyword(initConfig):
     default = getDefaultRunConfig()
     default['twitter']['runMode'] = 'keyword'
-    default['twitter']['keyword'] = json.loads(initConfig)
-    print(default)
-    print()
-    return main.run(default)
+    default['twitter']['keyword'] = json.loads(initConfig)['list']
+    proc = multiprocessing.Process(target=main.run, args=(default,))
+    proc.start()
+    return "PROCESSING"

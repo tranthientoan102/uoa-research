@@ -20,7 +20,7 @@ def run(runConfig, scrapFrom='twitter'):
 
     runMode = runConfig[scrapFrom]['runMode']
     queryInput = runConfig[scrapFrom][runMode]
-    maxSrolling = runConfig['maxScrolling']
+    maxScrolling = runConfig['maxScrolling']
     count = runConfig[scrapFrom]['tweetLoad']
 
     if (runMode == 'account'):
@@ -29,14 +29,20 @@ def run(runConfig, scrapFrom='twitter'):
         urls = myTwitter.buildTwitterUrl_search(queryInput)
     res = []
     for url in urls:
-        res.append( subRun(url, browser, maxSrolling, count, myfirebase))
+        res.append(subRun(url, browser, maxScrolling, count, myfirebase))
+
+
+    browser.quit()
+    myfirebase.disconnect()
+
     return res
+
 
 def subRun(url, browser, maxSrolling, count, myfirebase):
     try:
         print(f'looking for {url}\n')
         browser.get(url)
-        time.sleep(5)
+        time.sleep(2)
         body = browser.find_element_by_tag_name('body')
 
         with open('./config/cssSelector.json') as f:
@@ -46,25 +52,31 @@ def subRun(url, browser, maxSrolling, count, myfirebase):
         iter = 0
 
         # maxSrollingIn = config['maxScrolling']
-        stopSrollingIn = maxSrolling
+        stopScrollingIn = maxSrolling
+        goingDown = True
 
-        while (counter_insert < count) and (stopSrollingIn > 0):
-            body.send_keys(Keys.PAGE_DOWN)
+        while (counter_insert < count) and (stopScrollingIn > 0):
+            try:
+                if goingDown:
+                    body.send_keys(Keys.PAGE_DOWN)
+                    time.sleep(0.5)
+                    body.send_keys(Keys.PAGE_DOWN)
+                tmp_insert = 0
+                for x in browser.find_elements_by_css_selector(f"{config['tweet']['full']}"):
+                    tweet = myTwitter.MyTweet(x)
+                    if not myfirebase.checkExisted(tweet.hash):
+                        myfirebase.insertData(tweet)
+                        tmp_insert += 1
+                        counter_insert += 1
+                    if (counter_insert == count) | (stopScrollingIn == 0):
+                        break
+                goingDown = True
+            except Exception as e:
+                goingDown = False
+                # traceback.print_exc()
 
-            tmp_insert = 0
-            for x in browser.find_elements_by_css_selector(f"{config['tweet']['full']}"):
-                tweet = myTwitter.MyTweet(x)
-                # counter_insert += 1
-
-                if not myfirebase.checkExisted(tweet.hash):
-                    myfirebase.insertData(tweet)
-                    tmp_insert += 1
-
-                counter_insert += 1
-                if (counter_insert == count) | (stopSrollingIn == 0):
-                    break
             if tmp_insert == 0:
-                stopSrollingIn -= 1
+                stopScrollingIn -= 1
 
             print(f'#{iter}: insert {counter_insert} tweets\n')
 

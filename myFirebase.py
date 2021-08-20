@@ -12,6 +12,7 @@ class MyFirebaseService:
                  , certPath='./config/cobalt-entropy-272613-95e25772de3a.json'
                  ,collectionName = 'tweets_health'
                  ):
+        self.appName = ''
         self.collectionRef = None
         self.certPath = certPath
         self.collectionName = collectionName
@@ -24,8 +25,11 @@ class MyFirebaseService:
     def __initCollectionRef(self):
         # Use a service account
         cred = credentials.Certificate(self.certPath)
-        firebase_admin.initialize_app(cred)
-
+        try:
+            app = firebase_admin.initialize_app(cred)
+            self.appName = app.name
+        except Exception as e:
+            print('ERROR when init new Firebase App')
         db = firestore.client()
         return db.collection(self.collectionName)
 
@@ -39,6 +43,9 @@ class MyFirebaseService:
     def getDoc(self, key):
         return self.getCollectionRef().document(key).get().to_dict()
 
+    def disconnect(self):
+        if not self.appName.__eq__(''):
+            firebase_admin.delete_app(firebase_admin.get_app())
 
 if __name__ == '__main__':
     # docs = initCollectionRef().stream()
