@@ -36,9 +36,13 @@ async def triggerAccount(initConfig=Body(...)):
     print(f'{initConfig}')
     default = getDefaultRunConfig()
     # default['twitter']['account'] = json.loads(initConfig)['list']
-    default['twitter']['account'] = initConfig['list']
-    proc = multiprocessing.Process(target=main.run, args=(default,))
-    proc.start()
+
+    # accs = json.loads(initConfig)
+    # print(f'{accs=}')
+    for acc in initConfig['list'].split(','):
+        default['twitter']['account'] = [acc]
+        proc = multiprocessing.Process(target=main.run, args=(default,))
+        proc.start()
     return "PROCESSING"
 
 

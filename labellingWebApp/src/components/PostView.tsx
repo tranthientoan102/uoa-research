@@ -25,16 +25,20 @@ const PostView = (props) => {
         }
     }
 
+    // @ts-ignore
     const fetchData = async (acc: string) => {
         setData("...loading...")
         let res = null
+        // @ts-ignore
         if (acc.length > 0)
             res = await loadUnlabelledPostByAccount(acc)
         else
             res = await loadUnlabelledPost()
         const newData = await generateForm(auth, res)
+        // @ts-ignore
         setData(newData)
     }
+    // @ts-ignore
     const refillData = async (acc: string) => {
         setData("...preparing db...")
         // try {
@@ -62,6 +66,8 @@ const PostView = (props) => {
             // data = JSON.stringify(loadUnlabelledPostByAccount(getAcc()))
             let result = []
             promiseData.forEach(data => {
+                // @ts-ignore
+                // @ts-ignore
                 result.push(
                     <Box m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl" id={data.hash}>
                         <Text color="blue.300" mt={2}>

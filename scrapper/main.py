@@ -78,7 +78,8 @@ def subRun(url, browser, maxSrolling, count, myfirebase):
             if tmp_insert == 0:
                 stopScrollingIn -= 1
 
-            print(f'#{iter}: insert {counter_insert} tweets\n')
+            # https://twitter.com/ABC
+            print(f'#{iter}: insert {counter_insert} tweets posted by @{ url.split("/")[3] }\n')
 
             iter += 1
 
