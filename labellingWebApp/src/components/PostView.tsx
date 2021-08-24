@@ -160,7 +160,7 @@ const PostView = (props) => {
 let getAcc = () => {
     let result = 'a'
     try {
-        result = document.getElementById('searchAcc').value
+        result = (document.getElementById('searchAcc') as HTMLInputElement).value
     } catch (err) {
 
     }
