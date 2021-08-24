@@ -1,4 +1,6 @@
 import json
+import traceback
+
 from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import multiprocessing
@@ -32,18 +34,21 @@ async def read_item(item_id):
 
 @app.post("/trigger/account")
 async def triggerAccount(initConfig=Body(...)):
-    # initConfig = Body(...)
-    print(f'{initConfig}')
-    default = getDefaultRunConfig()
-    # default['twitter']['account'] = json.loads(initConfig)['list']
+    result = 'PROCESSING'
+    try:
+        print(f'{initConfig}')
+        default = getDefaultRunConfig()
+        # default['twitter']['account'] = json.loads(initConfig)['list']
 
-    # accs = json.loads(initConfig)
-    # print(f'{accs=}')
-    for acc in initConfig['list'].split(','):
-        default['twitter']['account'] = [acc]
-        proc = multiprocessing.Process(target=main.run, args=(default,))
-        proc.start()
-    return "PROCESSING"
+        # accs = json.loads(initConfig)
+        # print(f'{accs=}')
+        for acc in initConfig['list'].split(','):
+            default['twitter']['account'] = [acc]
+            proc = multiprocessing.Process(target=main.run, args=(default,))
+            proc.start()
+    except Exception as e:
+        result = "FAILED \n" + traceback.print_exc()
+    return result
 
 
 @app.post("/trigger/keyword")

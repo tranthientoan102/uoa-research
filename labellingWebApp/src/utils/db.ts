@@ -27,7 +27,11 @@ export const docExisted = async (docRef: any) => {
 
 export const refillDbWithAccount = async (acc: string) => {
 
-    let tmp = await Axios.post('http://localhost:8000/trigger/account', { list: acc })
+    // let tmp = await Axios.post('http://localhost:8000/trigger/account', { list: acc })
+    let tmp = await Axios.post('http://20.37.47.186:8000/trigger/account', { list: acc })
+
+    // let tmp = await Axios.post('http://ec2-3-135-207-27.us-east-2.compute.amazonaws.com:8000/trigger/account', { list: acc })
+
     return tmp
 }
 
