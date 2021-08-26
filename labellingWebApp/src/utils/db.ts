@@ -2,7 +2,7 @@ import { IdProvider } from "@chakra-ui/react";
 import firebase from "../lib/firebase";
 import Axios from "axios";
 
-const postLimit = 3
+const postLimit = 20
 
 export const addUser = async (authUser: any) => {
     console.log('lookup user from db: ' + authUser.uid)
@@ -86,16 +86,34 @@ export const loadUnlabelledPostByAccount = async (account: string = 'SAHealth') 
     }
 }
 
-export const updateLabel = async (auth, hash, rating) => {
+export const updateLabel = async (auth, hash, rating, event) => {
     let dataRef = await firebase.firestore().collection("tweets_health").doc(hash)
+
     try {
         const res = await firebase.firestore().runTransaction(async t => {
             const doc = await t.get(dataRef)
-            await t.update(dataRef, { rating: rating })
+            await t.update(dataRef, { rating: rating, event: event })
         })
         console.log('Transaction success', res);
     } catch (e) {
         console.log('Transaction failure:', e);
     }
+
+}
+
+export const getDefaultEventList = async () => {
+    console.log('getDefaultEventList')
+    let dataRef = await firebase.firestore().collection("default_events").get()
+
+    // dataRef.docs.forEach((doc) => defEve.push(doc.data))
+    // let defEve = dataRef.docs.map((doc) => (
+    //     { id: doc.id, ...doc.data() })
+    // )
+    let defEve = dataRef.docs.map(doc => (
+        { id: doc.id, ...doc.data() })
+    )
+    console.log(defEve)
+
+    return defEve
 
 }

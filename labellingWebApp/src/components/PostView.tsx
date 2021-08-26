@@ -1,10 +1,13 @@
 import { Box, Container, Flex, SimpleGrid, Text, Button } from '@chakra-ui/react';
 import { Input } from "@chakra-ui/react"
 import React, { useState } from 'react';
-import { loadUnlabelledPostByAccount, loadUnlabelledPost, updateLabel, refillDbWithAccount } from '../utils/db';
+import { loadUnlabelledPostByAccount, loadUnlabelledPost, updateLabel, refillDbWithAccount, getDefaultEventList } from '../utils/db';
 import { useAuth } from "../lib/auth";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+
+import TagInput2 from './TagsInput2';
 
 const PostView = (props) => {
 
@@ -13,11 +16,34 @@ const PostView = (props) => {
     toast.configure()
     const { auth, signinWithGoogle } = useAuth();
     const [data, setData] = useState("init data");
-    const [label, setLabel] = useState("label")
+    const [defaultEvent, setDefaultEvent] = useState([]);
+    const [tagDisplay, setTagDisplay] = useState([])
+    let tags = {}
+    const addNewTag = (hash, newTag) => {
+        tags[hash].push(newTag)
+        console.log(tags)
+    }
 
-    const update = (auth, hash, rating) => {
+    let de = []
+
+    const getEvents = (hash) => {
+        let tags = []
+        document.getElementById(hash).querySelectorAll('.chakra-checkbox.css-khpbvo').forEach(de => {
+            if (de.querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes())
+                tags.push(de.querySelector('.chakra-checkbox__label.css-1sgc0qu').innerHTML)
+        })
+        document.getElementById(hash).querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-tag').forEach((element) => {
+            tags.push(element.innerHTML.replace("<a></a>", ""))
+        })
+        return tags.join(',')
+    }
+
+    const update = (auth, hash, rating, events) => {
+
+
+
         if (auth != null) {
-            updateLabel(auth, hash, rating)
+            updateLabel(auth, hash, rating, events)
             document.getElementById(hash).style.backgroundColor = "LightYellow";
         }
         else {
@@ -29,6 +55,10 @@ const PostView = (props) => {
     const fetchData = async (acc: string) => {
         setData("...loading...")
         let res = null
+
+        getDefaultEventList().then(res => de = res)
+
+
         // @ts-ignore
         if (acc.length > 0)
             res = await loadUnlabelledPostByAccount(acc)
@@ -56,15 +86,13 @@ const PostView = (props) => {
         // }
     }
 
+
     const generateForm = (auth, promiseData) => {
 
 
         try {
-            // console.log(promise)
-            // let promisedData = JSON.parse(promise)
-
-            // data = JSON.stringify(loadUnlabelledPostByAccount(getAcc()))
             let result = []
+
             promiseData.forEach(data => {
                 // @ts-ignore
                 // @ts-ignore
@@ -83,25 +111,30 @@ const PostView = (props) => {
                             {data.text}
                         </Text>
 
+                        <TagInput2 id={data.hash} tags={[]} defaultEvents={de} />
+
+
                         <Flex align="center" justify="center" mt={3}>
+
+
                             <Button
-                                mx={3}
+                                mx={2}
                                 colorScheme="red"
-                                onClick={() => update(auth, data.hash, -1)}
+                                onClick={() => update(auth, data.hash, -1, getEvents(data.hash))}
                             >
                                 Negative
                             </Button>
                             <Button
-                                mx={3}
+                                mx={2}
                                 colorScheme="yellow"
-                                onClick={() => update(auth, data.hash, 0)}
+                                onClick={() => update(auth, data.hash, 0, getEvents(data.hash))}
                             >
                                 Neutral
                             </Button>
                             <Button
-                                mx={3}
+                                ml={2}
                                 colorScheme="green"
-                                onClick={() => update(auth, data.hash, 1)}
+                                onClick={() => update(auth, data.hash, 1, getEvents(data.hash))}
                             >
                                 Possitive
                             </Button>
@@ -120,19 +153,19 @@ const PostView = (props) => {
     return (
         <div>
             <Container maxW="6xl">
-                 <Flex my={6} mx={20}>
+                <Flex my={6} mx={20}>
                     <Input focusBorderColor="blue.500" placeholder="Search by Twitter account"
                         id="searchAcc" alignContent='center'
                         defaultValue="SAHealth"
                     />
-                     <Button
-                    ml={3}
-                    colorScheme="blue"
-                    onClick={() => fetchData(getAcc())}
-                     >
+                    <Button
+                        ml={3}
+                        colorScheme="blue"
+                        onClick={() => fetchData(getAcc())}
+                    >
                         Go
                     </Button>
-                 </Flex>
+                </Flex>
 
 
                 {/* </Flex> */}
@@ -166,22 +199,5 @@ let getAcc = () => {
     }
     return result
 }
-
-
-// export async function getServerSideProps(_context) {
-
-//     console.log('function PostView_getServerSideProps: dont know what it do')
-
-//     // const data = await (await loadUnlabelledComment()).map((formData: any) => {
-//     //     return 
-//     // })
-
-//     const unlabelledComment = await loadUnlabelledPostByAccount(getAcc());
-//     if (unlabelledComment)
-//         return { props: { formData: JSON.stringify(unlabelledComment) } };
-//     else
-//         return { props: { formData: JSON.stringify({ a: 'a', b: 'c' }) } }
-// }
-
 
 export default PostView;

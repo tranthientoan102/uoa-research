@@ -2,9 +2,9 @@ import { Box, Container, Divider, Flex, Heading, SimpleGrid, Text, HStack, Butto
 import { Input } from "@chakra-ui/react"
 import Head from 'next/head';
 import { useRouter } from 'next/dist/client/router';
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
-import { loadUnlabelledPostByAccount, loadUnlabelledPost, updateLabel } from '../utils/db';
+
 import { useAuth } from "../lib/auth";
 
 import { toast } from 'react-toastify';
@@ -18,7 +18,8 @@ const Home = (props) => {
 
     toast.configure()
     const { auth, signinWithGoogle } = useAuth();
-    const router = useRouter();
+    // const [tags, setTags] = useState([])
+    // const router = useRouter();
 
     return (
         <div>
@@ -34,23 +35,6 @@ const Home = (props) => {
         </div >
     );
 }
-
-// export async function getServerSideProps() {
-
-//     console.log('function getServerSideProps: dont know what it do')
-
-//     // const data = await (await loadUnlabelledComment()).map((formData: any) => {
-//     //     return 
-//     // })
-
-//     const unlabelledComment = await loadUnlabelledPostByAccount();
-//     if (unlabelledComment)
-//         return { props: { formData: JSON.stringify(unlabelledComment) } };
-//     else
-//         return { props: { formData: JSON.stringify({ a: 'a', b: 'c' }) } }
-// }
-
-
 
 
 

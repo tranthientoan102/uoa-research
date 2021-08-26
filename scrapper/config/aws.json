@@ -1,0 +1,16 @@
+{
+    "repository": {
+        "repositoryArn": "arn:aws:ecr:us-east-2:042397151973:repository/scrapperdocker2",
+        "registryId": "042397151973",
+        "repositoryName": "scrapperdocker2",
+        "repositoryUri": "042397151973.dkr.ecr.us-east-2.amazonaws.com/scrapperdocker2",
+        "createdAt": "2021-08-22T13:56:15+09:30",
+        "imageTagMutability": "MUTABLE",
+        "imageScanningConfiguration": {
+            "scanOnPush": true
+        },
+        "encryptionConfiguration": {
+            "encryptionType": "AES256"
+        }
+    }
+}
