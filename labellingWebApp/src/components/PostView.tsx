@@ -1,4 +1,4 @@
-import { Box, Container, Flex, SimpleGrid, Text, Button } from '@chakra-ui/react';
+import {Box, Container, Flex, SimpleGrid, Text, Button, Grid} from '@chakra-ui/react';
 import { Input } from "@chakra-ui/react"
 import React, { useState } from 'react';
 import { loadUnlabelledPostByAccount, loadUnlabelledPost, updateLabel, refillDbWithAccount, getDefaultEventList } from '../utils/db';
@@ -52,17 +52,17 @@ const PostView = (props) => {
         }
     }
 
-    // @ts-ignore
-    const fetchData = async (acc: string) => {
-        setData("...loading...")
+
+    const fetchData = async (accs: string[]) => {
+        setData(`loading post from ${accs}...`)
         let res = null
 
         getDefaultEventList().then(res => de = res)
 
 
-        // @ts-ignore
-        if (acc.length > 0)
-            res = await loadUnlabelledPostByAccount(acc)
+
+        if (accs.length > 0)
+            res = await loadUnlabelledPostByAccount(accs)
         else
             res = await loadUnlabelledPost()
         const newData = await generateForm(auth, res)
@@ -70,14 +70,15 @@ const PostView = (props) => {
         setData(newData)
     }
     // @ts-ignore
-    const refillData = async (acc: string) => {
+    const refillData = async () => {
         setData("...preparing db...")
+        let accs = getTagsInput('searchAcc',true)
         // try {
-        if (acc.length > 0) {
+        if (accs.length > 0) {
             toast.info('Please wait for DB to be filled up...', { autoClose: 10000 })
 
-            refillDbWithAccount(acc)
-            setTimeout(() => { fetchData(acc) }, 10000)
+            refillDbWithAccount(accs.join(','))
+            setTimeout(() => { fetchData(accs) }, 10000)
 
 
         } else
@@ -154,15 +155,14 @@ const PostView = (props) => {
     return (
         <div>
             <Container maxW="6xl">
-                <Flex my={6} mx={20}>
-                    <Input focusBorderColor="blue.500" placeholder="Search by Twitter account"
-                        id="searchAcc" alignContent='center'
-                        defaultValue="SAHealth"
-                    />
+                <Flex  my={6} align="center" justify="center">
+
+                    <TagInput2 id="searchAcc" defaultEvents={[]} tags={['sahealth']} />
+
                     <Button
                         ml={3}
                         colorScheme="blue"
-                        onClick={() => fetchData(getAcc())}
+                        onClick={() => fetchData(getTagsInput('searchAcc', true))}
                     >
                         Go
                     </Button>
@@ -177,13 +177,13 @@ const PostView = (props) => {
                     {data}
                 </SimpleGrid>
                 <SimpleGrid >
-                    <Button mt={6} mx={3} colorScheme="blue" onClick={() => fetchData(getAcc())}>Load more</Button>
+                    <Button mt={6} mx={3} colorScheme="blue" onClick={() => fetchData(getTagsInput('searchAcc', true))}>Load more</Button>
                     <Button
                         m={3}
                         colorScheme="yellow"
-                        onClick={() => refillData(getAcc())}
+                        onClick={() => refillData()}
                     >
-                        or REFILL DB with {getAcc()}
+                        or REFILL DB
                     </Button>
                 </SimpleGrid>
             </Container>
@@ -191,14 +191,6 @@ const PostView = (props) => {
     );
 }
 
-let getAcc = () => {
-    let result = 'a'
-    try {
-        result = (document.getElementById('searchAcc') as HTMLInputElement).value
-    } catch (err) {
 
-    }
-    return result
-}
 
 export default PostView;

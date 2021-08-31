@@ -13,7 +13,7 @@ export const labelling = async (auth, values) => {
     }
 }
 
-export const getTagsInput = (eleId, isTwitterAcc=false, convertToString=true) => {
+export const getTagsInput = (eleId, isTwitterAcc=false) => {
     let tags = []
     let rootEle = document.getElementById(eleId)
     // if (rootEle.has)
@@ -25,9 +25,7 @@ export const getTagsInput = (eleId, isTwitterAcc=false, convertToString=true) =>
         tags.push((isTwitterAcc?'@':'') + element.innerHTML.replace("<a></a>", ""))
     })
     console.log('detect tags: ' + tags)
-    if (convertToString) {
-        return tags.join(',')
-    } else return tags
+    return tags
 }
 
 export const convertTimeToString = (time) => {

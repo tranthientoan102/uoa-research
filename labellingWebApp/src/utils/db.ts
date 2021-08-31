@@ -1,6 +1,8 @@
 import { IdProvider } from "@chakra-ui/react";
 import firebase from "../lib/firebase";
 import Axios from "axios";
+import {database} from "firebase-admin/lib/database";
+
 
 const postLimit = 20
 
@@ -27,10 +29,8 @@ export const docExisted = async (docRef: any) => {
 
 export const refillDbWithAccount = async (acc: string) => {
 
-    // let tmp = await Axios.post('http://localhost:8000/trigger/account', { list: acc })
-    let tmp = await Axios.post('http://20.37.47.186:8000/trigger/account', { list: acc })
-
-    // let tmp = await Axios.post('http://ec2-3-135-207-27.us-east-2.compute.amazonaws.com:8000/trigger/account', { list: acc })
+    let tmp = await Axios.post('http://localhost:8000/trigger/account', { list: acc })
+    // let tmp = await Axios.post('http://20.37.47.186:8000/trigger/account', { list: acc })
 
     return tmp
 }
@@ -41,9 +41,7 @@ export const loadUnlabelledPost = async () => {
     let loadUnlabelled = null
 
     try {
-        let dataRef = await firebase.firestore().collection("tweets_health")
-            .where("rating", "<", -2).orderBy("rating", "desc")
-            .limit(postLimit)
+        let dataRef = await buildGETQuery_unlabelled([],postLimit)
             .get()
         loadUnlabelled = dataRef.docs.map((doc) => (
             { id: doc.id, ...doc.data() })
@@ -62,23 +60,15 @@ export const loadUnlabelledPost = async () => {
 }
 
 
-export const loadUnlabelledPostByAccount = async (account: string = 'SAHealth') => {
+export const loadUnlabelledPostByAccount = async (accs: string[]) => {
     let result = []
-    if (!account.startsWith('@'))
-        account = '@' + account
-    // console.log(`load UnlabelledPost By ${account}`)
 
     try {
-        let dataRef = await firebase.firestore().collection("tweets_health")
-            .where("account", "==", account)
-            .where("rating", '==', -10)
-            .orderBy("postAt", 'desc')
-            .limit(postLimit)
-            .get()
+        let dataRef = await buildGETQuery_unlabelled(accs,postLimit).get()
         result = dataRef.docs.map((doc) => (
             { id: doc.id, ...doc.data() })
         )
-        console.log(`finish load ${result.length} unlabelled post By ${account} `)
+        console.log(`finish load ${result.length} unlabelled post By ${accs} `)
 
         return result
     } catch (err) {
@@ -102,7 +92,6 @@ export const updateLabel = async (auth, hash, rating, event) => {
 }
 
 export const getDefaultEventList = async () => {
-    console.log('getDefaultEventList')
     let dataRef = await firebase.firestore().collection("default_events").get()
 
     // dataRef.docs.forEach((doc) => defEve.push(doc.data))
@@ -112,7 +101,6 @@ export const getDefaultEventList = async () => {
     let defEve = dataRef.docs.map(doc => (
         { id: doc.id, ...doc.data() })
     )
-    console.log(defEve)
 
     return defEve
 
@@ -131,7 +119,7 @@ export const downloadData = async (auth, accounts: string[], limit:number) => {
         //     .orderBy("postAt", 'desc')
         //     .get()
 
-        let dataRef = await buildGETQuery(accounts, limit).get().then((all)=>{
+        let dataRef = await buildGETQuery_labelled(accounts, limit).get().then((all)=>{
             result = all.docs.map((doc) => (
                 { id: doc.id, ...doc.data() })
             )
@@ -144,15 +132,33 @@ export const downloadData = async (auth, accounts: string[], limit:number) => {
         console.log('Error occurred: ' + err)
     }
 }
+function buildGETQuery_unlabelled (accounts: string[], limit) {
 
-function buildGETQuery (accounts: string[], limit) {
-    let query = firebase.firestore().collection("tweets_health")
-                        .where("rating", '!=', -10)
+    let dataRef = firebase.firestore().collection("tweets_health")
+    let query = dataRef.where("rating", '==', -10)
+
     if (accounts.length > 0){
-        query = query.where("account", 'in', accounts)
+        query = query.where("account", 'array-contains-any', accounts)
     }
     if (limit != null){
         query = query.limit(limit)
     }
-    return query
+    return query.orderBy("postAt",'desc')
+    // return query
+}
+
+function buildGETQuery_labelled (accounts: string[], limit) {
+
+    let dataRef = firebase.firestore().collection("tweets_health")
+    let query = dataRef.where("rating", '!=', -10)
+    // else query = dataRef.where("rating", '==', -10)
+
+    if (accounts.length > 0){
+        query = query.where("account", 'array-contains-any', accounts)
+    }
+    if (limit != null){
+        query = query.limit(limit)
+    }
+    return query.orderBy("rating").orderBy("postAt",'desc')
+    // return query
 }
