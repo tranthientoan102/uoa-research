@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 import TagInput2 from './TagsInput2';
+import {getTagsInput} from "../utils/common";
 
 const PostView = (props) => {
 
@@ -26,17 +27,17 @@ const PostView = (props) => {
 
     let de = []
 
-    const getEvents = (hash) => {
-        let tags = []
-        document.getElementById(hash).querySelectorAll('.chakra-checkbox.css-khpbvo').forEach(de => {
-            if (de.querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes())
-                tags.push(de.querySelector('.chakra-checkbox__label.css-1sgc0qu').innerHTML)
-        })
-        document.getElementById(hash).querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-tag').forEach((element) => {
-            tags.push(element.innerHTML.replace("<a></a>", ""))
-        })
-        return tags.join(',')
-    }
+    // const getEvents = (hash) => {
+    //     let tags = []
+    //     document.getElementById(hash).querySelectorAll('.chakra-checkbox.css-khpbvo').forEach(de => {
+    //         if (de.querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes())
+    //             tags.push(de.querySelector('.chakra-checkbox__label.css-1sgc0qu').innerHTML)
+    //     })
+    //     document.getElementById(hash).querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-tag').forEach((element) => {
+    //         tags.push(element.innerHTML.replace("<a></a>", ""))
+    //     })
+    //     return tags.join(',')
+    // }
 
     const update = (auth, hash, rating, events) => {
 
@@ -120,21 +121,21 @@ const PostView = (props) => {
                             <Button
                                 mx={2}
                                 colorScheme="red"
-                                onClick={() => update(auth, data.hash, -1, getEvents(data.hash))}
+                                onClick={() => update(auth, data.hash, -1, getTagsInput(data.hash))}
                             >
                                 Negative
                             </Button>
                             <Button
                                 mx={2}
                                 colorScheme="yellow"
-                                onClick={() => update(auth, data.hash, 0, getEvents(data.hash))}
+                                onClick={() => update(auth, data.hash, 0, getTagsInput(data.hash))}
                             >
                                 Neutral
                             </Button>
                             <Button
                                 ml={2}
                                 colorScheme="green"
-                                onClick={() => update(auth, data.hash, 1, getEvents(data.hash))}
+                                onClick={() => update(auth, data.hash, 1, getTagsInput(data.hash))}
                             >
                                 Possitive
                             </Button>

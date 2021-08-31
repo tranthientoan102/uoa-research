@@ -40,7 +40,7 @@ class TagsInput2 extends React.Component<Props> {
 
     render() {
         return (
-            <div>
+            <div id={this.props.id}>
                 {this.state.defaultEvents.map(de =>
                     <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
                     >

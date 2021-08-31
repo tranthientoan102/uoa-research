@@ -11,10 +11,10 @@
 }
 
 .react-tagsinput-tag {
-  background-color: #cde69c;
+  background-color: dodgerblue;
   border-radius: 2px;
-  border: 1px solid #a5d24a;
-  color: #638421;
+  /*border: 1px solid dodgerblue;*/
+  color: ivory;
   display: inline-block;
   font-family: sans-serif;
   font-size: 13px;

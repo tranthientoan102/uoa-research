@@ -22,6 +22,18 @@ const Navbar: React.FC<{}> = () => {
                             <Link mx={6}>
                                 Admin
                             </Link>
+                            <Link
+                                p={2}
+                                onClick={() => router.push('/')}
+                            >
+                                Main view
+                            </Link>
+                            <Link
+                                p={2}
+                                onClick={() => router.push('/download')}
+                            >
+                                Download
+                            </Link>
                             <Link p={2} onClick={() => signOut()}>
                                 Logout
                             </Link>

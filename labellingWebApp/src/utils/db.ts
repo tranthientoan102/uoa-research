@@ -117,3 +117,42 @@ export const getDefaultEventList = async () => {
     return defEve
 
 }
+
+export const downloadData = async (auth, accounts: string[], limit:number) => {
+    let result= []
+    // if (!account.startsWith('@'))
+    //     account = '@' + account
+    // console.log(`load UnlabelledPost By ${account}`)
+
+    try {
+        // let dataRef = await firebase.firestore().collection("tweets_health")
+        //     .where("account", "==", account)
+        //     .where("rating", '!=', -10)
+        //     .orderBy("postAt", 'desc')
+        //     .get()
+
+        let dataRef = await buildGETQuery(accounts, limit).get().then((all)=>{
+            result = all.docs.map((doc) => (
+                { id: doc.id, ...doc.data() })
+            )
+
+        })
+
+        console.log(`downloaded ${result.length} records By ${accounts} `)
+        return result
+    } catch (err) {
+        console.log('Error occurred: ' + err)
+    }
+}
+
+function buildGETQuery (accounts: string[], limit) {
+    let query = firebase.firestore().collection("tweets_health")
+                        .where("rating", '!=', -10)
+    if (accounts.length > 0){
+        query = query.where("account", 'in', accounts)
+    }
+    if (limit != null){
+        query = query.limit(limit)
+    }
+    return query
+}
