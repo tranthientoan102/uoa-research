@@ -12,9 +12,10 @@ def buildTwitterUrl_search(keywords, hashtags=None):
         addup += '%20' + buildQueryPart(hashtags)
     return [f'{base}{addup}']
 
-def buildTwitterUrl_account(accs):
 
+def buildTwitterUrl_account(accs):
     return [f'https://twitter.com/{acc}' for acc in accs]
+
 
 def buildQueryPart(queryParts):
     result = ''
@@ -43,13 +44,13 @@ class MyTweet:
         with open(configPath) as f:
             config = json.load(f)
 
-        self.account = webEle.find_element_by_css_selector(f"{config['tweet']['account']}").text
+        self.account: str = webEle.find_element_by_css_selector(f"{config['tweet']['account']}").text
         self.orig = webEle.find_element_by_css_selector(f"{config['tweet']['orig']}").get_property('href')
 
         dtFormat = '%Y-%m-%dT%H:%M:%S'
         self.postAt = datetime.strptime(webEle.find_element_by_css_selector(f"{config['tweet']['orig']}")
-                                            .find_element_by_css_selector('time').get_attribute('datetime')
-                                            .split('.')[0],
+                                        .find_element_by_css_selector('time').get_attribute('datetime')
+                                        .split('.')[0],
                                         dtFormat)
 
         self.text = webEle.find_element_by_css_selector(f"{config['tweet']['text']}").text
@@ -59,7 +60,7 @@ class MyTweet:
 
     def to_dict(self):
         return {
-            'account'     : self.account
+            'account'     : self.account.lower()
             , 'orig'      : self.orig
             , 'postAt'    : self.postAt
             , 'text'      : self.text
