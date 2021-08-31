@@ -1,4 +1,5 @@
 import hashlib
+import random
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -54,10 +55,14 @@ def run(runConfig, scrapFrom='twitter'):
     return res
 
 
-def subRun(url, browser, maxSrolling, count, myfirebase):
-    result = 'aaa'
+def subRun(url:str, browser, maxSrolling, count, myfirebase):
+
     try:
         print(f'looking for {url}\n')
+        mainTarget = ''
+        if url.find('search?q') == -1 :
+            mainTarget = '@' + url.split('/')[-1]
+
         browser.get(url)
         time.sleep(3)
         body = browser.find_element_by_tag_name('body')
@@ -75,31 +80,35 @@ def subRun(url, browser, maxSrolling, count, myfirebase):
 
         while (counter_insert < count) and (stopScrollingIn > 0):
             tmp_insert = 0
-            found = 0
-            try:
-                if goingDown:
-                    body.send_keys(Keys.PAGE_DOWN)
-                    body.send_keys(Keys.PAGE_DOWN)
-                    time.sleep(1)
-                found = len(browser.find_element_by_tag_name('body').find_elements_by_css_selector(f"{config['tweet']['full']}"))
-                for x in browser.find_element_by_tag_name('body').find_elements_by_css_selector(f"{config['tweet']['full']}"):
-                    tweet = myTwitter.MyTweet(x)
+
+            # if goingDown:
+            body.send_keys(Keys.PAGE_DOWN)
+            body.send_keys(Keys.PAGE_DOWN)
+            time.sleep(1)
+            if random.random() > 0.8:
+                body.send_keys(Keys.PAGE_UP)
+                time.sleep(1)
+                body.send_keys(Keys.PAGE_DOWN)
+
+            foundPost = browser.find_element_by_tag_name('body').find_elements_by_css_selector(f"{config['tweet']['full']}")
+            for x in foundPost:
+                try:
+                    tweet = myTwitter.MyTweet(x, mainTarget)
                     if not myfirebase.checkExisted(tweet.hash):
                         myfirebase.insertData(tweet)
                         tmp_insert += 1
                         counter_insert += 1
                     if (counter_insert == count) | (stopScrollingIn == 0):
                         break
-                goingDown = True
-            except Exception as e:
-                goingDown = False
-                traceback.print_exc()
+                except Exception as e:
+                    print(e)
+            # goingDown = True
 
             if tmp_insert == 0:
                 stopScrollingIn -= 1
 
             # https://twitter.com/ABC
-            print(f'#{iter}: found {found} / insert {counter_insert} tweets posted by @{ url.split("/")[3] }')
+            print(f'#{iter}: found {len(foundPost)} / insert {counter_insert} tweets posted by @{ url.split("/")[-1] } ||stop in {stopScrollingIn}')
 
             iter += 1
 

@@ -40,11 +40,15 @@ class MyTweet:
     #     self.text = initText
     #     self.insertDbAt = None
 
-    def __init__(self, webEle: WebElement, configPath='./config/cssSelector.json'):
+    def __init__(self, webEle: WebElement, mainTarget:str, configPath='./config/cssSelector.json'):
         with open(configPath) as f:
             config = json.load(f)
 
-        self.account: str = webEle.find_element_by_css_selector(f"{config['tweet']['account']}").text
+        tmpAcc = webEle.find_element_by_css_selector(f"{config['tweet']['account']}").text.lower()
+        self.account = [tmpAcc]
+        if (not mainTarget.__eq__(tmpAcc)) & (len(mainTarget) > 0):
+            self.account.append(mainTarget)
+
         self.orig = webEle.find_element_by_css_selector(f"{config['tweet']['orig']}").get_property('href')
 
         dtFormat = '%Y-%m-%dT%H:%M:%S'
@@ -60,7 +64,7 @@ class MyTweet:
 
     def to_dict(self):
         return {
-            'account'     : self.account.lower()
+            'account'     : self.account
             , 'orig'      : self.orig
             , 'postAt'    : self.postAt
             , 'text'      : self.text

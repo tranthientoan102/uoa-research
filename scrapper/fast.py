@@ -43,7 +43,7 @@ async def triggerAccount(initConfig=Body(...)):
         # accs = json.loads(initConfig)
         # print(f'{accs=}')
         for acc in initConfig['list'].split(','):
-            default['twitter']['account'] = [acc]
+            default['twitter']['account'] = [acc.replace('@','')]
             proc = multiprocessing.Process(target=main.run, args=(default,))
             proc.start()
     except Exception as e:
