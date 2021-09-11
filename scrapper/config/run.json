@@ -2,20 +2,21 @@
     "maxScrolling": 200,
     "scrapFrom": "twitter",
     "twitter": {
-        "tweetLoad": 200,
-        "runMode": "account",
+        "auth": {
+            "consumer_key" : "RBOcTaw0iUtzT6sOwWWQnWR7T",
+            "consumer_secret": "uaSGeTnMf5l5aLlJT2a7he8lWKNRBuJSEnIvI5Ictso2F6hkzJ",
+            "access_token": "1223874444084408321-IHxaj24dFlwivMDUbWJLdreOfrdIvW",
+            "access_token_secret": "W3biyeycjkLImV5rKaDVYkRqI5iPQzXxwvpLovy4s60RW"
+        },
+        "tweetLoad": 20,
+        "runMode": "combine",
         "account": [
-            "SAHealth",
-            "healthgovau",
-            "AP"
+            "abcaustralia"
         ],
         "keyword": [
-            "covid",
-            "jab",
-            "(covid+jab)",
-            "vaccin",
-            "vaxx",
-            "mask"
+            "mask",
+            "vaccine",
+            "vaccinated"
         ],
         "hashtag": [
             "#healthcare",

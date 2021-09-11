@@ -3,6 +3,7 @@ from datetime import datetime
 import json
 
 from selenium.webdriver.remote.webelement import WebElement
+from tweepy import Status
 
 
 def buildTwitterUrl_search(keywords, hashtags=None):
@@ -16,14 +17,36 @@ def buildTwitterUrl_search(keywords, hashtags=None):
 def buildTwitterUrl_account(accs):
     return [f'https://twitter.com/{acc}' for acc in accs]
 
+def buildTwitterUrl_advanced(accs, keywords, withBase = False, filterReplies = True):
 
-def buildQueryPart(queryParts):
+    result = []
+    base = 'https://twitter.com/search?q='
+    for acc in accs:
+        addup =''
+        if (keywords != None):
+            addup += f'{buildQueryPart(keywords)}'
+
+        if (acc != None):
+            addup += f' from:{acc}'
+
+        if filterReplies:
+            addup += ' -filter:replies'
+        addup = translateSpecialChar(addup) + '&src=typed_query&f=live'
+        if withBase: addup = base + addup
+        result.append(addup)
+
+    return result
+
+
+
+def buildQueryPart(queryParts, translate = True):
     result = ''
-    if len(queryParts) > 1:
-        result = f"({'%20OR%20'.join(queryParts)})"
+    if len(queryParts) >= 1:
+        result = f"{' OR '.join(queryParts)}"
     else:
         result = queryParts
-    return f'{translateSpecialChar(result)}'
+    if translate: result = translateSpecialChar(result)
+    return f'{result}'
 
 
 def translateSpecialChar(query):
@@ -39,6 +62,9 @@ class MyTweet:
     #     self.rating = None
     #     self.text = initText
     #     self.insertDbAt = None
+
+    def __init__(self, initData: Status):
+        self.account = initData.json
 
     def __init__(self, webEle: WebElement, mainTarget:str, configPath='./config/cssSelector.json'):
         with open(configPath) as f:
@@ -67,7 +93,6 @@ class MyTweet:
             'account'     : self.account
             , 'orig'      : self.orig
             , 'postAt'    : self.postAt
-            , 'text'      : self.text
             , 'hash'      : self.hash
             , 'text'      : self.text
             , 'rating'    : self.rating

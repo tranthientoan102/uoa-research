@@ -33,6 +33,24 @@ class MyFirebaseService:
         db = firestore.client()
         return db.collection(self.collectionName)
 
+    def getDbSnapshot(self):
+        return self.getCollectionRef()\
+            .limit(10)\
+            .stream()
+
+    def updateLocalDbState(self, cache):
+        print('updating local db state')
+        cloudDbState = self.getDbSnapshot()
+        for doc in cloudDbState:
+            try:
+                hash = doc.to_dict()['hash']
+                acc = doc.to_dict()['account']
+                text = doc.to_dict()['text']
+                cache[hash] = [acc, text]
+            except Exception as e:
+                print(f'ERROR fail to get info from {doc.to_dict()}')
+        print(f'dbState contains {len(cache)} records')
+
     def insertData(self, data: MyTweet):
         data.insertDbAt = datetime.datetime.now()
         self.getCollectionRef().document(data.hash).set(data.to_dict())
@@ -58,11 +76,22 @@ if __name__ == '__main__':
     # else:
     #     print('No such document!')
 
-    tweet = MyTweet('test2')
     service = MyFirebaseService()
-    doc = service.getCollectionRef().document(tweet.hash).set(tweet.to_dict())
-    docRead = service.getCollectionRef().document(tweet.hash).get()
-    if docRead.exists:
-        print(docRead.to_dict())
-    else:
-        print('No such document!')
+
+    # tweet = MyTweet('test2')
+    # doc = service.getCollectionRef().document(tweet.hash).set(tweet.to_dict())
+    docRead = service.getCollectionRef().where("account", "array_contains", "@abcaustralia").get()
+
+    # .collection("tweets_health")
+    # .where("account", "array-contains-any", ["@abcaustralia"])
+
+
+    # if docRead.exists:
+    #     print(docRead.to_dict())
+    # else:
+    #     print('No such document!')
+
+    for doc in docRead:
+        a = doc.to_dict()['hash']
+        service.getCollectionRef().document(a).delete()
+        print(f'done delete {a}')
