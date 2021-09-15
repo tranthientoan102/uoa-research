@@ -19,9 +19,11 @@ const Navbar: React.FC<{}> = () => {
                 <Box>
                     {auth ? (
                         <Box p={2}>
-                            <Link mx={6}>
+                            {auth.roles.filter(r => r =='admin').length>0 ? (<Link mx={6}>
                                 Admin
-                            </Link>
+                            </Link>):('')
+                            }
+
                             <Link
                                 p={2}
                                 onClick={() => router.push('/')}

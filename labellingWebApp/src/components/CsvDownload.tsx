@@ -13,6 +13,7 @@ const headers = [
     {label: "text", key: "text"},
     {label: "event", key: "event"},
     {label: "rating", key: "rating"},
+    { label: "labelledBy", key: "labelledBy" }
 ];
 
 interface Props {

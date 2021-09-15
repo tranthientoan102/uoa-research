@@ -23,21 +23,21 @@ const Download = (props) => {
 
     toast.configure()
     const { auth, signinWithGoogle } = useAuth();
-    const [data, setData] = useState([])
-    const [isWaiting, setWaiting] = useState(false)
+    // const [data, setData] = useState([])
+    // const [isWaiting, setWaiting] = useState(false)
     // const router = useRouter();
 
     // let data =[]
-    let headers = [
-        { label: "id", key: "id" },
-        { label: "account", key: "account" },
-        // { label: "hash", key: "hash" },
-        { label: "postAt", key: "postAt" },
-        { label: "insertDbAt", key: "insertDbAt" },
-        { label: "text", key: "text" },
-        { label: "event", key: "event" },
-        { label: "rating", key: "rating" },
-    ];
+    // let headers = [
+    //     { label: "id", key: "id" },
+    //     { label: "account", key: "account" },
+    //     // { label: "hash", key: "hash" },
+    //     { label: "postAt", key: "postAt" },
+    //     { label: "insertDbAt", key: "insertDbAt" },
+    //     { label: "text", key: "text" },
+    //     { label: "event", key: "event" },
+    //     { label: "rating", key: "rating" },
+    // ];
 
 
     const getData = async () => {
@@ -87,7 +87,7 @@ const Download = (props) => {
                 <Navbar />
                 <Container maxW="6xl" pt={6}>
                     <SimpleGrid>
-                        <TagsInput2 id={id} tags={['SAHealth']} defaultEvents={[]} />
+                        <TagsInput2 id={id} tags={[]} defaultEvents={[]} />
                         <CsvDownload auth={auth} id={id}/>
                     </SimpleGrid>
                 </Container>

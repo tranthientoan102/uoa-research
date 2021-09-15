@@ -1,14 +1,23 @@
-import {Box, Container, Flex, SimpleGrid, Text, Button, Grid} from '@chakra-ui/react';
-import { Input } from "@chakra-ui/react"
-import React, { useState } from 'react';
-import { loadUnlabelledPostByAccount, loadUnlabelledPost, updateLabel, refillDbWithAccount, getDefaultEventList } from '../utils/db';
-import { useAuth } from "../lib/auth";
-import { toast } from 'react-toastify';
+import {Box, Button, Container, Flex, SimpleGrid, Text} from '@chakra-ui/react';
+import React, {useState} from 'react';
+import {
+    getDefaultEventList,
+    loadUnlabelledPost,
+    loadUnlabelledPostByAccount,
+    refillDbWithAccount,
+    updateLabel,
+    searchCache_acc_kw,
+    loadUnlabelledPost_accs_kws,
+    refillDb_acc_kw, refillDb_kw, searchDb_kw
+} from '../utils/db';
+import {useAuth} from "../lib/auth";
+import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
 import TagInput2 from './TagsInput2';
 import {getTagsInput} from "../utils/common";
+import DefaultEvent from "./DefaultEvent";
 
 const PostView = (props) => {
 
@@ -53,7 +62,7 @@ const PostView = (props) => {
     }
 
 
-    const fetchData = async (accs: string[]) => {
+    const fetchData = async (accs: string[], kws:string[]) => {
         setData(`loading post from ${accs}...`)
         let res = null
 
@@ -61,10 +70,19 @@ const PostView = (props) => {
 
 
 
-        if (accs.length > 0)
+        if (accs.length > 0 && kws.length > 0) {
+            // res = await loadUnlabelledPostByAccount(accs, kws)
+            res = await loadUnlabelledPost_accs_kws(accs, kws)
+        }
+        else if ((accs.length > 0 && kws.length == 0)){
             res = await loadUnlabelledPostByAccount(accs)
-        else
+        }
+        else if (kws.length > 0){
+            res = await searchDb_kw(kws)
+        }
+        else {
             res = await loadUnlabelledPost()
+        }
         const newData = await generateForm(auth, res)
         // @ts-ignore
         setData(newData)
@@ -73,16 +91,33 @@ const PostView = (props) => {
     const refillData = async () => {
         setData("...preparing db...")
         let accs = getTagsInput('searchAcc',true)
+        let kws = getTagsInput('searchKey',false)
         // try {
-        if (accs.length > 0) {
-            toast.info('Please wait for DB to be filled up...', { autoClose: 10000 })
 
-            refillDbWithAccount(accs.join(','))
-            setTimeout(() => { fetchData(accs) }, 10000)
+        let isWaiting = true
 
+        if (accs.length > 0 && kws.length > 0) {
+            refillDb_acc_kw(accs, kws)
 
-        } else
-            toast.error('Please specifiy desired account')
+             // else {
+             //    refillDbWithAccount(accs.join(','))
+        } else {
+            if (accs.length > 0) refillDbWithAccount(accs.join(','))
+            else if (kws.length > 0) refillDb_kw(kws)
+            else {
+                toast.error('Please check your input')
+                isWaiting = false
+            }
+        }
+        if (isWaiting) {
+            toast.info('Please wait for DB to be filled up...', {autoClose: 10000})
+            setTimeout(() => {
+                fetchData(accs, kws)
+            }, 10000)
+        }
+
+        // } else
+        //     toast.error('Please specifiy desired account')
         // } catch (err) {
         //     toast.error('REFILL FAILED: ' + err)
         // }
@@ -90,6 +125,7 @@ const PostView = (props) => {
 
 
     const generateForm = (auth, promiseData) => {
+        toast.info(`load ${promiseData.length} unlabelled tweets`,{ autoClose: 5000 })
 
 
         try {
@@ -113,7 +149,7 @@ const PostView = (props) => {
                             {data.text}
                         </Text>
 
-                        <TagInput2 id={data.hash} tags={[]} defaultEvents={de} />
+                        <DefaultEvent id={data.hash} defaultEvents={de} />
 
 
                         <Flex align="center" justify="center" mt={3}>
@@ -154,38 +190,63 @@ const PostView = (props) => {
 
     return (
         <div>
-            <Container maxW="6xl">
-                <Flex  my={6} align="center" justify="center">
+            <Container maxW="10xl">
+                <Flex  my={2} align="center" justify="center">
 
-                    <TagInput2 id="searchAcc" defaultEvents={[]} tags={['sahealth']} />
+                    <Container mx={2} p={0}>
+                        <Text>Twitter account</Text>
+                        <TagInput2 id="searchAcc" defaultEvents={[]} tags={['sahealth']} />
+                    </Container>
+
+                    <Container mx={2} p={0}>
+                        <Text>Keyword</Text>
+                        <TagInput2 id="searchKey" defaultEvents={[]} tags={['mask','masks']} />
+                    </Container>
 
                     <Button
-                        ml={3}
-                        colorScheme="blue"
-                        onClick={() => fetchData(getTagsInput('searchAcc', true))}
+                        m={3}
+                        // colorScheme="blue"
+                        // background="gray"
+                        // color="lightgreen"
+                        onClick={() => fetchData(
+                            getTagsInput('searchAcc', true)
+                            , getTagsInput('searchKey', false)
+                        )}
                     >
-                        Go
+                        <p>Load more</p>
+                    </Button>
+                    <Button
+                        m={3}
+                        colorScheme="yellow"
+                        onClick={() => refillData()}
+                    >
+                        LATEST
                     </Button>
                 </Flex>
 
 
                 {/* </Flex> */}
             </Container>
-            <Container maxW="6xl">
+            <Container maxW="20xl">
                 <SimpleGrid>
                     {/* {generateForm(auth, props)} */}
                     {data}
                 </SimpleGrid>
-                <SimpleGrid >
-                    <Button mt={6} mx={3} colorScheme="blue" onClick={() => fetchData(getTagsInput('searchAcc', true))}>Load more</Button>
-                    <Button
-                        m={3}
-                        colorScheme="yellow"
-                        onClick={() => refillData()}
-                    >
-                        or REFILL DB
-                    </Button>
-                </SimpleGrid>
+                {/*<SimpleGrid >*/}
+                {/*    <Button mt={6} mx={3} colorScheme="blue"*/}
+                {/*            onClick={() => fetchData(*/}
+                {/*                getTagsInput('searchAcc', true)*/}
+                {/*                , getTagsInput('searchKey', false)*/}
+                {/*            )}*/}
+                {/*    >Load more</Button>*/}
+                {/*    <Button*/}
+                {/*        m={3}*/}
+                {/*        colorScheme="yellow"*/}
+                {/*        onClick={() => refillData()}*/}
+                {/*    >*/}
+                {/*        or REFILL DB*/}
+                {/*    </Button>*/}
+                {/*</SimpleGrid>*/}
             </Container>
         </div >
     );

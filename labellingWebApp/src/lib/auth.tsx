@@ -1,5 +1,5 @@
 import { Context, createContext, useContext, useEffect, useState } from 'react';
-import { addUser } from '../utils/db';
+import { updateAuthUser } from '../utils/db';
 import firebase from './firebase';
 
 
@@ -10,6 +10,7 @@ interface Auth {
     photoUrl: string | null;
     token: string | null;
     level: number | 0;
+    roles: string[]| null;
 
 }
 interface AuthContext {
@@ -33,6 +34,7 @@ const formatAuthState = (user: firebase.User): Auth => ({
     photoUrl: user.photoURL,
     token: '',
     level: 0,
+    roles: []
 })
 
 function userProvideAuth() {
@@ -44,10 +46,12 @@ function userProvideAuth() {
             setLoading(false);
             return;
         }
-        const formattedAuth = formatAuthState(authState);
+        let formattedAuth = formatAuthState(authState);
         formattedAuth.token = await authState.getIdToken();
-        setAuth(formattedAuth);
+
         setLoading(false);
+        formattedAuth = await updateAuthUser({ ...formattedAuth});
+        setAuth(formattedAuth);
     };
 
     const signedIn = async (
@@ -59,7 +63,7 @@ function userProvideAuth() {
         }
         const authUser = formatAuthState(response.user);
         console.log(authUser.uid)
-        await addUser({ ...authUser, provider });
+        // await addUser({ ...authUser, provider });
     };
 
     const clear = () => {

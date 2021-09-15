@@ -21,9 +21,13 @@ export const getTagsInput = (eleId, isTwitterAcc=false) => {
         if (de.querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes())
             tags.push(de.querySelector('.chakra-checkbox__label.css-1sgc0qu').innerHTML)
     })
-    rootEle.querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-tag').forEach((element) => {
-        tags.push((isTwitterAcc?'@':'') + element.innerHTML.replace("<a></a>", ""))
-    })
+
+    let reactTagInput = rootEle.querySelector('.react-tagsinput')
+    if (reactTagInput) {
+        rootEle.querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-tag').forEach((element) => {
+            tags.push((isTwitterAcc ? '@' : '') + element.innerHTML.replace("<a></a>", ""))
+        })
+    }
     console.log('detect tags: ' + tags)
     return tags
 }
