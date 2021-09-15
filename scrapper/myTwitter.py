@@ -3,7 +3,7 @@ from datetime import datetime
 import json
 
 from selenium.webdriver.remote.webelement import WebElement
-from tweepy import Status
+
 
 
 def buildTwitterUrl_search(keywords, hashtags=None):
@@ -63,8 +63,11 @@ class MyTweet:
     #     self.text = initText
     #     self.insertDbAt = None
 
-    def __init__(self, initData: Status):
-        self.account = initData.json
+    # def __init__(self, infoStr:str):
+    #     info = json.loads(infoStr)
+    #     print(info)
+
+
 
     def __init__(self, webEle: WebElement, mainTarget:str, configPath='./config/cssSelector.json'):
         with open(configPath) as f:
@@ -99,6 +102,43 @@ class MyTweet:
             , 'insertDbAt': self.insertDbAt
         }
 
+class MyTweet2:
+    def __init__(self):
+        self.account=None
+        self.orig=None
+        self.postAt=None
+        self.hash=None
+        self.text=None
+        self.rating=None
+        self.insertDbAt=None
+
+    def parse(self, initDict):
+        if 'retweeted_status' in initDict.keys():
+            self.parse(initDict['retweeted_status'])
+        else:
+            self.account = ['@'+initDict['user']['screen_name']]
+            tweetId = initDict['id']
+            self.orig = f'https://twitter.com/{self.account}/status/{tweetId}'
+            dt = initDict['created_at'].split(' ')
+            dt2 = f'{dt[1]} {dt[2]} {dt[5]} {dt[3]}'
+            self.postAt = datetime.strptime(dt2, '%b %d %Y %H:%M:%S')
+            # print(f'converting {dt2} -> {self.postAt}')
+            self.text = initDict['full_text']
+            self.rating = -10
+            self.hash = md5(self.text.encode()).hexdigest()
+            self.insertDbAt = None
+        return self
+
+    def to_dict(self):
+        return {
+            'account'     : self.account
+            , 'orig'      : self.orig
+            , 'postAt'    : self.postAt
+            , 'hash'      : self.hash
+            , 'text'      : self.text
+            , 'rating'    : self.rating
+            , 'insertDbAt': self.insertDbAt
+        }
 
 if __name__ == '__main__':
     test = MyTweet("""test

@@ -3,13 +3,13 @@
     "scrapFrom": "twitter",
     "twitter": {
         "auth": {
-            "consumer_key" : "RBOcTaw0iUtzT6sOwWWQnWR7T",
-            "consumer_secret": "uaSGeTnMf5l5aLlJT2a7he8lWKNRBuJSEnIvI5Ictso2F6hkzJ",
-            "access_token": "1223874444084408321-IHxaj24dFlwivMDUbWJLdreOfrdIvW",
-            "access_token_secret": "W3biyeycjkLImV5rKaDVYkRqI5iPQzXxwvpLovy4s60RW"
+            "consumer_key" : "lgBu13nhDXA1sYkHpMn6gZdnH",
+            "consumer_secret": "spagOJXGx3NSVAp9jccWAYIXHEBhmNJuBqfHUoFNvd6svZlxXE",
+            "access_token": "1221687331452674049-CEsgd7VOyISy6EK6YivTLgiWQ5lzYA",
+            "access_token_secret": "9W2JuomO2xWCoRLQsM8oIQiYzoYMNZoIrsnJRo869Nj2w"
         },
-        "tweetLoad": 20,
-        "runMode": "combine",
+        "tweetLoad": 400,
+        "runMode": "keyword",
         "account": [
             "abcaustralia"
         ],

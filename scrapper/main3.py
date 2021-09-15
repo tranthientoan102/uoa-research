@@ -13,6 +13,7 @@ import myFirebase
 
 # Press the green button in the gutter to run the script.
 
+
 def run(runConfig, cache, scrapFrom='twitter'):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -136,9 +137,10 @@ def subRun(url:str, mainTarget, cache, browser, maxSrolling, count, myfirebase):
 def updateCache(tweet, cache):
     hash = tweet.hash
     acc = tweet.account
+    postAt = tweet.postAt
     text = tweet.text
     cache[tweet.hash] = [hash, acc, text]
-    postData = {'hash': hash, 'acc': acc, 'text': text}
+    postData = {'hash': hash, 'acc': acc, 'postAt':postAt.__str__(), 'text': text}
     r = requests.post("http://0.0.0.0:8000/cache/", json=json.dumps(postData))
 
 

@@ -5,6 +5,7 @@ from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import multiprocessing
 import main
+import main2
 import main3
 import myFirebase
 
@@ -12,9 +13,12 @@ class MyFast (FastAPI):
     cache = {}
     def __init__(self):
         FastAPI.__init__(self)
-        myfirebase = myFirebase.MyFirebaseService()
-        myfirebase.updateLocalDbState(self.cache)
-        myfirebase.disconnect()
+        # self.updateCache()
+
+    # def updateCache(self):
+    #     myfirebase = myFirebase.MyFirebaseService()
+    #     myfirebase.updateLocalDbState(self.cache)
+    #     myfirebase.disconnect()
 
 
 app = MyFast()
@@ -40,10 +44,11 @@ async def root():
 
 
 @app.get("/cache")
-async def loadCach():
+async def loadCache():
     result = []
     for key in app.cache.keys():
-        result.append([app.cache[key][0], app.cache[key][1] ])
+        # result.append([app.cache[key][0], app.cache[key][1]])
+        result.append([key, app.cache[key]])
     return result
 
 @app.get("/cache/count")
@@ -54,8 +59,12 @@ async def countCache():
 async def postToCache(initConfig=Body(...)):
     # print(f'{initConfig}')
     update = json.loads(initConfig)
-    app.cache[update['hash']] = [update['acc'], update['text']]
+    app.cache[update['hash']] = [update['acc'], update['postAt'], update['text']]
 
+@app.delete("/cache")
+async def clearCache():
+    app.cache.clear()
+    # app.updateCache()
 
 @app.post("/trigger/account")
 async def triggerAccount(initConfig=Body(...)):
@@ -67,9 +76,10 @@ async def triggerAccount(initConfig=Body(...)):
 
         # accs = json.loads(initConfig)
         # print(f'{accs=}')
+        default['twitter']['runMode'] = 'account'
         for acc in initConfig['list'].split(','):
             default['twitter']['account'] = [acc.replace('@','')]
-            proc = multiprocessing.Process(target=main.run, args=(default,))
+            proc = multiprocessing.Process(target=main2.run, args=(default,))
             proc.start()
     except Exception as e:
         result = "FAILED \n" + traceback.print_exc()
@@ -77,21 +87,28 @@ async def triggerAccount(initConfig=Body(...)):
 
 
 @app.post("/trigger/keyword")
-async def triggerKeyword(initConfig):
-    default = getDefaultRunConfig()
-    default['twitter']['runMode'] = 'keyword'
-    default['twitter']['keyword'] = json.loads(initConfig)['list']
-    proc = multiprocessing.Process(target=main.run, args=(default,))
-    proc.start()
-    return "PROCESSING"
+async def triggerKeyword(initConfig=Body(...)):
+    result = 'PROCESSING'
+    try:
+        default = getDefaultRunConfig()
+        default['twitter']['runMode'] = 'keyword'
+        # default['twitter']['keyword'] = json.loads(initConfig)['list']
+        default['twitter']['keyword'] = initConfig['list']
+        multiprocessing.Process(target=main2.run, args=(default,)).start()
+
+    except Exception as e:
+        result = "FAILED \n" + traceback.print_exc()
+    return result
 
 
 @app.post("/trigger/combine")
-async def triggerCombine(initConfig):
+async def triggerCombine(initConfig=Body(...)):
     default = getDefaultRunConfig()
 
     # {"account": ["@sahealth","@7newsadelaide"], "keyword": ["mask"]}
     # {"account": ["@7newsadelaide"], "keyword": ["restriction"]}
+    # {"account": ["@ap","@afp"], "keyword": ["BREAKING"]}
+
     update = json.loads(initConfig)
     print(update['account'])
     for x in update['account']:
@@ -110,8 +127,9 @@ async def triggerCombine(initConfig):
 async def searchCombine(initConfig):
     # {"account": ["@sahealth", "@7newsadelaide"], "keyword": ["mask"]}
     # {"account": ["@ap","@afp"], "keyword": ["BREAKING"]}
-    update = json.loads(initConfig)
 
+    update = json.loads(initConfig)
+    print(f'initConfig: {update}')
     accList = update['account']
     kwList = update['keyword']
 
@@ -119,30 +137,34 @@ async def searchCombine(initConfig):
     for key in app.cache.keys():
         # print(f'finding for {accList}\'s tweets containing {kwList} in {app.cache[key]}')
 
-        if findElementFromList(accList, app.cache[key][0]) and findKeywordFromText(kwList, app.cache[key][1]):
+        if findElementFromList(accList, app.cache[key][0]) and findKeywordFromText(kwList, app.cache[key][2]):
             hashList.append(key)
 
-    # print(f'found tweets:\n{hashList}')
+    print(f'found {len(hashList)} tweets')
     return hashList
+
 
 def findElementFromList(eleList, destList):
 
     result = False
+    if len(eleList)==0: result = True
     for ele in eleList:
         for dest in destList:
             if ele.__eq__(dest):
                 result = True
-                print('found ' + ele)
+                # print('found ' + ele)
                 break
     return result
 
 def findKeywordFromText(kwList, text:str):
     result = False
-    for kw in kwList:
-        if text.find(kw) >= 0:
-            print('found ' + kw)
-            result = True
-            break
+    if len(kwList) == 0: result = True
+    else :
+        for kw in kwList:
+            if text.lower().find(kw.lower()) >= 0:
+                # print('found ' + kw)
+                result = True
+                break
     return result
 
 

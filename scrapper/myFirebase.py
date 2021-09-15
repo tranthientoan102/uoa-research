@@ -4,6 +4,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
+
 from myTwitter import MyTweet
 
 
@@ -34,9 +35,11 @@ class MyFirebaseService:
         return db.collection(self.collectionName)
 
     def getDbSnapshot(self):
-        return self.getCollectionRef()\
-            .limit(10)\
-            .stream()
+        # query = self.getCollectionRef().order_by('postAt', direction='DESCENDING').limit(10)
+        query = self.getCollectionRef().order_by('postAt', direction='DESCENDING')
+
+
+        return query.stream()
 
     def updateLocalDbState(self, cache):
         print('updating local db state')
@@ -45,8 +48,9 @@ class MyFirebaseService:
             try:
                 hash = doc.to_dict()['hash']
                 acc = doc.to_dict()['account']
+                postAt = doc.to_dict()['postAt']
                 text = doc.to_dict()['text']
-                cache[hash] = [acc, text]
+                cache[hash] = [acc, postAt, text]
             except Exception as e:
                 print(f'ERROR fail to get info from {doc.to_dict()}')
         print(f'dbState contains {len(cache)} records')
@@ -80,7 +84,7 @@ if __name__ == '__main__':
 
     # tweet = MyTweet('test2')
     # doc = service.getCollectionRef().document(tweet.hash).set(tweet.to_dict())
-    docRead = service.getCollectionRef().where("account", "array_contains", "@abcaustralia").get()
+    docRead = service.getCollectionRef().where("account", "array_contains", "@elonmusk").get()
 
     # .collection("tweets_health")
     # .where("account", "array-contains-any", ["@abcaustralia"])
@@ -92,6 +96,7 @@ if __name__ == '__main__':
     #     print('No such document!')
 
     for doc in docRead:
+        # if len(doc.to_dict()['account'])>1:
         a = doc.to_dict()['hash']
         service.getCollectionRef().document(a).delete()
         print(f'done delete {a}')
