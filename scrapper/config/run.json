@@ -8,7 +8,7 @@
             "access_token": "1221687331452674049-CEsgd7VOyISy6EK6YivTLgiWQ5lzYA",
             "access_token_secret": "9W2JuomO2xWCoRLQsM8oIQiYzoYMNZoIrsnJRo869Nj2w"
         },
-        "tweetLoad": 2000,
+        "tweetLoad": 500,
         "runMode": "keyword",
         "account": [
             "abcaustralia"

@@ -105,6 +105,7 @@ class MyTweet:
 class MyTweet2:
     def __init__(self):
         self.account=None
+        self.id= None
         self.orig=None
         self.postAt=None
         self.hash=None
@@ -116,9 +117,9 @@ class MyTweet2:
         if 'retweeted_status' in initDict.keys():
             self.parse(initDict['retweeted_status'])
         else:
-            self.account = ['@'+initDict['user']['screen_name']]
-            tweetId = initDict['id']
-            self.orig = f'https://twitter.com/{initDict["user"]["screen_name"]}/status/{tweetId}'
+            self.account = ['@'+initDict['user']['screen_name'].lower()]
+            self.id = initDict['id']
+            self.orig = f'https://twitter.com/{initDict["user"]["screen_name"]}/status/{self.id}'
             dt = initDict['created_at'].split(' ')
             dt2 = f'{dt[1]} {dt[2]} {dt[5]} {dt[3]}'
             self.postAt = datetime.strptime(dt2, '%b %d %Y %H:%M:%S')

@@ -109,18 +109,19 @@ async def triggerCombine(initConfig=Body(...)):
     # {"account": ["@7newsadelaide"], "keyword": ["restriction"]}
     # {"account": ["@ap","@afp"], "keyword": ["BREAKING"]}
 
-    update = json.loads(initConfig)
-    print(update['account'])
-    for x in update['account']:
+    # update = json.loads(initConfig)
+    # print(update['account'])
+    for x in initConfig['account']:
         print(x)
         default['twitter']['runMode'] = 'combine'
         # default['twitter']['account'] = update['account'].__str__().replace('@','')
-        default['twitter']['account'] = [x.replace('@ ', '')]
-        default['twitter']['keyword'] = update['keyword']
+        default['twitter']['account'] = [x.replace('@', '')]
+        default['twitter']['keyword'] = initConfig['keyword']
 
         # proc = multiprocessing.Process(target=main3.run, args=(default,app.cache))
         # proc.start()
-        multiprocessing.Process(target=main3.run, args=(default, app.cache)).start()
+        # multiprocessing.Process(target=main3.run, args=(default, app.cache)).start()
+        multiprocessing.Process(target=main2.run, args=(default,)).start()
     return "PROCESSING"
 
 @app.get("/search/combine")
