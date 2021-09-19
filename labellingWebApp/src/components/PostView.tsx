@@ -6,9 +6,8 @@ import {
     loadUnlabelledPostByAccount,
     refillDbWithAccount,
     updateLabel,
-    searchCache_acc_kw,
     loadUnlabelledPost_accs_kws,
-    refillDb_acc_kw, refillDb_kw, searchDb_kw
+    refillDb_acc_kw, refillDb_kw, refillDb_acc_kws
 } from '../utils/db';
 import {useAuth} from "../lib/auth";
 import {toast} from 'react-toastify';
@@ -63,26 +62,32 @@ const PostView = (props) => {
 
 
     const fetchData = async (accs: string[], kws:string[]) => {
-        setData(`loading post from ${accs}...`)
+        setData(`loading post from ${accs} with keywords ${kws}`)
         let res = null
 
         getDefaultEventList().then(res => de = res)
 
 
 
-        if (accs.length > 0 && kws.length > 0) {
-            // res = await loadUnlabelledPostByAccount(accs, kws)
-            res = await loadUnlabelledPost_accs_kws(accs, kws)
-        }
-        else if ((accs.length > 0 && kws.length == 0)){
+        // if (accs.length > 0 && kws.length > 0) {
+        //     // res = await loadUnlabelledPostByAccount(accs, kws)
+        //     res = await loadUnlabelledPost_accs_kws(accs, kws)
+        // }
+        // else if ((accs.length > 0 && kws.length == 0)){
+        //     res = await loadUnlabelledPostByAccount(accs)
+        // }
+        // else if (kws.length > 0){
+        //     res = await searchDb_kw(kws)
+        // }
+        // else {
+        //     res = await loadUnlabelledPost()
+        // }
+
+        if (kws.length == 0){
             res = await loadUnlabelledPostByAccount(accs)
-        }
-        else if (kws.length > 0){
-            res = await searchDb_kw(kws)
-        }
-        else {
-            res = await loadUnlabelledPost()
-        }
+        }else res = await loadUnlabelledPost_accs_kws(accs, kws)
+
+
         const newData = await generateForm(auth, res)
         // @ts-ignore
         setData(newData)
@@ -97,10 +102,8 @@ const PostView = (props) => {
         let isWaiting = true
 
         if (accs.length > 0 && kws.length > 0) {
-            refillDb_acc_kw(accs, kws)
-
-             // else {
-             //    refillDbWithAccount(accs.join(','))
+            // refillDbWithAccount(accs.join(','))
+            refillDb_acc_kws(accs, kws)
         } else {
             if (accs.length > 0) refillDbWithAccount(accs.join(','))
             else if (kws.length > 0) refillDb_kw(kws)
@@ -135,8 +138,8 @@ const PostView = (props) => {
                 // @ts-ignore
                 // @ts-ignore
                 result.push(
-                    <Box m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl" id={data.hash}>
-                        <Text color="blue.300" mt={2}>
+                    <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl" id={data.hash}>
+                        <Text color="blue.300" >
                             <a href={data.orig}>{data.orig}</a>
                         </Text>
                         <Text colorScheme="teal">
@@ -190,7 +193,7 @@ const PostView = (props) => {
 
     return (
         <div>
-            <Container maxW="10xl">
+            <Container maxW="8xl">
                 <Flex  my={2} align="center" justify="center">
 
                     <Container mx={2} p={0}>
@@ -200,7 +203,7 @@ const PostView = (props) => {
 
                     <Container mx={2} p={0}>
                         <Text>Keyword</Text>
-                        <TagInput2 id="searchKey" defaultEvents={[]} tags={['mask','masks']} />
+                        <TagInput2 id="searchKey" defaultEvents={[]} tags={['mask']} />
                     </Container>
 
                     <Button
@@ -227,26 +230,11 @@ const PostView = (props) => {
 
                 {/* </Flex> */}
             </Container>
-            <Container maxW="20xl">
-                <SimpleGrid>
+            <Container maxW="8xl">
+                <SimpleGrid my={2} align="center" >
                     {/* {generateForm(auth, props)} */}
-                    {data}
+                    <div>{data}</div>
                 </SimpleGrid>
-                {/*<SimpleGrid >*/}
-                {/*    <Button mt={6} mx={3} colorScheme="blue"*/}
-                {/*            onClick={() => fetchData(*/}
-                {/*                getTagsInput('searchAcc', true)*/}
-                {/*                , getTagsInput('searchKey', false)*/}
-                {/*            )}*/}
-                {/*    >Load more</Button>*/}
-                {/*    <Button*/}
-                {/*        m={3}*/}
-                {/*        colorScheme="yellow"*/}
-                {/*        onClick={() => refillData()}*/}
-                {/*    >*/}
-                {/*        or REFILL DB*/}
-                {/*    </Button>*/}
-                {/*</SimpleGrid>*/}
             </Container>
         </div >
     );

@@ -38,7 +38,7 @@ const Admin = (props) => {
         let result = []
         for (const e of de)
             result.push(<Text m={1}>{e}</Text>)
-        result.push(<TagsInput2 id='newDE' tags={[]} defaultEvents={[]}></TagsInput2>)
+        result.push(<TagsInput2 id='newDE' tags={[]} defaultEvents={[]}/>)
 
         // @ts-ignore
         setData(result)
