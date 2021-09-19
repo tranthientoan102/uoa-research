@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Divider, Flex, Heading, Link } from "@chakra-ui/layout";
 import { Input } from "@chakra-ui/react"
-import { useRouter } from "next/dist/client/router";
-// import { useRouter } from "next/router";
+// import { useRouter } from "next/dist/client/router";
+import { useRouter } from "next/router";
 import { useAuth } from "../lib/auth";
 
 
@@ -19,22 +19,33 @@ const Navbar: React.FC<{}> = () => {
                 <Box>
                     {auth ? (
                         <Box p={2}>
-                            {auth.roles.filter(r => r =='admin').length>0 ? (<Link mx={6}>
-                                Admin
-                            </Link>):('')
-                            }
-
                             <Link
                                 p={2}
-                                onClick={() => router.push('/')}
+                                onClick={() => {
+                                    console.log('going /')
+                                    router.push('/')
+                                }}
                             >
                                 Main view
                             </Link>
                             <Link
                                 p={2}
-                                onClick={() => router.push('/download')}
+                                onClick={() => {
+                                    console.log('going /download')
+                                    router.push('/download')
+                                }}
                             >
                                 Download
+                            </Link>
+                            <Link
+                                href='/admin'
+                                p={2}
+                                onclick={()=> {
+                                    console.log('going /admin')
+                                    router.push('/admin')
+                                }}
+                            >
+                                Admin
                             </Link>
                             <Link p={2} onClick={() => signOut()}>
                                 Logout

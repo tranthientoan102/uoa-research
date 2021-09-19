@@ -20,7 +20,7 @@ const signin = () => {
                 <Center mt={10}>
                     <VStack spacing="4">
                         <Heading fontSize="3xl" mb={2}>
-                            Good day !!!
+                            Welcome to Text Labelling tool!!!
                         </Heading>
                         <Button leftIcon={<FcGoogle />} onClick={() => signinWithGoogle()}>
                             Sign In with Google

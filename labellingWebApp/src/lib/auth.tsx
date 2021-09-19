@@ -34,7 +34,7 @@ const formatAuthState = (user: firebase.User): Auth => ({
     photoUrl: user.photoURL,
     token: '',
     level: 0,
-    roles: []
+    roles: ['user']
 })
 
 function userProvideAuth() {

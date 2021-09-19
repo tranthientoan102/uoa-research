@@ -1,3 +1,10 @@
+h1 {
+
+  font-size: 20px;
+  font-weight:900;
+  margin-bottom: 20px;
+}
+
 .react-tagsinput {
   background-color: #fff;
   border: 1px solid #ccc;

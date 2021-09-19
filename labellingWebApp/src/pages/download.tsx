@@ -85,12 +85,17 @@ const Download = (props) => {
             </Head>
             <main>
                 <Navbar />
-                <Container maxW="6xl" pt={6}>
+                {auth?(
+                    <Container maxW="6xl" pt={6}>
                     <SimpleGrid>
                         <TagsInput2 id={id} tags={[]} defaultEvents={[]} />
                         <CsvDownload auth={auth} id={id}/>
                     </SimpleGrid>
                 </Container>
+                ):(
+                    <Container>Please log in for start using tool</Container>
+                )}
+
             </main>
             <footer></footer>
         </div >

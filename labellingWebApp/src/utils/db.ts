@@ -5,11 +5,12 @@ import {database} from "firebase-admin/lib/database";
 import {toast} from 'react-toastify';
 
 
+
 toast.configure()
 
 const postLimit = 200
-const host = 'localhost'
-// const host = '20.37.47.186'
+// const host = 'localhost'
+const host = '20.37.47.186'
 
 
 export const updateAuthUser = async (authUser: any) => {
@@ -60,7 +61,7 @@ export const searchDb_kw = async(kws: string[])=> {
     data.forEach(p =>{
         for (const kw in kws){
             let w = kws[kw]
-            if (p.text.includes(w)){
+            if (p.text.toLowerCase().includes(w.toLowerCase())){
                 result.push(p)
                 break;
             }
@@ -134,8 +135,10 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[])
     let data = await loadUnlabelledPostByAccount(accs, null)
     data.forEach((doc) => {
         for (const kw of kws){
-            if (doc.text.includes(kw))
+            if (doc.text.includes(kw)) {
                 result.push(doc)
+                break
+            }
         }
     })
     return result
@@ -205,6 +208,20 @@ export const getDefaultEventList = async () => {
     )
 
     return defEve
+
+}
+export const createDefaultEvent = async (eventList:string[], auth) =>{
+    let dataRef = await firebase.firestore().collection("default_events")
+    var crypto = require('crypto');
+    for (const e of eventList){
+        let doc = {
+            id: crypto.createHash('md5').update(e).digest('hex'),
+            name: e,
+            createdBy: auth.email
+        }
+        console.log(doc)
+        dataRef.doc(doc.id.toString()).set(doc)
+    }
 
 }
 
