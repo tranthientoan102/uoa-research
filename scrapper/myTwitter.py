@@ -118,7 +118,7 @@ class MyTweet2:
         else:
             self.account = ['@'+initDict['user']['screen_name']]
             tweetId = initDict['id']
-            self.orig = f'https://twitter.com/{self.account}/status/{tweetId}'
+            self.orig = f'https://twitter.com/{initDict["user"]["screen_name"]}/status/{tweetId}'
             dt = initDict['created_at'].split(' ')
             dt2 = f'{dt[1]} {dt[2]} {dt[5]} {dt[3]}'
             self.postAt = datetime.strptime(dt2, '%b %d %Y %H:%M:%S')
