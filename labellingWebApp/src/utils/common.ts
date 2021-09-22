@@ -1,4 +1,5 @@
 import axios from "axios";
+import {toast} from 'react-toastify';
 
 export const labelling = async (auth, values) => {
     try {
@@ -26,6 +27,14 @@ export const getTagsInput = (eleId, isTwitterAcc=false) => {
     if (reactTagInput) {
         rootEle.querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-tag').forEach((element) => {
             tags.push((isTwitterAcc ? '@' : '') + element.innerHTML.replace("<a></a>", ""))
+        })
+        rootEle.querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-input').forEach(element =>{
+            // @ts-ignore
+            let tmpInput = element.value
+            if (tmpInput != '') {
+                tags.push((isTwitterAcc ? '@' : '') + tmpInput)
+                toast.info(`Include unfinalised input ${tmpInput}. Please remember hitting Enter or Tab next time`)
+            }
         })
     }
     console.log('detect tags: ' + tags)

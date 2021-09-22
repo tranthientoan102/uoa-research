@@ -8,7 +8,7 @@ import {toast} from 'react-toastify';
 
 toast.configure()
 
-const expectingPost = 300
+const expectingPost = 500
 const dbLookupLimit = 1000
 
 // const host = 'localhost'
@@ -38,7 +38,7 @@ export const updateAuthUser = async (authUser: any) => {
 //     })
 // }
 
-export const refillDbWithAccount = async (acc: string) => {
+export const refillDb_acc = async (acc: string) => {
     let tmp = await Axios.post(`http://${host}:8000/trigger/account`, { list: acc })
     return tmp
 }

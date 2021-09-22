@@ -4,7 +4,7 @@ import {
     getDefaultEventList,
     loadUnlabelledPost,
     loadUnlabelledPostByAccount,
-    refillDbWithAccount,
+    refillDb_acc,
     updateLabel,
     loadUnlabelledPost_accs_kws,
     refillDb_acc_kw, refillDb_kw, refillDb_acc_kws
@@ -88,36 +88,47 @@ const PostView = (props) => {
         }else res = await loadUnlabelledPost_accs_kws(accs, kws)
 
 
+
+        let latestDate = new Date(res[0].postAt['seconds'] * 1000)
+        // @ts-ignore
+        let isOlderThan1Day = ((new Date()) - latestDate)/(1000 * 3600 * 24) > 1
+
+        if ((res.length < 500) || (isOlderThan1Day)) {
+            toast.info('Auto scrapping latest tweets')
+            refillData(accs,kws)
+        }
+
+
         const newData = await generateForm(auth, res)
         // @ts-ignore
         setData(newData)
     }
     // @ts-ignore
-    const refillData = async () => {
-        setData("...preparing db...")
-        let accs = getTagsInput('searchAcc',true)
-        let kws = getTagsInput('searchKey',false)
-        // try {
+    const refillData = async (accs:string[], kws:string[]) => {
+        // setData("...preparing db...")
+        //
+        // let accs = getTagsInput('searchAcc',true)
+        // let kws = getTagsInput('searchKey',false)
 
-        let isWaiting = true
+        // let isWaiting = true
 
         if (accs.length > 0 && kws.length > 0) {
             // refillDbWithAccount(accs.join(','))
             refillDb_acc_kws(accs, kws)
         } else {
-            if (accs.length > 0) refillDbWithAccount(accs.join(','))
+            if (accs.length > 0) refillDb_acc(accs.join(','))
             else if (kws.length > 0) refillDb_kw(kws)
             else {
                 toast.error('Please check your input')
-                isWaiting = false
+                // isWaiting = false
             }
         }
-        if (isWaiting) {
-            toast.info('Please wait for DB to be filled up...', {autoClose: 10000})
-            setTimeout(() => {
-                fetchData(accs, kws)
-            }, 10000)
-        }
+        // if (isWaiting) {
+        //     toast.info('Please wait for DB to be filled up...', {autoClose: 10000})
+        //     setTimeout(() => {
+        //         fetchData(accs, kws)
+        //     }, 10000)
+        // }
 
         // } else
         //     toast.error('Please specifiy desired account')
@@ -218,13 +229,13 @@ const PostView = (props) => {
                     >
                         <p>Load more</p>
                     </Button>
-                    <Button
-                        m={3}
-                        colorScheme="yellow"
-                        onClick={() => refillData()}
-                    >
-                        LATEST
-                    </Button>
+                    {/*<Button*/}
+                    {/*    m={3}*/}
+                    {/*    colorScheme="yellow"*/}
+                    {/*    onClick={() => refillData()}*/}
+                    {/*>*/}
+                    {/*    LATEST*/}
+                    {/*</Button>*/}
                 </Flex>
 
 
