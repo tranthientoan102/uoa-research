@@ -1,4 +1,16 @@
-import { Box, Container, Divider, Flex, Heading, SimpleGrid, Text, HStack, Button, Spacer } from '@chakra-ui/react';
+import {
+    Box,
+    Container,
+    Divider,
+    Flex,
+    Heading,
+    SimpleGrid,
+    Text,
+    HStack,
+    Button,
+    Spacer,
+    Checkbox, Grid
+} from '@chakra-ui/react';
 import Head from 'next/head';
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
@@ -6,7 +18,7 @@ import { useAuth } from "../lib/auth";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TagsInput2 from "../components/TagsInput2";
-import {convertTimeToString, getTagsInput} from "../utils/common";
+import {convertTimeToString, getTagsInput, isAdmin, isMasked} from "../utils/common";
 import {downloadData} from "../utils/db";
 import CsvDownload from '../components/CsvDownload'
 import { CSVLink, CSVDownload } from "react-csv";
@@ -87,17 +99,23 @@ const Download = (props) => {
                 <Navbar />
                 {auth?(
                     <Container maxW="6xl" pt={6}>
-                    <SimpleGrid>
-                        <TagsInput2 id={id} tags={[]} defaultEvents={[]} />
-                        <CsvDownload auth={auth} id={id}/>
-                    </SimpleGrid>
+                    <Flex>
+                        <Container maxW="6xl" pl={0} pr={2}><TagsInput2 id={id} tags={[]} defaultEvents={[]} /></Container>
+                        <div id="isMasked">
+                        {isAdmin(auth) ?
+                            <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
+                            : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
+                        }
+                        </div>
+                    </Flex>
+                    <CsvDownload auth={auth} id={id}/>
                 </Container>
                 ):(
                     <Container>Please log in for start using tool</Container>
                 )}
 
             </main>
-            <footer></footer>
+            <footer/>
         </div >
     );
 }

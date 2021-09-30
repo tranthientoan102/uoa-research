@@ -1,13 +1,13 @@
-import {Box, Button, Container, Flex, SimpleGrid, Text} from '@chakra-ui/react';
+import {Box, Button, Checkbox, Container, Flex, SimpleGrid, Tag, Text} from '@chakra-ui/react';
 import React, {useState} from 'react';
 import {
     getDefaultEventList,
-    loadUnlabelledPost,
     loadUnlabelledPostByAccount,
     refillDb_acc,
     updateLabel,
     loadUnlabelledPost_accs_kws,
-    refillDb_acc_kw, refillDb_kw, refillDb_acc_kws
+    refillDb_kw,
+    refillDb_acc_kws
 } from '../utils/db';
 import {useAuth} from "../lib/auth";
 import {toast} from 'react-toastify';
@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 import TagInput2 from './TagsInput2';
-import {getTagsInput} from "../utils/common";
+import {getTagsInput, isAdmin, isMasked} from "../utils/common";
 import DefaultEvent from "./DefaultEvent";
 
 const PostView = (props) => {
@@ -28,10 +28,7 @@ const PostView = (props) => {
     const [defaultEvent, setDefaultEvent] = useState([]);
     const [tagDisplay, setTagDisplay] = useState([])
     let tags = {}
-    const addNewTag = (hash, newTag) => {
-        tags[hash].push(newTag)
-        console.log(tags)
-    }
+
 
     let de = []
 
@@ -48,9 +45,6 @@ const PostView = (props) => {
     // }
 
     const update = (auth, hash, rating, events) => {
-
-
-
         if (auth != null) {
             updateLabel(auth, hash, rating, events)
             document.getElementById(hash).style.backgroundColor = "LightYellow";
@@ -138,6 +132,17 @@ const PostView = (props) => {
     }
 
 
+    // const isMasked = (auth) => {
+    //     let isAdmin = auth.roles.includes('admin')
+    //     return !isAdmin || document.getElementById('isMasked')
+    //                         .querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes()
+    // }
+    //
+    // const isAdmin = (auth) => {
+    //     return auth.roles.includes('admin')
+    // }
+
+
     const generateForm = (auth, promiseData) => {
         toast.info(`load ${promiseData.length} unlabelled tweets`,{ autoClose: 5000 })
 
@@ -150,16 +155,17 @@ const PostView = (props) => {
                 // @ts-ignore
                 result.push(
                     <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl" id={data.hash}>
-                        <Text color="blue.300" >
-                            <a href={data.orig}>{data.orig}</a>
-                        </Text>
+                        {isMasked(auth) ? '' :
+                            <Text color="blue.300">
+                                <a href={data.orig}>{data.orig}</a>
+                            </Text>}
                         <Text colorScheme="teal">
-                            <b>{data.account}</b> {(new Date(data.postAt['seconds'] * 1000).toString())}
+                            {isMasked(auth)? '' :<b>{data.account}</b>} {(new Date(data.postAt['seconds'] * 1000).toString())}
                         </Text>
-                        <Text color="teal">
+                        {isMasked(auth)? '' :<Text color="teal">
                             {data.hash}
-                        </Text>
-                        <Text color="gray.500" my={2} fontSize="2xl">
+                        </Text>}
+                        <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
                             {data.text}
                         </Text>
 
@@ -167,8 +173,6 @@ const PostView = (props) => {
 
 
                         <Flex align="center" justify="center" mt={3}>
-
-
                             <Button
                                 mx={2}
                                 colorScheme="red"
@@ -204,12 +208,12 @@ const PostView = (props) => {
 
     return (
         <div>
-            <Container maxW="8xl">
-                <Flex  my={2} align="center" justify="center">
+            <Container position="relative" maxW="8xl">
+                <Flex  my={2} align="center" justify="center" >
 
                     <Container mx={2} p={0}>
                         <Text>Twitter account</Text>
-                        <TagInput2 id="searchAcc" defaultEvents={[]} tags={['sahealth']} />
+                        <TagInput2 id="searchAcc" defaultEvents={[]} tags={[]} />
                     </Container>
 
                     <Container mx={2} p={0}>
@@ -217,6 +221,12 @@ const PostView = (props) => {
                         <TagInput2 id="searchKey" defaultEvents={[]} tags={['mask']} />
                     </Container>
 
+                    <div id="isMasked">
+                    {isAdmin(auth) ?
+                        <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
+                        : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
+                    }
+                    </div>
                     <Button
                         m={3}
                         // colorScheme="blue"
@@ -229,6 +239,8 @@ const PostView = (props) => {
                     >
                         <p>Load more</p>
                     </Button>
+
+
                     {/*<Button*/}
                     {/*    m={3}*/}
                     {/*    colorScheme="yellow"*/}

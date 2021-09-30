@@ -11,8 +11,8 @@ toast.configure()
 const expectingPost = 500
 const dbLookupLimit = 1000
 
-// const host = 'localhost'
-const host = '20.37.47.186'
+export const host = 'localhost'
+// export const host = '20.37.47.186'
 
 
 export const updateAuthUser = async (authUser: any) => {
@@ -70,14 +70,14 @@ export const refillDb_acc_kws = async (acc: string[], kws:string[]) => {
 // }
 
 
-export const refillDb_acc_kw = async (acc: string[], kw:string[]) => {
-
-    let data = JSON.stringify({"account": acc, "keyword": kw})
-    let tmp = await Axios.post(`http://${host}:8000/trigger/combine`
-                        , data)
-                .then(res => res.data)
-    return tmp
-}
+// export const refillDb_acc_kw = async (acc: string[], kw:string[]) => {
+//
+//     let data = JSON.stringify({"account": acc, "keyword": kw})
+//     let tmp = await Axios.post(`http://${host}:8000/trigger/combine`
+//                         , data)
+//                 .then(res => res.data)
+//     return tmp
+// }
 
 export const searchCache_acc_kw = async (acc: string[], kw:string[]) => {
     let data = JSON.stringify({"account": acc, "keyword": kw})
@@ -128,11 +128,11 @@ export const loadUnlabelledPostByAccount = async (accs: string[], postAfter=new 
         console.log('Error occurred: ' + err)
     }
 }
-export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[]) => {
+export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[], limit= expectingPost) => {
     let result = []
     let queryDateTime = new Date()
 
-    while (result.length < expectingPost) {
+    while (result.length < limit) {
         console.log('query by date: ' + queryDateTime)
         let data = await loadUnlabelledPostByAccount(accs, queryDateTime, dbLookupLimit)
         if (data.length == 0) break
@@ -140,7 +140,7 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[])
             if (checkDocIncludesKws(doc.text, kws)) {
                 result.push(doc)
             }
-            if (result.length == expectingPost) break
+            if (result.length == limit) break
         }
         // console.log(data[data.length - 1].postAt['seconds'])
         queryDateTime = new Date(data[data.length - 1].postAt['seconds'] * 1000)

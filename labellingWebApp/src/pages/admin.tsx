@@ -1,4 +1,16 @@
-import { Box, Container, Divider, Flex, Heading, SimpleGrid, Text, HStack, Button, Spacer } from '@chakra-ui/react';
+import {
+    Box,
+    Container,
+    Divider,
+    Flex,
+    Heading,
+    SimpleGrid,
+    Text,
+    HStack,
+    Button,
+    Spacer,
+    Input, Grid, Textarea
+} from '@chakra-ui/react';
 import Head from 'next/head';
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
@@ -7,7 +19,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {createDefaultEvent, getDefaultEventList} from "../utils/db";
 import TagsInput2 from "../components/TagsInput2";
-import {getTagsInput} from "../utils/common";
+import {decrypting, getTagsInput, testEncrypt} from "../utils/common";
 
 interface Props {
     data: string[]
@@ -21,8 +33,10 @@ const Admin = (props) => {
 
     toast.configure()
     const { auth, signinWithGoogle } = useAuth();
-    const [data, setData] = useState("");
+    const [data, setData] = useState('');
     const [de,setDE] = useState('')
+    const [decrypted, setDecrypted] = useState([''])
+    const [encrypted, setEncrypted] = useState('')
 
     // let de = []
     const isAuthoriesed = (auth) =>{
@@ -43,6 +57,9 @@ const Admin = (props) => {
         // @ts-ignore
         setData(result)
     }
+    const decryptData = (text) => {
+        setDecrypted(decrypting(text))
+    }
 
 
     return (
@@ -59,24 +76,23 @@ const Admin = (props) => {
                         <div>{data}</div>
 
                         <Button my={2} colorScheme='telegram' onClick={()=> {
-
-                            // let inputList = getTagsInput('newDE')
-                            // for (let index in inputList){
-                            //     // console.log(inputList[index])
-                            //     // console.log(de.filter(x => x ==inputList[index]))
-                            //     if (de.filter(x => x ==inputList[index]).length==0 ) inputList.splice(index)
-                            //     else console.log(`${inputList[index]} currently existed`)
-                            // }
-
                             createDefaultEvent(getTagsInput('newDE'), auth)
-
                         }} >
                             Add new Default Event
                         </Button>
+                        <SimpleGrid align="center" justify="center" pt={5} >
+                            <Text fontSize="2xl">Encrypted data</Text>
+                            <Textarea id="encrypted"
+                                   onChange={event => {
+                                        setDecrypted(decrypting(event.target.value))
+                                   }}/>
+                            <Text id="decrypted" readOnly={true}>{decrypted.map(function (d, idx){
+                                return (<p key={idx}>{d}</p>)
+                            })}</Text>
+                        </SimpleGrid>
                     </SimpleGrid>
                 ):('Authorities required') }
             </Container>
-
         </>
 
     );

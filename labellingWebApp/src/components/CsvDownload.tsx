@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {CSVLink} from "react-csv";
-import {convertTimeToString, getTagsInput} from "../utils/common";
+import {convertTimeToString, encrypting, getTagsInput, isMasked} from "../utils/common";
 import {downloadData} from "../utils/db";
 import {Button, SimpleGrid} from "@chakra-ui/react";
 
@@ -43,6 +43,10 @@ class CsvDownload extends Component<Props> {
                 a.insertDbAt = convertTimeToString(a.insertDbAt)
                 a.text = a.text.replaceAll("\"","[doubleQuote]")
                     .replaceAll("\n", "[newLine]")
+                if (isMasked(this.props.auth)){
+                    a.account = encrypting(a.account[0])
+                    a.labelledBy =  encrypting(a.labelledBy)
+                }
             })
             return res
         })
