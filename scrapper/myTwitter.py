@@ -142,7 +142,24 @@ class MyTweet2:
         }
 
 if __name__ == '__main__':
-    test = MyTweet("""test
-    newline""")
-    print(test.text)
-    print(test.to_dict())
+    # test = MyTweet("""test
+    # newline""")
+    # print(test.text)
+    # print(test.to_dict())
+
+    # text = 'sahealthsahealth'
+    # obj = AES.new('sH9NM6goFrv0o3W2y2YvCw==', AES.MODE_ECB)
+    # a = obj.encrypt(text)
+    # print(f'{a=}')
+    # ciphertext = base64.b16encode(obj.encrypt(text))
+    # print(f'{ciphertext=}')
+    # print(ciphertext)
+    #
+    # b = obj.decrypt(base64.b16decode('9731ECD1E8FFAC1A067B2D4610EDED5D'))
+    # print(f'{b=}')
+
+    text = 'sahealth'
+    obj = md5(text.encode()).hexdigest()
+    print(f'{obj=}')
+
+

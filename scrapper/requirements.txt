@@ -1,6 +1,6 @@
 uvicorn
 fastapi
-tweepy
+tweepy>=4.1.0
 selenium
 firebase-admin
 google-auth<2.0dev

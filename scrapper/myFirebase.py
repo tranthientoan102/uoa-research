@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     # tweet = MyTweet('test2')
     # doc = service.getCollectionRef().document(tweet.hash).set(tweet.to_dict())
-    docRead = service.getCollectionRef().where("account", "array_contains_any", ["@ap","@afp"]).get()
+    docRead = service.getCollectionRef().where("rating", "!=", -10).get()
 
     # .collection("tweets_health")
     # .where("account", "array-contains-any", ["@abcaustralia"])
@@ -98,9 +98,12 @@ if __name__ == '__main__':
     counter = -1
     for doc in docRead:
         # if len(doc.to_dict()['account'])>1:
-        a = doc.to_dict()['hash']
-        service.getCollectionRef().document(a).delete()
-        print(f'done delete {a}')
+        a = doc.to_dict()
+        a['rating'] = -10
+        a['event'] = []
+        # service.getCollectionRef().document(a).delete()
+        service.getCollectionRef().document(a['hash']).set(a)
+        print(f'{a}')
         counter -= 1
         if counter == 0: break
     print(f'done deleting {counter} tweets')

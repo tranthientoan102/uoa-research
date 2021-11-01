@@ -56,9 +56,10 @@ def subRun_kws(api, myfirebase, kws, expectingCount, startTime):
     counter = 0
     try:
         tmp = 0
-        for status in tweepy.Cursor(api.search
+        for status in tweepy.Cursor(api.search_tweets
                 , q=query
                 , tweet_mode="extended"
+                , lang='en'
                                     ).items(expectingCount * 5):
             tmp+=1
             tweet = MyTweet2().parse(status._json)
