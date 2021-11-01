@@ -1,4 +1,4 @@
-import {Box, Button, Checkbox, Container, Flex, SimpleGrid, Tag, Text} from '@chakra-ui/react';
+import {Box, Button, Checkbox, Container, Flex, SimpleGrid, Spinner, Tag, Text} from '@chakra-ui/react';
 import React, {useState} from 'react';
 import {
     getDefaultEventList,
@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 import TagInput2 from './TagsInput2';
-import {getTagsInput, isAdmin, isMasked} from "../utils/common";
+import {fetchData, getTagsInput, isAdmin, isMasked} from "../utils/common";
 import DefaultEvent from "./DefaultEvent";
 
 const PostView = (props) => {
@@ -55,42 +55,36 @@ const PostView = (props) => {
     }
 
 
-    const fetchData = async (accs: string[], kws:string[]) => {
-        setData(`loading post from ${accs} with keywords ${kws}`)
-        let res = null
+    const process = async (accs: string[], kws:string[]) => {
+        // @ts-ignore
+        setData(<Flex my={2} align="center" justify="center" ><p>loading post from {accs} with keywords {kws.join(' or ')}</p>
+                <Spinner size="md" m={1} thickness="4px"
+                          speed="0.65s"
+                          emptyColor="gray.200"
+                          color="blue.500"/>
+        </Flex>
+        )
+        // let res = null
 
         getDefaultEventList().then(res => de = res)
 
+        let res = await fetchData(accs, kws, 500)
 
 
-        // if (accs.length > 0 && kws.length > 0) {
-        //     // res = await loadUnlabelledPostByAccount(accs, kws)
-        //     res = await loadUnlabelledPost_accs_kws(accs, kws)
-        // }
-        // else if ((accs.length > 0 && kws.length == 0)){
+        // if (kws.length == 0){
         //     res = await loadUnlabelledPostByAccount(accs)
+        // }else res = await loadUnlabelledPost_accs_kws(accs, kws)
+        //
+        //
+        //
+        // let latestDate = new Date(res[0].postAt['seconds'] * 1000)
+        // // @ts-ignore
+        // let isOlderThan1Day = ((new Date()) - latestDate)/(1000 * 3600 * 24) > 1
+        //
+        // if ((res.length < 500) || (isOlderThan1Day)) {
+        //     toast.info('Auto scrapping latest tweets')
+        //     refillData(accs,kws)
         // }
-        // else if (kws.length > 0){
-        //     res = await searchDb_kw(kws)
-        // }
-        // else {
-        //     res = await loadUnlabelledPost()
-        // }
-
-        if (kws.length == 0){
-            res = await loadUnlabelledPostByAccount(accs)
-        }else res = await loadUnlabelledPost_accs_kws(accs, kws)
-
-
-
-        let latestDate = new Date(res[0].postAt['seconds'] * 1000)
-        // @ts-ignore
-        let isOlderThan1Day = ((new Date()) - latestDate)/(1000 * 3600 * 24) > 1
-
-        if ((res.length < 500) || (isOlderThan1Day)) {
-            toast.info('Auto scrapping latest tweets')
-            refillData(accs,kws)
-        }
 
 
         const newData = await generateForm(auth, res)
@@ -232,7 +226,7 @@ const PostView = (props) => {
                         // colorScheme="blue"
                         // background="gray"
                         // color="lightgreen"
-                        onClick={() => fetchData(
+                        onClick={() => process(
                             getTagsInput('searchAcc', true)
                             , getTagsInput('searchKey', false)
                         )}
@@ -240,14 +234,6 @@ const PostView = (props) => {
                         <p>Load more</p>
                     </Button>
 
-
-                    {/*<Button*/}
-                    {/*    m={3}*/}
-                    {/*    colorScheme="yellow"*/}
-                    {/*    onClick={() => refillData()}*/}
-                    {/*>*/}
-                    {/*    LATEST*/}
-                    {/*</Button>*/}
                 </Flex>
 
 

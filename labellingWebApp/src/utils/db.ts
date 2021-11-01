@@ -9,10 +9,14 @@ import {toast} from 'react-toastify';
 toast.configure()
 
 const expectingPost = 500
-const dbLookupLimit = 1000
+const dbLookupLimit = 5000
 
-export const host = 'localhost'
-// export const host = '20.37.47.186'
+// export const host = 'localhost'
+export const host = '20.37.47.186'
+export const host_sa = '20.37.47.186'
+export const port_sa = 8001
+export const host_ed = '20.37.47.186'
+export const port_ed = 8002
 
 
 export const updateAuthUser = async (authUser: any) => {
@@ -230,7 +234,7 @@ export const getDefaultEventList = async () => {
     //     { id: doc.id, ...doc.data() })
     // )
     let defEve = dataRef.docs.map(doc => (
-        { id: doc.id, ...doc.data() })
+        { id: doc.id, name:doc.data().name,...doc.data() })
     )
 
     return defEve
@@ -251,7 +255,17 @@ export const createDefaultEvent = async (eventList:string[], auth) =>{
 
 }
 
-export const downloadData = async (auth, accounts: string[], limit:number) => {
+export const deleteDefaultEvent = async (hash: string) => {
+
+    try{
+        await firebase.firestore().collection("default_events").doc(hash).delete()
+    }catch (e) {
+        console.log(`Delete failure: ${hash}`, e);
+    }
+
+}
+
+export const downloadData = async (auth, accounts: string[], limit:number, labelledBy) => {
     let result= []
     // if (!account.startsWith('@'))
     //     account = '@' + account
@@ -264,7 +278,7 @@ export const downloadData = async (auth, accounts: string[], limit:number) => {
         //     .orderBy("postAt", 'desc')
         //     .get()
 
-        let dataRef = await buildGETQuery_labelled(accounts, limit).get().then((all)=>{
+        let dataRef = await buildGETQuery_labelled(accounts, limit, labelledBy).get().then((all)=>{
             result = all.docs.map((doc) => (
                 { id: doc.id, ...doc.data() })
             )
@@ -310,7 +324,7 @@ function buildGETQuery_hash_unlabelled (hashList: string[], limit) {
 }
 
 
-function buildGETQuery_labelled (accounts: string[], limit) {
+function buildGETQuery_labelled (accounts: string[], limit, labelledBy= null) {
 
     let dataRef = firebase.firestore().collection("tweets_health")
     let query = dataRef.where("rating", '!=', -10)
@@ -318,6 +332,9 @@ function buildGETQuery_labelled (accounts: string[], limit) {
 
     if (accounts.length > 0){
         query = query.where("account", 'array-contains-any', accounts)
+    }
+    if (labelledBy != null){
+        query = query.where('labelledBy', '==', labelledBy)
     }
     if (limit != null){
         query = query.limit(limit)

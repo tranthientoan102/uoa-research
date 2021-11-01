@@ -1,8 +1,13 @@
 import axios from "axios";
 import {toast} from 'react-toastify';
 import crypto from "crypto";
-import {loadUnlabelledPost_accs_kws, loadUnlabelledPostByAccount, host} from "./db";
+import {
+    loadUnlabelledPost_accs_kws
+    , loadUnlabelledPostByAccount
+    , host, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw
+} from "./db";
 import Axios from "axios";
+import {Tag} from "@chakra-ui/react";
 
 export const labelling = async (auth, values) => {
     try {
@@ -17,7 +22,7 @@ export const labelling = async (auth, values) => {
     }
 }
 
-export const getTagsInput = (eleId, isTwitterAcc=false) => {
+export const getTagsInput = (eleId, isTwitterAcc=false, lowering = true) => {
     let tags = []
     let rootEle = document.getElementById(eleId)
     // if (rootEle.has)
@@ -29,12 +34,15 @@ export const getTagsInput = (eleId, isTwitterAcc=false) => {
     let reactTagInput = rootEle.querySelector('.react-tagsinput')
     if (reactTagInput) {
         rootEle.querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-tag').forEach((element) => {
-            tags.push((isTwitterAcc ? '@' : '') + element.innerHTML.replace("<a></a>", ""))
+            let tmp = (isTwitterAcc ? '@' : '') + element.innerHTML.replace("<a></a>", "")
+            if (lowering) tmp = tmp.toLowerCase()
+            tags.push(tmp)
         })
         rootEle.querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-input').forEach(element =>{
             // @ts-ignore
             let tmpInput = element.value
-            if (tmpInput != '') {
+            if (tmpInput.trim() != '') {
+                if (lowering) tmpInput = tmpInput.toLowerCase()
                 tags.push((isTwitterAcc ? '@' : '') + tmpInput)
                 toast.info(`Include unfinalised input ${tmpInput}. Please remember hitting Enter or Tab next time`)
             }
@@ -96,7 +104,7 @@ export const decrypting = (text) => {
 
     } catch (err) {
         console.log('Error occurred: ' + err)
-        decrypted = ['invalie input']
+        decrypted = ['invalid input']
     }
     return decrypted
 }
@@ -137,11 +145,78 @@ export const fetchData = async (accs: string[], kws:string[], limit) => {
         res = await loadUnlabelledPostByAccount(accs, null, limit)
     }else res = await loadUnlabelledPost_accs_kws(accs, kws, limit)
 
+    let isOldData = true
+    let isReachLimit = false
+    if (res.length > 0) {
+        let latestDate = new Date(res[0].postAt['seconds'] * 1000)
+        // @ts-ignore
+        isOldData = ((new Date()) - latestDate) / (1000 * 3600 * 24) > 1
+        isReachLimit = res.length >= limit
+    }
+    if (isOldData || !isReachLimit) {
+        toast.info('Auto scrapping latest tweets')
+        refillData(accs,kws)
+    }
+
+
     return res;
 
 }
-export const getPrediction = async (tweetList: string[]) => {
+export const refillData = async (accs:string[], kws:string[]) => {
+    // setData("...preparing db...")
+    //
+    // let accs = getTagsInput('searchAcc',true)
+    // let kws = getTagsInput('searchKey',false)
+
+    // let isWaiting = true
+
+    if (accs.length > 0 && kws.length > 0) {
+        // refillDbWithAccount(accs.join(','))
+        refillDb_acc_kws(accs, kws)
+    } else {
+        if (accs.length > 0) refillDb_acc(accs.join(','))
+        else if (kws.length > 0) refillDb_kw(kws)
+        else {
+            toast.error('Please check your input')
+            // isWaiting = false
+        }
+    }
+}
+export const getSAPrediction = async (tweetList: string[]) => {
     // let tmp = await Axios.post(`http://${host}:8001/trigger/account`, { list: acc })
-    let tmp = await Axios.post(`http://${host}:8001/predict`, { text: tweetList })
+    let tmp = await Axios.post(`http://${host_sa}:${port_sa}/predict`, { text: tweetList })
     return tmp
+}
+
+export const getEDPrediction = async (tweetList: string[]) => {
+    // let tmp = await Axios.post(`http://${host}:8001/trigger/account`, { list: acc })
+    let tmp = await Axios.post(`http://${host_ed}:${port_ed}/predict`, { text: tweetList })
+    return tmp
+}
+export const displayTag = (list: string[], fullList:string[]=null, colorScheme='telegram') => {
+    let result = []
+    if (fullList == null) {
+        for (const i in list) {
+            result.push(<Tag m={1} colorScheme={colorScheme} variant="solid">{list[i]}</Tag>)
+        }
+    } else{
+        for (const i in fullList) {
+            if (list.includes(fullList[i]))
+                result.push(<Tag m={1} colorScheme={colorScheme} variant="solid">{fullList[i]}</Tag>)
+            else result.push(<Tag m={1} color={'gray.300'}>{fullList[i]}</Tag>)
+        }
+
+    }
+    return result
+}
+export const displayTagSentiment = (list: string[], fullList:string[]=null) => {
+    let colorScheme = 'green'
+    if (list[0] == 'negative') colorScheme = 'red'
+    else if (list[0] == 'neutral') colorScheme = 'yellow'
+    return displayTag(list, fullList, colorScheme)
+}
+export const displayTagToxic = (list: string[], fullList:string[]=null) => {
+    let colorScheme = 'red'
+    if (list[0] == 'friendly') colorScheme = 'green'
+    return displayTag(list, fullList, colorScheme)
 }

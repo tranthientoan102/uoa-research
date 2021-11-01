@@ -9,7 +9,7 @@ import {
     HStack,
     Button,
     Spacer,
-    Checkbox, Grid
+    Checkbox, Grid, Spinner
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import React, { useState } from 'react';
@@ -18,7 +18,14 @@ import { useAuth } from "../lib/auth";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TagsInput2 from "../components/TagsInput2";
-import {convertTimeToString, fetchData, getPrediction, getTagsInput, isAdmin, isMasked} from "../utils/common";
+import {
+    convertTimeToString, displayTag, displayTagSentiment, displayTagToxic,
+    fetchData, getEDPrediction,
+    getSAPrediction,
+    getTagsInput,
+    isAdmin,
+    isMasked
+} from "../utils/common";
 import {downloadData} from "../utils/db";
 
 import TagInput2 from "../components/TagsInput2";
@@ -42,11 +49,20 @@ const Download = (props) => {
     const processPredict = async () => {
         let result = []
         let tweetList = []
-        setData('Loading tweets...')
+
+        let eventFullList = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate', 'friendly']
+        let sentimentFullList = ['negative', 'neutral', 'positive']
+        // @ts-ignore
+        setData(<Flex my={2} align="center" justify="center" >Loading tweets...
+                    <Spinner size="md" m={1} thickness="4px"
+                              speed="0.65s"
+                              emptyColor="gray.200"
+                              color="blue.500"/>
+                    </Flex>)
         let tweets = await fetchData(
                                         getTagsInput('searchAcc', true)
                                         , getTagsInput('searchKey', false)
-                                        , 100
+                                        , 25
                                     ).then((res) => {
             res.forEach(a =>{
                 // console.log(`converting ${a.id}`)
@@ -60,9 +76,16 @@ const Download = (props) => {
         })
         // toast.info('Predicting...')
 
-        setData(`Running Prediction for ${tweets.length} tweets`)
-        let pred = await getPrediction(tweetList)
-        console.log(pred)
+        // @ts-ignore
+        setData(<Flex my={2} align="center" justify="center" >Running Prediction for {tweets.length} tweets
+                    <Spinner size="md" m={1} thickness="4px"
+                              speed="0.65s"
+                              emptyColor="gray.200"
+                              color="blue.500"/>
+                    </Flex>)
+        let pred_sa = await getSAPrediction(tweetList)
+        let pred_ed = await getEDPrediction(tweetList)
+        // console.log(pred)
 
         for (const i in tweets) {
             let tweet = tweets[i]
@@ -82,9 +105,16 @@ const Download = (props) => {
                     <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
                         {tweet.text}
                     </Text>
-                    <Text>
-                        Prediction: {pred.data[i]}
-                    </Text>
+                    <Flex align="center" justify="center">
+                        Sentiment: {displayTagSentiment([pred_sa.data[i]], sentimentFullList)}
+                    </Flex>
+                    <Flex align="center" justify="center">
+                        Event: {
+                            (pred_ed.data[i].length>0)? displayTagToxic(pred_ed.data[i], eventFullList)
+                                : displayTagToxic(['friendly'], eventFullList)
+                        }
+                    </Flex>
+
                 </Box>
             )
         }
@@ -137,8 +167,9 @@ const Download = (props) => {
                                     // background="gray"
                                     // color="lightgreen"
                                     onClick={() => processPredict()}
+                                    colorScheme={'telegram'}
                                 >
-                                    <p>Load more</p>
+                                    <p>Load & Predict</p>
                                 </Button>
 
 

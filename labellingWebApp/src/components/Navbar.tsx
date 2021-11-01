@@ -29,9 +29,9 @@ const Navbar: React.FC<{}> = () => {
                                 Main view
                             </Link>
                             <Link
-                                href='/predict'
+                                // href='/predict'
                                 p={2}
-                                onclick={()=> {
+                                onClick={()=> {
                                     console.log('going /predict')
                                     router.push('/predict')
                                 }}
@@ -48,9 +48,9 @@ const Navbar: React.FC<{}> = () => {
                                 Download
                             </Link>
                             <Link
-                                href='/admin'
+                                // href='/admin'
                                 p={2}
-                                onclick={()=> {
+                                onClick={()=> {
                                     console.log('going /admin')
                                     router.push('/admin')
                                 }}

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {CSVLink} from "react-csv";
-import {convertTimeToString, encrypting, getTagsInput, isMasked} from "../utils/common";
+import {convertTimeToString, encrypting, getTagsInput, isAdmin, isMasked} from "../utils/common";
 import {downloadData} from "../utils/db";
 import {Button, SimpleGrid} from "@chakra-ui/react";
 
@@ -35,8 +35,10 @@ class CsvDownload extends Component<Props> {
     getData = () => {
         // @ts-ignore
         let accs = getTagsInput(this.props.id, true, false)
+        let labelledBy = isAdmin(this.props.auth)?null:this.props.auth.email
+        console.log(`download data labelled by ${labelledBy}`)
         // @ts-ignore
-        let result = downloadData(this.props.auth, accs, null).then((res) => {
+        let result = downloadData(this.props.auth, accs, null, labelledBy).then((res) => {
             res.forEach(a => {
                 // console.log(`converting ${a.id}`)
                 a.postAt = convertTimeToString(a.postAt)

@@ -1,5 +1,6 @@
 import { Button, Center, Container, Heading, VStack } from "@chakra-ui/react";
-import { useRouter } from "next/dist/client/router";
+// import { useRouter } from "next/dist/client/router";
+import { useRouter } from "next/router";
 import React from "react";
 import { FcGoogle } from 'react-icons/fc';
 import Navbar from "../components/Navbar";

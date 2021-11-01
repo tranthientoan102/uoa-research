@@ -52,42 +52,39 @@ const Download = (props) => {
     // ];
 
 
-    const getData = async () => {
-
-        // @ts-ignore
-        let accs: string[] = getTagsInput(id, true,false)
-        // await downloadData(auth, accs, null).then((result) => {
-        //
-        //     // result.forEach(a => {
-        //     //     console.log(a)
-        //     //     data.push(a)
-        //     // })
-        //
-        //     let tmpData = result.map(a => ({...a}))
-        //     tmpData.forEach(a =>{
-        //         console.log(`converting ${a.id}`)
-        //         a.postAt = convertTimeToString(a.postAt)
-        //         a.insertDbAt = convertTimeToString(a.insertDbAt)
-        //     })
-        //     setData(tmpData)
-        // })
-        // console.log('done getting data')
-        let result = await downloadData(auth, accs,null).then((res) => {
-            res.forEach(a =>{
-                // console.log(`converting ${a.id}`)
-                a.postAt = convertTimeToString(a.postAt)
-                a.insertDbAt = convertTimeToString(a.insertDbAt)
-            })
-            return res
-        })
-        // setData(result)
-        console.log(`done download data`)
-
-        return result
-
-
-
-    }
+    // const getData = async () => {
+    //
+    //     // @ts-ignore
+    //     let accs: string[] = getTagsInput(id, true,false)
+    //     // await downloadData(auth, accs, null).then((result) => {
+    //     //
+    //     //     // result.forEach(a => {
+    //     //     //     console.log(a)
+    //     //     //     data.push(a)
+    //     //     // })
+    //     //
+    //     //     let tmpData = result.map(a => ({...a}))
+    //     //     tmpData.forEach(a =>{
+    //     //         console.log(`converting ${a.id}`)
+    //     //         a.postAt = convertTimeToString(a.postAt)
+    //     //         a.insertDbAt = convertTimeToString(a.insertDbAt)
+    //     //     })
+    //     //     setData(tmpData)
+    //     // })
+    //     // console.log('done getting data')
+    //     let result = await downloadData(auth, accs,null).then((res) => {
+    //         res.forEach(a =>{
+    //             // console.log(`converting ${a.id}`)
+    //             a.postAt = convertTimeToString(a.postAt)
+    //             a.insertDbAt = convertTimeToString(a.insertDbAt)
+    //         })
+    //         return res
+    //     })
+    //     // setData(result)
+    //     console.log(`done download data`)
+    //
+    //     return result
+    // }
 
     return (
         <div>
