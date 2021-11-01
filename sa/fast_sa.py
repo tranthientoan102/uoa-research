@@ -5,7 +5,9 @@ import numpy
 import torch
 from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+
+# from KwDetector import *
+
 
 from transformers import BertTokenizer, BertForSequenceClassification, Trainer
 
@@ -29,6 +31,7 @@ class FastSA (FastAPI):
 
         self.classifier = Trainer(model)
 
+        # self.detector = KwDetector()
 
 
 app = FastSA()
@@ -80,7 +83,7 @@ async def predictTweet(data=Body(...)):
     # result = 'PROCESSING'
     result = ['ERROR'] * len(data['text'])
 
-    for a in data['text']: print(f'***{a}\n')
+    # for a in data['text']: print(f'***{a}\n')
     try:
         dataset = buildDataset(data['text'])
         pred, _, _ = app.classifier.predict(dataset)
