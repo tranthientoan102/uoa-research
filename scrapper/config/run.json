@@ -16,6 +16,7 @@
         "keyword": [
             "sydney"
         ],
+        "outsideTagIsAND": true,
         "hashtag": [
             "#healthcare",
             "#COVID19vaccine"

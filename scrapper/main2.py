@@ -44,14 +44,28 @@ def run(runConfig, scrapFrom='twitter'):
     apiMethod = None
     runMode = runConfig[scrapFrom]['runMode']
     if runMode=='keyword':
-        subRun_kws(api, myfirebase, runConfig[scrapFrom]['keyword'], runConfig[scrapFrom]['tweetLoad'], datetime.now())
+        subRun_kws(api, myfirebase
+                   , runConfig[scrapFrom]['keyword']
+                   , runConfig[scrapFrom]['outsideTagIsAND']
+                   , runConfig[scrapFrom]['tweetLoad']
+                   , datetime.now())
     elif runMode=='account':
-        subRun_acc_kws(api, myfirebase, runConfig[scrapFrom]["account"][0], [], runConfig[scrapFrom]['tweetLoad'], datetime.now())
+        subRun_acc_kws(api, myfirebase
+                       , runConfig[scrapFrom]["account"][0]
+                       , []
+                       , runConfig[scrapFrom]['outsideTagIsAND']
+                       , runConfig[scrapFrom]['tweetLoad']
+                       , datetime.now())
     else:
-        subRun_acc_kws(api, myfirebase, runConfig[scrapFrom]['account'][0], runConfig[scrapFrom]['keyword'], runConfig[scrapFrom]['tweetLoad'], datetime.now())
+        subRun_acc_kws(api, myfirebase
+                       , runConfig[scrapFrom]['account'][0]
+                       , runConfig[scrapFrom]['keyword']
+                       , runConfig[scrapFrom]['outsideTagIsAND']
+                       , runConfig[scrapFrom]['tweetLoad']
+                       , datetime.now())
 
-def subRun_kws(api, myfirebase, kws, expectingCount, startTime):
-    query = ' OR '.join(kws)
+def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime):
+    query = buildQuery(kws, outsideTagIsAND )
     print(f'init Tweepy search with keywords {query}')
     counter = 0
     try:
@@ -79,10 +93,9 @@ def subRun_kws(api, myfirebase, kws, expectingCount, startTime):
     print(f'done scrapping {counter} tweets with keywords {kws} in {(endTime - startTime).total_seconds()}s')
 
 
-def subRun_acc_kws(api, myfirebase, acc, kws, expectingCount, startTime):
+def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, startTime):
     counter = 0
-
-    query = f'({" OR ".join(kws)}) (from:{acc})'
+    query = f'({buildQuery(kws, outsideTagIsAND )}) (from:{acc})'
     maxTweetId = None
     print(f'init Tweepy search: @{acc} with {kws}')
     toDate = datetime.now()
@@ -140,6 +153,19 @@ def checkTextIncludeKeywords(text, keywords):
             result = True
             break
     return result
+
+def buildQuery( kwTags, outsideTagIsAND):
+    result = []
+    if outsideTagIsAND:
+        for kwTag in kwTags:
+            tmp = ' OR '.join(kwTag)
+            result.append(f'({tmp})' )
+        return ' '.join(result)
+    else:
+        for kwTag in kwTags:
+            tmp = ' '.join(kwTag)
+            result.append(f'({tmp})' )
+        return ' OR '.join(result)
 
 if __name__ == '__main__':
     with open('./config/run.json') as f:

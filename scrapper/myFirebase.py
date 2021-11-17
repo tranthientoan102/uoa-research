@@ -10,7 +10,7 @@ from myTwitter import MyTweet
 
 class MyFirebaseService:
     def __init__(self
-                 , certPath='./config/cobalt-entropy-272613-95e25772de3a.json'
+                 , certPath='./config/firebase.json'
                  ,collectionName = 'tweets_health'
                  ):
         self.appName = ''
@@ -84,7 +84,9 @@ if __name__ == '__main__':
 
     # tweet = MyTweet('test2')
     # doc = service.getCollectionRef().document(tweet.hash).set(tweet.to_dict())
-    docRead = service.getCollectionRef().where("rating", "!=", -10).get()
+
+    # docRead = service.getCollectionRef().where("rating", "!=", -10).get()
+    docRead = service.getCollectionRef().get()
 
     # .collection("tweets_health")
     # .where("account", "array-contains-any", ["@abcaustralia"])
@@ -99,11 +101,14 @@ if __name__ == '__main__':
     for doc in docRead:
         # if len(doc.to_dict()['account'])>1:
         a = doc.to_dict()
-        a['rating'] = -10
-        a['event'] = []
-        # service.getCollectionRef().document(a).delete()
-        service.getCollectionRef().document(a['hash']).set(a)
-        print(f'{a}')
-        counter -= 1
-        if counter == 0: break
+        # a['rating'] = -10
+        # a['event'] = []
+        #
+        # service.getCollectionRef().document(a['hash']).set(a)
+        # print(f'{a}')
+
+        service.getCollectionRef().document(a['hash']).delete()
+        print(a['hash'])
+        # counter -= 1
+        # if counter == 0: break
     print(f'done deleting {counter} tweets')

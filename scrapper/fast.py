@@ -117,6 +117,7 @@ async def triggerCombine(initConfig=Body(...)):
         # default['twitter']['account'] = update['account'].__str__().replace('@','')
         default['twitter']['account'] = [x.replace('@', '')]
         default['twitter']['keyword'] = initConfig['keyword']
+        default['twitter']['outsideTagIsAND'] = initConfig['outsideTagIsAND']
 
         # proc = multiprocessing.Process(target=main3.run, args=(default,app.cache))
         # proc.start()
