@@ -21,7 +21,7 @@ const signin = () => {
                 <Center mt={10}>
                     <VStack spacing="4">
                         <Heading fontSize="3xl" mb={2}>
-                            Welcome to Text Labelling tool!!!
+                            Welcome to {process.env.NEXT_PUBLIC_NAME}!!!
                         </Heading>
                         <Button leftIcon={<FcGoogle />} onClick={() => signinWithGoogle()}>
                             Sign In with Google

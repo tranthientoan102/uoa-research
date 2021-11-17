@@ -19,8 +19,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TagsInput2 from "../components/TagsInput2";
 import {
-    convertTimeToString, displayTag, displayTagSentiment, displayTagToxic,
-    fetchData, getEDPrediction,
+    convertTimeToString, displayTag, displayTagSentiment, displayTagToxic, explainKws,
+    fetchData, getEDPrediction, getKwInput,
     getSAPrediction,
     getTagsInput,
     isAdmin,
@@ -53,15 +53,15 @@ const Download = (props) => {
         let eventFullList = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate', 'friendly']
         let sentimentFullList = ['negative', 'neutral', 'positive']
         // @ts-ignore
-        setData(<Flex my={2} align="center" justify="center" >Loading tweets...
+        setData(<Flex my={2} align="center" justify="center" >Loading tweets ...
                     <Spinner size="md" m={1} thickness="4px"
                               speed="0.65s"
                               emptyColor="gray.200"
                               color="blue.500"/>
                     </Flex>)
         let tweets = await fetchData(
-                                        getTagsInput('searchAcc', true)
-                                        , getTagsInput('searchKey', false)
+                                        getTagsInput('searchAcc' )
+                                        , getKwInput('searchKeyPredict')
                                         , 25
                                     ).then((res) => {
             res.forEach(a =>{
@@ -152,7 +152,7 @@ const Download = (props) => {
 
                                 <Container mx={2} p={0}>
                                     <Text>Keyword</Text>
-                                    <TagInput2 id="searchKey" defaultEvents={[]} tags={['mask']} />
+                                    <TagInput2 id="searchKeyPredict" defaultEvents={[]} tags={[]} />
                                 </Container>
 
                                 <div id="isMasked">
@@ -187,7 +187,6 @@ const Download = (props) => {
                         </Container>
                         <Container maxW="8xl">
                             <SimpleGrid my={2} align="center" >
-                                {/* {generateForm(auth, props)} */}
                                 <div>{data}</div>
                             </SimpleGrid>
                         </Container>

@@ -18,17 +18,17 @@ interface DE{
 interface Props {
     id: string,
     tags: string[],
-    defaultEvents: DE[]
+    outsideIsAND: boolean
 }
 
-class TagsInput2 extends React.Component<Props> {
+class TagsInputKws extends React.Component<Props> {
     // constructor(init: Props) {
     //     super(init)
     //     console.log(init.defaultEvents)
     // }
     state = {
         tags: this.props.tags,
-        defaultEvents: this.props.defaultEvents
+        outsideIsAND: this.props.outsideIsAND
     };
 
     handleTagsinput = tags => {
@@ -42,12 +42,6 @@ class TagsInput2 extends React.Component<Props> {
     render() {
         return (
             <Container id={this.props.id} m={0} p={0}>
-                {this.state.defaultEvents.map(de =>
-                    <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
-                    >
-                        {de.name}
-                    </Checkbox>)
-                }
                 <TagsInput
                     className="react-tagsinput"
                     onChange={this.handleTagsinput}
@@ -56,10 +50,18 @@ class TagsInput2 extends React.Component<Props> {
                     inputProps={inputProps}
                 >
                 </TagsInput>
+                {/*<Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'*/}
+                {/*          value ={(this.state.outsideIsAND)?'checked':'unchecked'}*/}
+                {/*          onChange={()=> {*/}
+                {/*              this.state.outsideIsAND = !this.state.outsideIsAND*/}
+                {/*          }}*/}
+                {/*>*/}
+                {/*        /!*{this.props.outsideIsAND}*!/ tag {this.state.outsideIsAND?'AND':'OR'} tag*/}
+                {/*</Checkbox>*/}
                 <p>{explainKws(this.props.id)}</p>
             </Container>
         );
     }
 }
 
-export default TagsInput2;
+export default TagsInputKws;

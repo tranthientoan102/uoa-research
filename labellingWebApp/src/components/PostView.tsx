@@ -1,4 +1,4 @@
-import {Box, Button, Checkbox, Container, Flex, SimpleGrid, Spinner, Tag, Text} from '@chakra-ui/react';
+import {Box, Button, Checkbox, Container, Flex, Grid, SimpleGrid, Spinner, Tag, Text} from '@chakra-ui/react';
 import React, {useState} from 'react';
 import {
     getDefaultEventList,
@@ -15,8 +15,10 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 import TagInput2 from './TagsInput2';
-import {fetchData, getTagsInput, isAdmin, isMasked} from "../utils/common";
+import {fetchData, getKwInput, getTagsInput, isAdmin, isMasked, explainKws} from "../utils/common";
 import DefaultEvent from "./DefaultEvent";
+import TagsInput2 from "./TagsInput2";
+import TagsInputKws from "./TagsInputKws";
 
 const PostView = (props) => {
 
@@ -25,6 +27,7 @@ const PostView = (props) => {
     toast.configure()
     const { auth, signinWithGoogle } = useAuth();
     const [data, setData] = useState("init data");
+    const [query, setQuery] = useState('');
     const [defaultEvent, setDefaultEvent] = useState([]);
     const [tagDisplay, setTagDisplay] = useState([])
     let tags = {}
@@ -55,9 +58,9 @@ const PostView = (props) => {
     }
 
 
-    const process = async (accs: string[], kws:string[]) => {
+    const process = async (accs: string[], kws:string[][]) => {
         // @ts-ignore
-        setData(<Flex my={2} align="center" justify="center" ><p>loading post from {accs} with keywords {kws.join(' or ')}</p>
+        setData(<Flex my={2} align="center" justify="center" ><p>loading post from {accs} with keywords {explainKws('searchKey')}</p>
                 <Spinner size="md" m={1} thickness="4px"
                           speed="0.65s"
                           emptyColor="gray.200"
@@ -92,38 +95,38 @@ const PostView = (props) => {
         setData(newData)
     }
     // @ts-ignore
-    const refillData = async (accs:string[], kws:string[]) => {
-        // setData("...preparing db...")
-        //
-        // let accs = getTagsInput('searchAcc',true)
-        // let kws = getTagsInput('searchKey',false)
-
-        // let isWaiting = true
-
-        if (accs.length > 0 && kws.length > 0) {
-            // refillDbWithAccount(accs.join(','))
-            refillDb_acc_kws(accs, kws)
-        } else {
-            if (accs.length > 0) refillDb_acc(accs.join(','))
-            else if (kws.length > 0) refillDb_kw(kws)
-            else {
-                toast.error('Please check your input')
-                // isWaiting = false
-            }
-        }
-        // if (isWaiting) {
-        //     toast.info('Please wait for DB to be filled up...', {autoClose: 10000})
-        //     setTimeout(() => {
-        //         fetchData(accs, kws)
-        //     }, 10000)
-        // }
-
-        // } else
-        //     toast.error('Please specifiy desired account')
-        // } catch (err) {
-        //     toast.error('REFILL FAILED: ' + err)
-        // }
-    }
+    // const refillData = async (accs:string[], kws:string[][]) => {
+    //     // setData("...preparing db...")
+    //     //
+    //     // let accs = getTagsInput('searchAcc',true)
+    //     // let kws = getTagsInput('searchKey',false)
+    //
+    //     // let isWaiting = true
+    //
+    //     if (accs.length > 0 && kws.length > 0) {
+    //         // refillDbWithAccount(accs.join(','))
+    //         refillDb_acc_kws(accs, kws)
+    //     } else {
+    //         if (accs.length > 0) refillDb_acc(accs.join(','))
+    //         else if (kws.length > 0) refillDb_kw(kws)
+    //         else {
+    //             toast.error('Please check your input')
+    //             // isWaiting = false
+    //         }
+    //     }
+    //     // if (isWaiting) {
+    //     //     toast.info('Please wait for DB to be filled up...', {autoClose: 10000})
+    //     //     setTimeout(() => {
+    //     //         fetchData(accs, kws)
+    //     //     }, 10000)
+    //     // }
+    //
+    //     // } else
+    //     //     toast.error('Please specifiy desired account')
+    //     // } catch (err) {
+    //     //     toast.error('REFILL FAILED: ' + err)
+    //     // }
+    // }
 
 
     // const isMasked = (auth) => {
@@ -204,16 +207,31 @@ const PostView = (props) => {
         <div>
             <Container position="relative" maxW="8xl">
                 <Flex  my={2} align="center" justify="center" >
+                    {/*<Container  align="top" justify="center" >*/}
+                        <Container mx={2} p={0}>
+                            <Text>Twitter account</Text>
+                            <TagInput2 id="searchAcc" defaultEvents={[]} tags={[]} />
+                        </Container>
+                    {/*</Container>*/}
 
-                    <Container mx={2} p={0}>
-                        <Text>Twitter account</Text>
-                        <TagInput2 id="searchAcc" defaultEvents={[]} tags={[]} />
-                    </Container>
+                    {/*<Container  align="top" justify="center" >*/}
+                        <Container mx={2} p={0}>
+                            {/*<Grid>*/}
+                                <Text>Keyword</Text>
+                                <TagsInputKws id="searchKey" tags={[]}
+                                            // onChange={setQuery(explainKws('searchKey'))}
+                                    outsideIsAND={true}
+                                />
 
-                    <Container mx={2} p={0}>
-                        <Text>Keyword</Text>
-                        <TagInput2 id="searchKey" defaultEvents={[]} tags={['mask']} />
-                    </Container>
+                            {/*</Grid>*/}
+                        </Container>
+
+                    {/*</Container>*/}
+
+                    {/*<Container mx={2} p={0}>*/}
+                    {/*    <Text>Keyword</Text>*/}
+                    {/*    <TagInput2 id="searchKey" defaultEvents={[]} tags={[]} />*/}
+                    {/*</Container>*/}
 
                     <div id="isMasked">
                     {isAdmin(auth) ?
@@ -228,7 +246,7 @@ const PostView = (props) => {
                         // color="lightgreen"
                         onClick={() => process(
                             getTagsInput('searchAcc', true)
-                            , getTagsInput('searchKey', false)
+                            , getKwInput('searchKey', false)
                         )}
                     >
                         <p>Load more</p>

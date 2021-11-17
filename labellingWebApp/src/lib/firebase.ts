@@ -5,13 +5,13 @@ import 'firebase/auth';
 
 
 var firebaseConfig = {
-    apiKey: "AIzaSyCS-zq-GplMiNF_bvbgrauBa9mkAiBFKMo",
-    authDomain: "cobalt-entropy-272613.firebaseapp.com",
-    projectId: "cobalt-entropy-272613",
-    storageBucket: "cobalt-entropy-272613.appspot.com",
-    messagingSenderId: "78394616721",
-    appId: "1:78394616721:web:d6db54396d5128695dc830",
-    measurementId: "G-ZR2WBCRFWG"
+    apiKey:             process.env.NEXT_PUBLIC_APIKEY,
+    authDomain:         process.env.NEXT_PUBLIC_AUTHDOMAIN,
+    projectId:          process.env.NEXT_PUBLIC_PROJECTID,
+    storageBucket:      process.env.NEXT_PUBLIC_STORAGEBUCKET,
+    messagingSenderId:  process.env.NEXT_PUBLIC_MESSAGINGSENDERID,
+    appId:              process.env.NEXT_PUBLIC_APPID,
+    measurementId:      process.env.NEXT_PUBLIC_MEASUREMENTID
 };
 // Initialize Firebase
 try {

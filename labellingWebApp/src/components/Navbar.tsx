@@ -13,7 +13,7 @@ const Navbar: React.FC<{}> = () => {
         <>
             <Flex justify="space-between" m={4}>
                 <Heading onClick={() => router.push('/')} as="button">
-                    Text labelling tool
+                    {process.env.NEXT_PUBLIC_NAME}
                 </Heading>
 
                 <Box>
@@ -26,7 +26,7 @@ const Navbar: React.FC<{}> = () => {
                                     router.push('/')
                                 }}
                             >
-                                Main view
+                                Annotation
                             </Link>
                             <Link
                                 // href='/predict'
@@ -36,7 +36,7 @@ const Navbar: React.FC<{}> = () => {
                                     router.push('/predict')
                                 }}
                             >
-                                Predict
+                                Prediction
                             </Link>
                             <Link
                                 p={2}

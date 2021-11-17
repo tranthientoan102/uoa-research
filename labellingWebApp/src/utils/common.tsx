@@ -4,7 +4,7 @@ import crypto from "crypto";
 import {
     loadUnlabelledPost_accs_kws
     , loadUnlabelledPostByAccount
-    , host, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw
+    , host_scrapper, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw
 } from "./db";
 import Axios from "axios";
 import {Tag} from "@chakra-ui/react";
@@ -22,10 +22,11 @@ export const labelling = async (auth, values) => {
     }
 }
 
-export const getTagsInput = (eleId, isTwitterAcc=false, lowering = true) => {
+export const getTagsInput = (eleId, isTwitterAcc=false, lowering = true, withWarning=true) => {
     let tags = []
     let rootEle = document.getElementById(eleId)
-    // if (rootEle.has)
+    if (rootEle == undefined) return []
+
     rootEle.querySelectorAll('.chakra-checkbox.css-khpbvo').forEach(de => {
         if (de.querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes())
             tags.push(de.querySelector('.chakra-checkbox__label.css-1sgc0qu').innerHTML)
@@ -34,7 +35,7 @@ export const getTagsInput = (eleId, isTwitterAcc=false, lowering = true) => {
     let reactTagInput = rootEle.querySelector('.react-tagsinput')
     if (reactTagInput) {
         rootEle.querySelector('.react-tagsinput').querySelectorAll('span .react-tagsinput-tag').forEach((element) => {
-            let tmp = (isTwitterAcc ? '@' : '') + element.innerHTML.replace("<a></a>", "")
+            let tmp = (isTwitterAcc ? '@' : '') + element.innerHTML.replace("<a></a>", "").trim()
             if (lowering) tmp = tmp.toLowerCase()
             tags.push(tmp)
         })
@@ -42,14 +43,71 @@ export const getTagsInput = (eleId, isTwitterAcc=false, lowering = true) => {
             // @ts-ignore
             let tmpInput = element.value
             if (tmpInput.trim() != '') {
-                if (lowering) tmpInput = tmpInput.toLowerCase()
+                if (lowering) tmpInput = tmpInput.toLowerCase().trim()
                 tags.push((isTwitterAcc ? '@' : '') + tmpInput)
-                toast.info(`Include unfinalised input ${tmpInput}. Please remember hitting Enter or Tab next time`)
+                if (withWarning) toast.info(`Include unfinalised input ${tmpInput}. Please remember hitting Enter or Tab next time`)
             }
         })
     }
-    console.log('detect tags: ' + tags)
+    // console.log('detect tags: ' + tags)
     return tags
+}
+
+export const getKwInput= (eleId, lowering = true, withWarning=true) => {
+
+    let tmpTags = getTagsInput(eleId, false, lowering, withWarning)
+    let tags = []
+    for (let tmpTag of tmpTags){
+        let tmpSubTags = (tmpTag + " ").split(/\s+/)
+        let subTags = []
+        let insideQuoteMark = false
+        let nonSepaKw = ''
+        //  "christmas eve" "new year eve"
+        for (let tmptmp of tmpSubTags){
+            console.log(tmptmp)
+            if (tmptmp.startsWith("\"")) {
+                // tmptmp = tmptmp.split("\"")[1]
+                insideQuoteMark = true
+            }
+            if (insideQuoteMark){
+
+                if (tmptmp.endsWith("\"")) {
+                    // tmptmp = tmptmp.split("\"")[0]
+                    insideQuoteMark = false
+                    nonSepaKw += ' ' + tmptmp
+                    subTags.push(nonSepaKw)
+                    nonSepaKw = ''
+                } else nonSepaKw += ' ' + tmptmp
+            } else {
+                // if (nonSepaKw.length != 0) {
+                //     subTags.push(nonSepaKw)
+                //     nonSepaKw = ''
+                // }
+                if (tmptmp.length > 0) subTags.push (tmptmp)
+            }
+        }
+        tags.push(subTags)
+    }
+    console.log(tags)
+    return tags
+}
+
+
+export const explainKws = (eleId, lowering=true, outsideTagIsAND = true ) => {
+    let kwTags = getKwInput(eleId, lowering, false)
+
+    let result = []
+    if (outsideTagIsAND){
+        for (const tag of kwTags){
+            result.push(`(${tag.join(' OR ')})`)
+        }
+        return result.join(' AND ')
+    }else {
+        for (const tag of kwTags){
+            result.push(`(${tag.join(' AND ')})`)
+        }
+        return result.join(' OR ')
+    }
 }
 
 export const convertTimeToString = (time) => {
@@ -131,13 +189,8 @@ export const testEncrypt = () => {
     decrypted += decipher.final('utf8');
     console.log(decrypted)
 
-    // let a = crypto.md5
-    // let aa = CryptoJS.enc.Base64.parse(a)
-    // console.log(a)
-    // console.log(aa)
-
 }
-export const fetchData = async (accs: string[], kws:string[], limit) => {
+export const fetchData = async (accs: string[], kws:string[][], limit) => {
     // setData(`loading post from ${accs} with keywords ${kws}`)
     let res = null
 
@@ -154,7 +207,7 @@ export const fetchData = async (accs: string[], kws:string[], limit) => {
         isReachLimit = res.length >= limit
     }
     if (isOldData || !isReachLimit) {
-        toast.info('Auto scrapping latest tweets')
+        toast.info('Auto scrapping latest tweets', { autoClose: 20000 })
         refillData(accs,kws)
     }
 
@@ -162,7 +215,7 @@ export const fetchData = async (accs: string[], kws:string[], limit) => {
     return res;
 
 }
-export const refillData = async (accs:string[], kws:string[]) => {
+export const refillData = async (accs:string[], kws:string[][]) => {
     // setData("...preparing db...")
     //
     // let accs = getTagsInput('searchAcc',true)

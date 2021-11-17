@@ -7,13 +7,13 @@ FROM node:14-alpine
 #RUN mkdir -p /usr/src
 WORKDIR /app
 
-# copy source files
-COPY . .
-
 # install dependencies
 RUN npm install
+
+# copy source files
+COPY . .
 
 # start app
 #RUN npm run build
 EXPOSE 3000
-CMD npm run dev
+CMD npm run dev2

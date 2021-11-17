@@ -1,5 +1,7 @@
 import { IdProvider } from "@chakra-ui/react";
+
 import firebase from "../lib/firebase";
+
 import Axios from "axios";
 import {database} from "firebase-admin/lib/database";
 import {toast} from 'react-toastify';
@@ -7,16 +9,26 @@ import {toast} from 'react-toastify';
 
 
 toast.configure()
+// dotenv.config()
+// require('dotenv').config({path: './config/.e2222nv.development.dev'})
 
 const expectingPost = 500
 const dbLookupLimit = 5000
 
 // export const host = 'localhost'
-export const host = '20.37.47.186'
-export const host_sa = '20.37.47.186'
-export const port_sa = 8001
-export const host_ed = '20.37.47.186'
-export const port_ed = 8002
+// export const host = '20.37.47.186'
+// export const host_sa = '20.37.47.186'
+// export const port_sa = 8001
+// export const host_ed = '20.37.47.186'
+// export const port_ed = 8002
+
+export const host_scrapper = process.env.NEXT_PUBLIC_HOST_SCRAPPER
+export const port_scrapper = process.env.NEXT_PUBLIC_PORT_SCRAPPER
+export const host_sa = process.env.NEXT_PUBLIC_HOST_SA
+export const port_sa = process.env.NEXT_PUBLIC_PORT_SA
+export const host_ed = process.env.NEXT_PUBLIC_HOST_ED
+export const port_ed = process.env.NEXT_PUBLIC_PORT_ED
+
 
 
 export const updateAuthUser = async (authUser: any) => {
@@ -43,20 +55,27 @@ export const updateAuthUser = async (authUser: any) => {
 // }
 
 export const refillDb_acc = async (acc: string) => {
-    let tmp = await Axios.post(`http://${host}:8000/trigger/account`, { list: acc })
+    // console.log(process.env.NEXT_PUBLIC_HOST_SCRAPPER)
+    // console.log(process.env.NEXT_PUBLIC_PORT_SCRAPPER)
+    let tmp = await Axios.post(`http://${host_scrapper}:${port_scrapper}/trigger/account`, { list: acc })
     return tmp
 }
-export const refillDb_kw = async (kws:string[]) => {
+export const refillDb_kw = async (kws:string[][], outsideTagIsAND= true) => {
 
     // let data = JSON.stringify({"account": acc, "keyword": kw})
-    let tmp = await Axios.post(`http://${host}:8000/trigger/keyword`, {list: kws})
+
+    // console.log(process.env.NEXT_PUBLIC_HOST_SCRAPPER)
+    // console.log(process.env.NEXT_PUBLIC_PORT_SCRAPPER)
+    let tmp = await Axios.post(`http://${host_scrapper}:${port_scrapper}/trigger/keyword`
+                                , {list: kws, outsideTagIsAND: outsideTagIsAND})
     return tmp
 }
 
-export const refillDb_acc_kws = async (acc: string[], kws:string[]) => {
+export const refillDb_acc_kws = async (acc: string[], kws:string[][], outsideTagIsAND= true) => {
 
     // let data = JSON.stringify({"account": acc, "keyword": kw})
-    let tmp = await Axios.post(`http://${host}:8000/trigger/combine`, {account: acc, keyword: kws})
+    let tmp = await Axios.post(`http://${host_scrapper}:${port_scrapper}/trigger/combine`
+                                , {account: acc, keyword: kws, outsideTagIsAND: outsideTagIsAND})
     return tmp
 }
 // export const searchDb_kw = async(kws: string[])=> {
@@ -83,15 +102,15 @@ export const refillDb_acc_kws = async (acc: string[], kws:string[]) => {
 //     return tmp
 // }
 
-export const searchCache_acc_kw = async (acc: string[], kw:string[]) => {
-    let data = JSON.stringify({"account": acc, "keyword": kw})
-    console.log(data)
-    let tmp = await Axios.get(`http://${host}:8000/search/combine`
-                        , {params: {initConfig: data}})
-                .then(res => res.data)
-    return tmp
-
-}
+// export const searchCache_acc_kw = async (acc: string[], kw:string[]) => {
+//     let data = JSON.stringify({"account": acc, "keyword": kw})
+//     console.log(data)
+//     let tmp = await Axios.get(`http://${host}:8000/search/combine`
+//                         , {params: {initConfig: data}})
+//                 .then(res => res.data)
+//     return tmp
+//
+// }
 
 export const loadUnlabelledPost = async () => {
     // var dataRef = null
@@ -132,7 +151,7 @@ export const loadUnlabelledPostByAccount = async (accs: string[], postAfter=new 
         console.log('Error occurred: ' + err)
     }
 }
-export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[], limit= expectingPost) => {
+export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][], limit= expectingPost) => {
     let result = []
     let queryDateTime = new Date()
 
@@ -162,10 +181,33 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[],
     console.log(`finish load ${result.length} unlabelled post By ${accs} with keywords ${kws}`)
     return result
 }
-const checkDocIncludesKws = (doc:string, kws:string[]) =>{
-    let result = false
-    for (const kw of kws){
-        if (doc.toLowerCase().includes(kw.toLowerCase())) {
+const checkDocIncludesKws = (doc:string, kws:string[][], outsideTagIsAND = true) =>{
+    let result = outsideTagIsAND
+    if (outsideTagIsAND){
+        // outside tag is AND
+        // inside tag is OR
+        result = true
+        for (const tag of kws) {
+            result = result && checkDocIncludesKws_insideTag_OR(doc,tag)
+        }
+    } else {
+        // outside tag is OR
+        // inside tag is AND
+        result = false
+        for (const tag of kws){
+            result = result || checkDocIncludesKws_insideTag_AND(doc,tag)
+        }
+
+    }
+    return result
+
+}
+
+const checkDocIncludesKws_insideTag_OR = (inputdoc: string, kwTag: string[]) => {
+    let result = false;
+    let doc = inputdoc.toLowerCase();
+    for (const kw of kwTag){
+        if (doc.includes(kw.replaceAll("\"","").toLowerCase())) {
             result = true
             break
         }
@@ -173,6 +215,18 @@ const checkDocIncludesKws = (doc:string, kws:string[]) =>{
     return result
 
 }
+const checkDocIncludesKws_insideTag_AND = (inputdoc: string, kwTag: string[]) => {
+    let result = true;
+    let doc = inputdoc.toLowerCase();
+    for (const kw of kwTag){
+        if (!doc.includes(kw.replaceAll("\"","").toLowerCase())){
+            result = false
+            break;
+        }
+    }
+    return result;
+}
+
 
 // export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[]) => {
 //     let result = []
