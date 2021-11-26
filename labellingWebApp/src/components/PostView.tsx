@@ -1,4 +1,4 @@
-import {Box, Button, Checkbox, Container, Flex, Grid, SimpleGrid, Spinner, Tag, Text} from '@chakra-ui/react';
+import {Box, Button, Checkbox, Container, Divider, Flex, Grid, SimpleGrid, Spinner, Tag, Text} from '@chakra-ui/react';
 import React, {useState} from 'react';
 import {
     getDefaultEventList,
@@ -15,7 +15,15 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 import TagInput2 from './TagsInput2';
-import {fetchData, getKwInput, getTagsInput, isAdmin, isMasked, explainKws} from "../utils/common";
+import {
+    fetchData,
+    getKwInput,
+    getTagsInput,
+    isAdmin,
+    isMasked,
+    explainKws,
+    maskPersonalDetails_AtSign
+} from "../utils/common";
 import DefaultEvent from "./DefaultEvent";
 import TagsInput2 from "./TagsInput2";
 import TagsInputKws from "./TagsInputKws";
@@ -47,9 +55,9 @@ const PostView = (props) => {
     //     return tags.join(',')
     // }
 
-    const update = (auth, hash, rating, events) => {
+    const update = (auth, hash, rating, events, maskingNames) => {
         if (auth != null) {
-            updateLabel(auth, hash, rating, events)
+            updateLabel(auth, hash, rating, events, maskingNames)
             document.getElementById(hash).style.backgroundColor = "LightYellow";
         }
         else {
@@ -90,7 +98,7 @@ const PostView = (props) => {
         // }
 
 
-        const newData = await generateForm(auth, res)
+        const newData = generateForm(auth, res)
         // @ts-ignore
         setData(newData)
     }
@@ -163,35 +171,51 @@ const PostView = (props) => {
                             {data.hash}
                         </Text>}
                         <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
-                            {data.text}
+                            {maskPersonalDetails_AtSign(data.text)}
                         </Text>
 
-                        <DefaultEvent id={data.hash} defaultEvents={de} />
+                        <DefaultEvent id={data.hash+'_events'} defaultEvents={de} />
 
+                        <Flex alignItems="center">
+                            <Box mr={2}>Names to be hide</Box>
+                            <TagsInput2 id={data.hash+'_maskingNames'} defaultEvents={[]} tags={[]}/>
+                            <Divider orientation="vertical" mx={5}/>
+                            <Flex align="center" justify="center" ml={5}>
+                                <Button
+                                    mx={2}
+                                    colorScheme="red"
+                                    onClick={() => update(auth, data.hash, -1
+                                                            , getTagsInput(data.hash+'_events')
+                                                            , getTagsInput(data.hash+'_maskingNames')
+                                    )}
+                                >
+                                    Negative
+                                </Button>
+                                <Button
+                                    mx={2}
+                                    colorScheme="yellow"
+                                    onClick={() => update(auth, data.hash, 0
+                                                            , getTagsInput(data.hash+'_events')
+                                                            , getTagsInput(data.hash+'_maskingNames')
+                                    )}
+                                >
+                                    Neutral
+                                </Button>
+                                <Button
+                                    ml={2}
+                                    colorScheme="green"
+                                    onClick={() => update(auth, data.hash, 1
+                                                            , getTagsInput(data.hash+'_events')
+                                                            , getTagsInput(data.hash+'_maskingNames')
+                                    )}
 
-                        <Flex align="center" justify="center" mt={3}>
-                            <Button
-                                mx={2}
-                                colorScheme="red"
-                                onClick={() => update(auth, data.hash, -1, getTagsInput(data.hash))}
-                            >
-                                Negative
-                            </Button>
-                            <Button
-                                mx={2}
-                                colorScheme="yellow"
-                                onClick={() => update(auth, data.hash, 0, getTagsInput(data.hash))}
-                            >
-                                Neutral
-                            </Button>
-                            <Button
-                                ml={2}
-                                colorScheme="green"
-                                onClick={() => update(auth, data.hash, 1, getTagsInput(data.hash))}
-                            >
-                                Possitive
-                            </Button>
+                                >
+                                    Positive
+                                </Button>
+                            </Flex>
                         </Flex>
+
+
                     </Box >
                 )
             });

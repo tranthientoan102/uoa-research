@@ -11,8 +11,11 @@ const inputProps = {
     className: "react-tagsinput-input",
     placeholder: ""
 };
-interface DE{
+export class DE{
     name: string
+    constructor (initName){
+        this.name = initName;
+    }
 }
 interface Props {
     id: string,

@@ -88,7 +88,6 @@ export const getKwInput= (eleId, lowering = true, withWarning=true) => {
         }
         tags.push(subTags)
     }
-    console.log(tags)
     return tags
 }
 
@@ -190,6 +189,24 @@ export const testEncrypt = () => {
     console.log(decrypted)
 
 }
+export const maskPersonalDetails = (text:string, names:string[]) =>{
+    return maskPersonalDetails_AtSign(maskPersonalDetails_names(text, names))
+}
+
+export const maskPersonalDetails_AtSign = (text:string) => {
+    return text.replace(/(\w+)@/gi, "✱✱✱@")
+                .replace(/@(\w+)/gi, "@✱✱✱")
+}
+export const maskPersonalDetails_names = (text:string, names:string[]) =>{
+    if (names != null) {
+        // console.log(`masking names: ${names.join(',')}`)
+        names.forEach(name => {
+            text = text.replace(new RegExp(name,'gi'), "✱✱✱")
+        })
+    }
+    return text
+}
+
 export const fetchData = async (accs: string[], kws:string[][], limit) => {
     // setData(`loading post from ${accs} with keywords ${kws}`)
     let res = null

@@ -11,12 +11,14 @@ const Navbar: React.FC<{}> = () => {
     const router = useRouter();
     return (
         <>
-            <Flex justify="space-between" m={4}>
-                <Heading onClick={() => router.push('/')} as="button">
-                    {process.env.NEXT_PUBLIC_NAME}
-                </Heading>
-
-                <Box>
+            <Flex justify="space-between" m={1}  align="center" di>
+                <Flex>
+                    <Heading onClick={() => router.push('/')} as="button" mx={2}>
+                        {process.env.NEXT_PUBLIC_NAME}
+                    </Heading>
+                    <img src={process.env.NEXT_PUBLIC_LOGO} width="64px"/>
+                </Flex>
+                <Box my={1}>
                     {auth ? (
                         <Box p={2}>
                             <Link

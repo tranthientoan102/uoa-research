@@ -151,13 +151,17 @@ export const loadUnlabelledPostByAccount = async (accs: string[], postAfter=new 
         console.log('Error occurred: ' + err)
     }
 }
-export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][], limit= expectingPost) => {
+export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][]
+                                                  , limit= expectingPost
+                                                  , postAfter = new Date()) => {
     let result = []
-    let queryDateTime = new Date()
+    // if (postAfter == None) {
+    //     postAfter = new Date()
+    // }
 
     while (result.length < limit) {
-        console.log('query by date: ' + queryDateTime)
-        let data = await loadUnlabelledPostByAccount(accs, queryDateTime, dbLookupLimit)
+        console.log('query by date: ' + postAfter)
+        let data = await loadUnlabelledPostByAccount(accs, postAfter, dbLookupLimit)
         if (data.length == 0) break
         for (const doc of data){
             if (checkDocIncludesKws(doc.text, kws)) {
@@ -165,16 +169,8 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][
             }
             if (result.length == limit) break
         }
-        // console.log(data[data.length - 1].postAt['seconds'])
-        queryDateTime = new Date(data[data.length - 1].postAt['seconds'] * 1000)
+        postAfter = new Date(data[data.length - 1].postAt['seconds'] * 1000)
 
-        // data.forEach((doc) => {
-        //     if (checkDocIncludesKws(doc.text, kws))
-        //         console.log(doc)
-        //     result.push(doc)
-        //     if (result.length == expectingPost) break
-        //
-        // })
     }
 
 
@@ -265,13 +261,13 @@ function getAtMost10FromList(fullList:string[]){
 }
 
 
-export const updateLabel = async (auth, hash, rating, event) => {
+export const updateLabel = async (auth, hash, rating, event, maskingNames) => {
     let dataRef = await firebase.firestore().collection("tweets_health").doc(hash)
 
     try {
         const res = await firebase.firestore().runTransaction(async t => {
             const doc = await t.get(dataRef)
-            await t.update(dataRef, { rating: rating, event: event, labelledBy: auth.email})
+            await t.update(dataRef, { rating: rating, event: event, labelledBy: auth.email, masking: maskingNames})
         })
         console.log('Transaction success', res);
     } catch (e) {

@@ -28,9 +28,26 @@ const Home = (props) => {
             </Head>
             <main>
                 <Navbar />
+                {process.env.NEXT_PUBLIC_SHOW_WARNING == 'true'?
+                    <Box background="coral" color='white'>
+                        <Container justify={"center"} align={"center"} >
+
+                                New server for Roche users has been deployed at <br/>
+                            <b><a href="http://52.189.248.255:3000/">http://52.189.248.255:3000</a></b><br/>
+
+                            Please switch to new server if you're from Roche.<br/>
+                            Thank you
+                        </Container>
+
+                    </Box>
+
+                    :''
+                }
+
                 {auth != null? (<PostView></PostView>): (
                     <Container>Please log in for start using tool</Container>
                         )}
+
             </main>
             <footer></footer>
         </div >
