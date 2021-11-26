@@ -111,6 +111,8 @@ class MyTweet2:
         self.hash=None
         self.text=None
         self.rating=None
+        self.event=[]
+        self.labelledBy=None
         self.insertDbAt=None
 
     def parse(self, initDict):
@@ -130,6 +132,23 @@ class MyTweet2:
             self.insertDbAt = None
         return self
 
+    def parseFromCSV(self, csvData: []):
+        i = 0
+        self.hash = csvData[i]; i += 1
+        self.account = csvData[i]; i += 1
+        # 2021-11-13T01:25:11.000Z
+        # tmpTime = csvData[i]; i += 1
+        self.postAt = datetime.strptime(csvData[i],  '%Y-%m-%dT%H:%M:%S.%fZ'); i += 1
+        self.insertDbAt = datetime.strptime(csvData[i], '%Y-%m-%dT%H:%M:%S.%fZ'); i += 1
+        self.text = csvData[i]; i += 1
+        if (len(csvData[i]) > 0):
+            # print(csvData[i].length > 0)
+            self.event = csvData[i].split(',')
+        i+=1
+        self.rating = csvData[i]; i += 1
+        self.labelledBy = csvData[i]
+        return self
+
     def to_dict(self):
         return {
             'account'     : self.account
@@ -138,6 +157,8 @@ class MyTweet2:
             , 'hash'      : self.hash
             , 'text'      : self.text
             , 'rating'    : self.rating
+            , 'event'       : self.event
+            , 'labelledBy'  : self.labelledBy
             , 'insertDbAt': self.insertDbAt
         }
 
