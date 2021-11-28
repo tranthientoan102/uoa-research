@@ -60,8 +60,8 @@ const Predict = (props) => {
                               color="blue.500"/>
                     </Flex>)
         let tweets = await fetchData(
-                                        getTagsInput('searchAcc' )
-                                        , getKwInput('searchKeyPredict')
+                                        getTagsInput('searchAcc',true )
+                                        , getKwInput('searchKeyPredict', false)
                                         , 25
                                     ).then((res) => {
             res.forEach(a =>{

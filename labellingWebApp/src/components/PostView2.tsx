@@ -107,16 +107,15 @@ class PostView2 extends React.Component<Props> {
                 , loading : true
             })
             this.postAfter = cur
-            console.log(cur.getTime())
-            console.log(this.postAfter)
+            // console.log(cur.getTime())
+            // console.log(this.postAfter)
         }
         let result = this.state.items
-        console.log('[TweetAnnotation] fetching more')
         let res = await fetchData(
             getTagsInput('searchAcc', true)
             , getKwInput('searchKey', false)
             , this.state.loadEachTime
-            , new Date(this.postAfter)
+            , this.postAfter
             , this.counter
         )
         this.counter++;
@@ -131,8 +130,8 @@ class PostView2 extends React.Component<Props> {
         if (res.length > 0) {
             this.setState({
                 items: this.state.items.concat(res)
-                , postAfter: new Date(res.at(-1).postAt['seconds']*1000)
             })
+            this.postAfter = new Date(res.at(-1).postAt['seconds']*1000)
             // if (res.length < this.state.loadEachTime) this.fetchMoreData()
         } else {
             this.setState({
