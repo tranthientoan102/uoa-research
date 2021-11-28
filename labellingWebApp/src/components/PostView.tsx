@@ -167,11 +167,11 @@ const PostView = (props) => {
                         <Text colorScheme="teal">
                             {isMasked(auth)? '' :<b>{data.account}</b>} {(new Date(data.postAt['seconds'] * 1000).toString())}
                         </Text>
-                        {isMasked(auth)? '' :<Text color="teal">
+                        <Text color="teal">
                             {data.hash}
-                        </Text>}
+                        </Text>
                         <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
-                            {maskPersonalDetails_AtSign(data.text)}
+                            {isMasked(auth) ? maskPersonalDetails_AtSign(data.text): data.text}
                         </Text>
 
                         <DefaultEvent id={data.hash+'_events'} defaultEvents={de} />

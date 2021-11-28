@@ -207,28 +207,30 @@ export const maskPersonalDetails_names = (text:string, names:string[]) =>{
     return text
 }
 
-export const fetchData = async (accs: string[], kws:string[][], limit) => {
+export const fetchData = async (accs: string[], kws:string[][], limit= 25
+                                , postAfter = new Date(), refillCounter = 0
+) => {
     // setData(`loading post from ${accs} with keywords ${kws}`)
     let res = null
 
     if (kws.length == 0){
         res = await loadUnlabelledPostByAccount(accs, null, limit)
-    }else res = await loadUnlabelledPost_accs_kws(accs, kws, limit)
+    }else res = await loadUnlabelledPost_accs_kws(accs, kws, limit, postAfter)
 
     let isOldData = true
     let isReachLimit = false
     if (res.length > 0) {
         let latestDate = new Date(res[0].postAt['seconds'] * 1000)
         // @ts-ignore
-        isOldData = ((new Date()) - latestDate) / (1000 * 3600 * 24) > 1
+        isOldData = ((new Date()) - latestDate) / (1000 * 3600 * 24) > .5
         isReachLimit = res.length >= limit
     }
-    if (isOldData || !isReachLimit) {
+    if ((refillCounter == 0) && (isOldData || !isReachLimit)) {
         toast.info('Auto scrapping latest tweets', { autoClose: 20000 })
         refillData(accs,kws)
     }
 
-
+    console.log(`fetched ${res.length} tweets`)
     return res;
 
 }

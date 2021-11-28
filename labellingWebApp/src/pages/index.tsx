@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import PostView from '../components/PostView';
 import signin from "./signin";
 import {redirect} from "next/dist/server/api-utils";
+import PostView2 from "../components/PostView2";
 
 const Home = (props) => {
 
@@ -44,7 +45,7 @@ const Home = (props) => {
                     :''
                 }
 
-                {auth != null? (<PostView></PostView>): (
+                {auth != null? (<PostView2 auth={auth}/>): (
                     <Container>Please log in for start using tool</Container>
                         )}
 

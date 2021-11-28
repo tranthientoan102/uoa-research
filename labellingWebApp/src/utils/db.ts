@@ -12,8 +12,8 @@ toast.configure()
 // dotenv.config()
 // require('dotenv').config({path: './config/.e2222nv.development.dev'})
 
-const expectingPost = 500
-const dbLookupLimit = 5000
+const expectingPost = 10
+const dbLookupLimit = 1000
 
 // export const host = 'localhost'
 // export const host = '20.37.47.186'
@@ -201,11 +201,13 @@ const checkDocIncludesKws = (doc:string, kws:string[][], outsideTagIsAND = true)
 
 const checkDocIncludesKws_insideTag_OR = (inputdoc: string, kwTag: string[]) => {
     let result = false;
-    let doc = inputdoc.toLowerCase();
-    for (const kw of kwTag){
-        if (doc.includes(kw.replaceAll("\"","").toLowerCase())) {
-            result = true
-            break
+    if (inputdoc != null){
+        let doc = inputdoc.toLowerCase();
+        for (const kw of kwTag) {
+            if (doc.includes(kw.replaceAll("\"", "").toLowerCase())) {
+                result = true
+                break
+            }
         }
     }
     return result

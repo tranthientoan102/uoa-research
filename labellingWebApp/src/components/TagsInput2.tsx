@@ -43,8 +43,7 @@ class TagsInput2 extends React.Component<Props> {
         return (
             <Container id={this.props.id} m={0} p={0}>
                 {this.state.defaultEvents.map(de =>
-                    <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
-                    >
+                    <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'>
                         {de.name}
                     </Checkbox>)
                 }
@@ -56,7 +55,6 @@ class TagsInput2 extends React.Component<Props> {
                     inputProps={inputProps}
                 >
                 </TagsInput>
-                <p>{explainKws(this.props.id)}</p>
             </Container>
         );
     }

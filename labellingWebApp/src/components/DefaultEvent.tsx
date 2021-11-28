@@ -44,11 +44,11 @@ class DefaultEvent extends React.Component<Props> {
     render() {
         return (
             <div id={this.props.id}>
-                {this.state.defaultEvents.map(de =>
+                {this.state.defaultEvents.map(de =>(
                     <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
                     >
                         {de.name}
-                    </Checkbox>)
+                    </Checkbox>))
                 }
             </div>
         );

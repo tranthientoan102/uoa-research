@@ -24,7 +24,7 @@ import {
     getSAPrediction,
     getTagsInput,
     isAdmin,
-    isMasked
+    isMasked, maskPersonalDetails_AtSign
 } from "../utils/common";
 import {downloadData} from "../utils/db";
 
@@ -34,7 +34,7 @@ interface Props {
     data: string[]
 }
 
-const Download = (props) => {
+const Predict = (props) => {
     const id = 'download'
 
     // const formData = JSON.parse(props.formData);
@@ -99,11 +99,11 @@ const Download = (props) => {
                         {isMasked(auth) ? '' :
                             <b>{tweet.account}</b>} {(new Date(tweet.postAt['seconds'] * 1000).toString())}
                     </Text>
-                    {isMasked(auth) ? '' : <Text color="teal">
+                    <Text color="teal">
                         {tweet.hash}
-                    </Text>}
+                    </Text>
                     <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
-                        {tweet.text}
+                        {isMasked(auth) ? maskPersonalDetails_AtSign(tweet.text): tweet.text}
                     </Text>
                     <Flex align="center" justify="center">
                         Sentiment: {displayTagSentiment([pred_sa.data[i]], sentimentFullList)}
@@ -206,4 +206,4 @@ const Download = (props) => {
 
 
 
-export default Download
+export default Predict
