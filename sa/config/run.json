@@ -5,32 +5,9 @@
             "1": "positive"
         },
         "base_model_name" : "bert-base-uncased",
-        "num_labels": 2,
+        "num_labels": 3,
         "max_length": 100,
-        "path": "./output/210930_a8778125",
+        "path": "./output/211130-a5952/last_model_state.bin",
         "runOnCPU": true
-    },
-    "eventDetectionModel": {
-        "events": [
-            "health",
-            "sport",
-            "food"
-        ],
-        "mode": "keyword",
-        "keyword": {
-            "health": {
-                "path":"./kw/health"
-            },
-            "sport": {
-                "path":"./kw/sport"
-            },
-            "food": {
-                "path":"./kw/foodDrink"
-            }
-        },
-        "ml": {
-
-        }
-
     }
 }
