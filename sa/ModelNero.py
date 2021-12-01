@@ -1,8 +1,8 @@
 import torch
-from torch import nn, optim
+from torch import nn
 from torch.utils.data import Dataset, DataLoader
 
-from transformers import BertTokenizer, BertForSequenceClassification, Trainer, BertModel
+from transformers import BertTokenizer, BertModel
 
 
 class ModelNero:
@@ -31,22 +31,9 @@ class ModelNero:
     def get_predictions(self, data_loader):
         model = self.model.eval()
 
-        review_texts = []
         predictions = []
-        prediction_probs = []
-        real_values = []
-
         with torch.no_grad():
             for d in data_loader:
-                texts = d["review_text"]
-                # input_ids = d["input_ids"].to(device)
-                # attention_mask = d["attention_mask"].to(device)
-                # targets = d["targets"].to(device)
-
-                # outputs = model(
-                #         input_ids=input_ids,
-                #         attention_mask=attention_mask
-                # )
                 outputs = model(
                         input_ids=d["input_ids"],
                         attention_mask=d["attention_mask"]
@@ -54,12 +41,7 @@ class ModelNero:
 
                 _, preds = torch.max(outputs, dim=1)
 
-                # probs = F.softmax(outputs, dim=1)
-                #
-                # review_texts.extend(texts)
-                predictions.extend(preds)
-                # prediction_probs.extend(probs)
-                # real_values.extend(targets)
+                predictions.extend(preds.numpy())
         return predictions
 
 

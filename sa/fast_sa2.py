@@ -1,15 +1,12 @@
 import json
 import traceback
 
-import numpy
-import torch
 from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from ModelNero import *
 
-from torch import nn, optim
-from torch.utils.data import Dataset, DataLoader
 
-from transformers import BertTokenizer, BertForSequenceClassification, Trainer, BertModel
+from transformers import BertTokenizer
 
 
 class FastSA2 (FastAPI):
@@ -23,18 +20,15 @@ class FastSA2 (FastAPI):
         with open('./config/run.json') as f:
             self.config = json.load(f)
 
-        model_name = self.config['runningModel']['base_model_name']
+        base_model_name = self.config['runningModel']['base_model_name']
         num_labels = self.config['runningModel']['num_labels']
         path = f"{self.config['runningModel']['path']}"
 
-        self.tokenizer = BertTokenizer.from_pretrained(model_name)
+        self.tokenizer = BertTokenizer.from_pretrained(base_model_name)
 
         # model = BertForSequenceClassification.from_pretrained(model_name, num_labels=num_labels)
         # model.load_state_dict(torch.load(path, map_location=torch.device('cpu')))
-        self.model = SentimentClassifier(num_labels, model_name)
-        self.model.load_state_dict(torch.load(path))
-
-        # self.classifier = Trainer(model)
+        self.model = ModelNero(base_model_name, num_labels, path)
 
 
 app = FastSA2()
@@ -46,62 +40,12 @@ app.add_middleware(
         allow_headers=["*"],
 )
 
-
-class GPReviewDataset(Dataset):
-
-    def __init__(self, reviews, targets, tokenizer, max_len):
-        self.reviews = reviews
-        self.targets = targets
-        self.tokenizer = tokenizer
-        self.max_len = max_len
-
-    def __len__(self):
-        return len(self.reviews)
-
-    def __getitem__(self, item):
-        review = str(self.reviews[item])
-        target = self.targets[item]
-
-        encoding = self.tokenizer.encode_plus(
-                review,
-                add_special_tokens=True,
-                max_length=self.max_len,
-                return_token_type_ids=False,
-                padding='max_length',
-                truncation=True,
-                return_attention_mask=True,
-                return_tensors='pt',
-        )
-
-        return {
-            'review_text'   : review,
-            'input_ids'     : encoding['input_ids'].flatten(),
-            'attention_mask': encoding['attention_mask'].flatten(),
-            'targets'       : torch.tensor(target, dtype=torch.long)
-        }
+@app.get("/")
+async def root():
+    modelInfo = app.config['runningModel']['path']
+    return {"message": f'running model {modelInfo}'}
 
 
-class SentimentClassifier(nn.Module):
-
-    def __init__(self, n_classes, model_name):
-        super(SentimentClassifier, self).__init__()
-        self.bert = BertModel.from_pretrained(model_name)
-        # self.drop = nn.Dropout(p=0.1)
-        # self.relu = nn.ReLU()
-        # self.L1 = nn.Linear(self.bert.config.hidden_size,self.bert.config.hidden_size//2)
-        self.out = nn.Linear(self.bert.config.hidden_size, n_classes)
-
-    def forward(self, input_ids, attention_mask):
-        pooled_output = self.bert(
-                input_ids=input_ids,
-                attention_mask=attention_mask
-        )[1]
-
-        # output = self.drop(pooled_output)
-        # # output = self.L1(output)
-        output = self.out(pooled_output)
-
-        return output
 
 
 
@@ -113,12 +57,17 @@ async def predictTweet(data=Body(...)):
 
     # for a in data['text']: print(f'***{a}\n')
     try:
-        dataset = app.create_data_loader(data['text'])
-        pred, _, _ = app.classifier.predict(dataset)
-        for i in range(len(data['text'])):
-            print(f"{pred[i]}\t{data['text'][i]}")
-            result[i] = app.config['runningModel']['labels'][(str(numpy.argmax(pred[i])))]
-            # result[i] = numpy.argmax(pred[i])
+        dataLoader = app.model.create_data_loader(data['text'])
+        preds = app.model.get_predictions(dataLoader)
+        # for i in range(len(data['text'])):
+        #     print(f"{pred[i]}\t{data['text'][i]}")
+        #     result[i] = app.config['runningModel']['labels'][(str(numpy.argmax(pred[i])))]
+        #     # result[i] = numpy.argmax(pred[i])
+
+        for i,p in enumerate(preds):
+            t = data['text'][i]
+            result[i] = app.config['runningModel']['labels'][str(p)]
+            print(f'{t}\n{result[i]}')
 
     except Exception as e:
         # result = ["FAILED"]
