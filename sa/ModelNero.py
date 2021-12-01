@@ -65,9 +65,9 @@ class ModelNero:
 
 class GPReviewDataset(Dataset):
 
-    def __init__(self, reviews, targets, tokenizer, max_len):
+    def __init__(self, reviews, tokenizer, max_len):
         self.reviews = reviews
-        self.targets = targets
+        # self.targets = targets
         self.tokenizer = tokenizer
         self.max_len = max_len
 
@@ -76,7 +76,7 @@ class GPReviewDataset(Dataset):
 
     def __getitem__(self, item):
         review = str(self.reviews[item])
-        target = self.targets[item]
+        # target = self.targets[item]
 
         encoding = self.tokenizer.encode_plus(
                 review,
@@ -93,7 +93,7 @@ class GPReviewDataset(Dataset):
             'review_text'   : review,
             'input_ids'     : encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
-            'targets'       : torch.tensor(target, dtype=torch.long)
+            # 'targets'       : torch.tensor(target, dtype=torch.long)
         }
 
 
