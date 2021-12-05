@@ -47,6 +47,17 @@ export const updateAuthUser = async (authUser: any) => {
     return authUser
 }
 
+export const getAllLabeller = async (authUser: any) => {
+    console.log('lookup user from db')
+    var users = await firebase.firestore().collection('users').get()
+    var result = []
+    users.docs.map(doc=> {
+        result.push(doc.data().email)
+    })
+    // console.log(result.join(' ; '))
+    return result
+}
+
 // export const docExisted = async (docRef: any) => {
 //     return docRef.onSnapshot((snapshot) => {
 //         if (snapshot.exists) return true;
@@ -177,6 +188,43 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][
     console.log(`finish load ${result.length} unlabelled post By ${accs} with keywords ${kws}`)
     return result
 }
+
+export const loadLabelledPostByLabelledBy = async ( reviewer: string
+                                                    , labelledBy: string[]
+                                                    , limit= expectingPost
+                                                    , postAfter = new Date()) => {
+    let result = []
+    try {
+        while (result.length < limit) {
+
+            let dataRef = await buildGETQuery_review(labelledBy, limit, postAfter).get()
+            // result = dataRef.docs.map((doc) => (
+            //     { id: doc.id, ...doc.data() })
+            // )
+
+            dataRef.docs.forEach(doc => {
+                // console.log(doc.data().reviewedBy.includes(reviewer))
+                if ((doc.data().reviewedBy == undefined) || (!doc.data().reviewedBy.includes(reviewer))) {
+                    result.push({...doc.data()})
+                }
+                // console.log(doc.data().postAt['seconds'])
+                // // console.log(doc.data())
+                // postAfter = new Date(doc.data().postAt['seconds'] * 1000)
+            })
+            postAfter = new Date(dataRef.docs[dataRef.docs.length-1].data().postAt['seconds'] * 1000)
+            console.log(postAfter)
+        }
+
+        // console.log(`finish load ${result.length} posts labelled by ${labelledBy} `)
+        // console.log(result)
+        return result
+    } catch (err) {
+        console.log('Error occurred: ' + err)
+    }
+
+}
+
+
 const checkDocIncludesKws = (doc:string, kws:string[][], outsideTagIsAND = true) =>{
     let result = outsideTagIsAND
     if (outsideTagIsAND){
@@ -278,6 +326,43 @@ export const updateLabel = async (auth, hash, rating, event, maskingNames) => {
 
 }
 
+export const updateReview = async (auth, hash, rating, events, email) =>{
+    try{
+        let dataRef = await firebase.firestore().collection("tweets_health").doc(hash)
+
+        let data = (await dataRef.get()).data()
+
+        let reviewData = {test:4444}
+        if (data.reviewCount) {
+            await dataRef.update({
+                reviewCount: data.reviewCount+1
+                , reviewedRating: data.reviewedRating.concat(rating)
+                , reviewedEvent: data.reviewedEvent.concat(events.join(','))
+                , reviewedBy: data.reviewedBy.concat(email)
+            })
+        }else{
+            await dataRef.update({
+                reviewCount: 1
+                , reviewedRating: [rating]
+                , reviewedEvent: [events.join(',')]
+                , reviewedBy: [email]
+            })
+
+        }
+
+        // const res =await firebase.firestore().runTransaction(async t => {
+        //     // const doc = await t.get(dataRef)
+        //     await t.set(dataRef, reviewData)
+        // })
+        await dataRef.update({...reviewData})
+        console.log('Transaction success');
+
+    }catch (e){
+        toast.error(`Transaction failed:  ${e}`)
+        console.log(`Transaction failed: ${e}`);
+    }
+}
+
 export const getDefaultEventList = async () => {
     let dataRef = await firebase.firestore().collection("default_events").get()
 
@@ -362,6 +447,7 @@ function buildGETQuery_unlabelled (accounts: string[], postAfter, limit) {
 }
 
 
+
 function buildGETQuery_hash_unlabelled (hashList: string[], limit) {
 
     let dataRef = firebase.firestore().collection("tweets_health")
@@ -376,7 +462,7 @@ function buildGETQuery_hash_unlabelled (hashList: string[], limit) {
 }
 
 
-function buildGETQuery_labelled (accounts: string[], limit, labelledBy= null) {
+function buildGETQuery_labelled (accounts: string[], limit, labelledBy= null, postAfter = new Date()) {
 
     let dataRef = firebase.firestore().collection("tweets_health")
     let query = dataRef.where("rating", '!=', -10)
@@ -395,3 +481,21 @@ function buildGETQuery_labelled (accounts: string[], limit, labelledBy= null) {
     // return query
 }
 
+function buildGETQuery_review (labelledBy, limit,  postAfter = new Date()) {
+
+    let dataRef = firebase.firestore().collection("tweets_health")
+    let query = dataRef.where('labelledBy', 'in', labelledBy)
+    // else query = dataRef.where("rating", '==', -10)
+
+
+    if (postAfter!= null){
+        query = query.where("postAt", "<", postAfter)
+    }
+    if (limit != null){
+        query = query.limit(limit)
+    }
+    return query
+        // .orderBy("rating")
+        .orderBy("postAt",'desc')
+    // return query
+}

@@ -7,7 +7,7 @@ import {
     updateLabel,
     loadUnlabelledPost_accs_kws,
     refillDb_kw,
-    refillDb_acc_kws
+    refillDb_acc_kws, loadLabelledPostByLabelledBy
 } from '../utils/db';
 import {useAuth} from "../lib/auth";
 import {toast} from 'react-toastify';
@@ -116,7 +116,6 @@ class PostView2 extends React.Component<Props> {
             , getKwInput('searchKey', false)
             , this.state.loadEachTime
             , this.postAfter
-            , this.counter
         )
         this.counter++;
         // .then(data => result.push)
@@ -127,11 +126,11 @@ class PostView2 extends React.Component<Props> {
         // })
         // // .finally(() => this.forceUpdate)
 
-        if (res.length > 0) {
+        if ((res != null) && (res.length > 0)) {
             this.setState({
                 items: this.state.items.concat(res)
             })
-            this.postAfter = new Date(res.at(-1).postAt['seconds']*1000)
+            this.postAfter = new Date(res[res.length-1].postAt['seconds']*1000)
             // if (res.length < this.state.loadEachTime) this.fetchMoreData()
         } else {
             this.setState({
