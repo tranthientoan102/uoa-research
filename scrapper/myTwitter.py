@@ -110,14 +110,15 @@ class MyTweet2:
         self.postAt=None
         self.hash=None
         self.text=None
+        self.query = ''
         self.rating=None
         self.event=[]
         self.labelledBy=None
         self.insertDbAt=None
 
-    def parse(self, initDict):
+    def parse(self, initDict, query):
         if 'retweeted_status' in initDict.keys():
-            self.parse(initDict['retweeted_status'])
+            self.parse(initDict['retweeted_status'], query=query)
         else:
             self.account = ['@'+initDict['user']['screen_name'].lower()]
             self.id = initDict['id']
@@ -127,6 +128,7 @@ class MyTweet2:
             self.postAt = datetime.strptime(dt2, '%b %d %Y %H:%M:%S')
             # print(f'converting {dt2} -> {self.postAt}')
             self.text = initDict['full_text']
+            self.query = query
             self.rating = -10
             self.hash = md5(self.text.encode()).hexdigest()
             self.insertDbAt = None
@@ -151,15 +153,16 @@ class MyTweet2:
 
     def to_dict(self):
         return {
-            'account'     : self.account
-            , 'orig'      : self.orig
-            , 'postAt'    : self.postAt
-            , 'hash'      : self.hash
-            , 'text'      : self.text
-            , 'rating'    : self.rating
+            'account'       : self.account
+            , 'orig'        : self.orig
+            , 'postAt'      : self.postAt
+            , 'hash'        : self.hash
+            , 'text'        : self.text
+            , 'query'       : self.query
+            , 'rating'      : self.rating
             , 'event'       : self.event
             , 'labelledBy'  : self.labelledBy
-            , 'insertDbAt': self.insertDbAt
+            , 'insertDbAt'  : self.insertDbAt
         }
 
 if __name__ == '__main__':

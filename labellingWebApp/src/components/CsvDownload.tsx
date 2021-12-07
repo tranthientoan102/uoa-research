@@ -10,7 +10,9 @@ const headers = [
     // { label: "hash", key: "hash" },
     {label: "postAt", key: "postAt"},
     {label: "insertDbAt", key: "insertDbAt"},
-    {label: "text", key: "text"},
+    { label: "text", key: "text" },
+    { label: "query", key: "query" },
+    
     {label: "event", key: "event"},
     {label: "rating", key: "rating"},
     { label: "labelledBy", key: "labelledBy" },

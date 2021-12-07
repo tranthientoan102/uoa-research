@@ -76,7 +76,7 @@ def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime)
                 , lang='en'
                                     ).items(expectingCount * 5):
             tmp+=1
-            tweet = MyTweet2().parse(status._json)
+            tweet = MyTweet2().parse(status._json, query)
             if not myfirebase.checkExisted(tweet.hash):
                 print(f'{tweet.hash}')
                 myfirebase.insertData(tweet)
@@ -122,7 +122,7 @@ def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, s
             #         ).items(expectingCount * 3):
 
                 totalCounter += 1
-                tweet = MyTweet2().parse(status._json)
+                tweet = MyTweet2().parse(status._json, buildQuery(kws, outsideTagIsAND))
 
 
                 if checkTextIncludeKeywords(tweet.text, kws) and not myfirebase.checkExisted(tweet.hash):

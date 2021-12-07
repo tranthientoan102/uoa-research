@@ -116,6 +116,7 @@ class PostView2 extends React.Component<Props> {
             , getKwInput('searchKey', false)
             , this.state.loadEachTime
             , this.postAfter
+            , this.counter
         )
         this.counter++;
         // .then(data => result.push)
