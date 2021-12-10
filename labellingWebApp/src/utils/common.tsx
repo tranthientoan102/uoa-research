@@ -22,12 +22,16 @@ export const labelling = async (auth, values) => {
     }
 }
 
-export const getTagsInput = (eleId, isTwitterAcc=false, lowering = true, withWarning=true) => {
+export const getTagsInput = (eleId, isTwitterAcc=false, lowering = true
+                             , withWarning=true
+                             , checkBoxCSS='.chakra-checkbox.css-khpbvo'
+
+) => {
     let tags = []
     let rootEle = document.getElementById(eleId)
     if (rootEle == undefined) return []
 
-    rootEle.querySelectorAll('.chakra-checkbox.css-khpbvo').forEach(de => {
+    rootEle.querySelectorAll(checkBoxCSS).forEach(de => {
         if (de.querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes())
             tags.push(de.querySelector('.chakra-checkbox__label.css-1sgc0qu').innerHTML)
     })
@@ -49,8 +53,30 @@ export const getTagsInput = (eleId, isTwitterAcc=false, lowering = true, withWar
             }
         })
     }
-    // console.log('detect tags: ' + tags)
+    console.log(`${eleId}'s tags: ${tags}`)
     return tags
+}
+
+export const getCheckedItemFromGrid =(eleId, isTwitterAcc=false, lowering = true
+                             , withWarning=true
+                             , gridCSS = '.css-1y0dfcn'
+                             , checkBoxCSS='.chakra-checkbox.css-1uiwwan'
+) => {
+    let tags = []
+    let rootEle = document.getElementById(eleId)
+
+    if (rootEle == undefined) return []
+
+    try{
+        rootEle.querySelector(gridCSS).querySelectorAll(checkBoxCSS).forEach(de => {
+            if (de.querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes())
+                tags.push(de.querySelector('.chakra-checkbox__label.css-1sgc0qu').innerHTML)
+        })
+    }catch (e){}
+
+    console.log(`${eleId}'s tags: ${tags}`)
+    return tags
+
 }
 
 export const getKwInput= (eleId, lowering = true, withWarning=true) => {
@@ -65,13 +91,13 @@ export const getKwInput= (eleId, lowering = true, withWarning=true) => {
         //  "christmas eve" "new year eve"
         for (let tmptmp of tmpSubTags){
             console.log(tmptmp)
-            if (tmptmp.startsWith("\"")) {
+            if (tmptmp.startsWith('"')) {
                 // tmptmp = tmptmp.split("\"")[1]
                 insideQuoteMark = true
             }
             if (insideQuoteMark){
 
-                if (tmptmp.endsWith("\"")) {
+                if (tmptmp.endsWith('"')) {
                     // tmptmp = tmptmp.split("\"")[0]
                     insideQuoteMark = false
                     nonSepaKw += ' ' + tmptmp

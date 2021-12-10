@@ -15,6 +15,6 @@ COPY ./ .
 # Install the dependencies
 RUN pip install -r requirements.txt
 # Run the application in the port 8000
-# uvicorn --host 0.0.0.0 --port 8001 fast_sa:app --reload
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8001", "fast_sa:app"]
+# uvicorn --host 0.0.0.0 --port 8001 fast_sa2:app --reload
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8001", "fast_sa2:app"]
 #CMD ["uvicorn", "fast:app"]
