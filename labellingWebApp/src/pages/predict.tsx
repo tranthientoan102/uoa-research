@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TagsInput2 from "../components/TagsInput2";
 import {
-    convertTimeToString, displayTag, displayTagSentiment, displayTagToxic, explainKws,
+    convertTimeToString, displayTag, displayTagSentiment, displayTagED, explainKws,
     fetchData, getEDPrediction, getKwInput,
     getSAPrediction,
     getTagsInput,
@@ -35,7 +35,7 @@ interface Props {
 }
 
 const Predict = (props) => {
-    const id = 'download'
+    const id = 'Predict'
 
     // const formData = JSON.parse(props.formData);
     // console.log(formData)
@@ -50,7 +50,11 @@ const Predict = (props) => {
         let result = []
         let tweetList = []
 
-        let eventFullList = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate', 'friendly']
+        // let eventFullList = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate', 'friendly']
+        let eventFullList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
+                       'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
+                       'advocary/reform', 'others']
+
         let sentimentFullList = ['negative', 'neutral', 'positive']
         // @ts-ignore
         setData(<Flex my={2} align="center" justify="center" >Loading tweets ...
@@ -83,8 +87,20 @@ const Predict = (props) => {
                               emptyColor="gray.200"
                               color="blue.500"/>
                     </Flex>)
-        let pred_sa = await getSAPrediction(tweetList)
-        let pred_ed = await getEDPrediction(tweetList)
+        // let pred_sa = await getSAPrediction(tweetList)
+        // let pred_ed = await getEDPrediction(tweetList)
+
+        let pred_sa
+        let pred_ed
+        let promise1 = getSAPrediction(tweetList)
+        let promise2 = getEDPrediction(tweetList)
+        await Promise.all([promise1, promise2]).then(data=>{
+            pred_sa= data[0]
+            pred_ed = data[1]
+        })
+
+
+
         // console.log(pred)
 
         for (const i in tweets) {
@@ -108,13 +124,15 @@ const Predict = (props) => {
                     <Flex align="center" justify="center">
                         Sentiment: {displayTagSentiment([pred_sa.data[i]], sentimentFullList)}
                     </Flex>
-                    <Flex align="center" justify="center">
-                        Event: {
-                            (pred_ed.data[i].length>0)? displayTagToxic(pred_ed.data[i], eventFullList)
-                                : displayTagToxic(['friendly'], eventFullList)
-                        }
-                    </Flex>
-
+                    Event:
+                    <Container position="relative" maxW="6xl">
+                        <Grid templateColumns={'repeat(5,auto)'} templateRows={'repeat(3,auto)'} align="center" justify="center">
+                            {
+                                (pred_ed.data[i].length>0)? displayTagED(pred_ed.data[i], eventFullList)
+                                    : displayTagED(['others'], eventFullList)
+                            }
+                        </Grid>
+                    </Container>
                 </Box>
             )
         }

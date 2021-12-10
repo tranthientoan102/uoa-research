@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "./node_modules/.bin/env-cmd -f config/.env next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "dev2": "./node_modules/.bin/env-cmd -f ./config/.env  next dev"
+    "dev2": "./node_modules/.bin/env-cmd -f config/.env.test  next dev",
+    "dev3": "./node_modules/.bin/env-cmd -f ./config/.env.prod  next dev"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.16",

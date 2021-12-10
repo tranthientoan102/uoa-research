@@ -7,7 +7,7 @@ import {
     , host_scrapper, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw
 } from "./db";
 import Axios from "axios";
-import {Tag} from "@chakra-ui/react";
+import {Box, GridItem, Tag} from "@chakra-ui/react";
 
 export const labelling = async (auth, values) => {
     try {
@@ -282,13 +282,20 @@ export const refillData = async (accs:string[], kws:string[][]) => {
 }
 export const getSAPrediction = async (tweetList: string[]) => {
     // let tmp = await Axios.post(`http://${host}:8001/trigger/account`, { list: acc })
-    let tmp = await Axios.post(`http://${host_sa}:${port_sa}/predict`, { text: tweetList })
+
+    let port = host_sa.startsWith('https')?'':`:${port_sa}`
+    console.log(`${host_sa}${port}/predict`)
+    let tmp = await Axios.post(`${host_sa}${port}/predict`, { text: tweetList,headers: {
+	  'Access-Control-Allow-Origin': '*',
+	} })
     return tmp
 }
 
 export const getEDPrediction = async (tweetList: string[]) => {
     // let tmp = await Axios.post(`http://${host}:8001/trigger/account`, { list: acc })
-    let tmp = await Axios.post(`http://${host_ed}:${port_ed}/predict`, { text: tweetList })
+
+    let port = host_ed.startsWith('https')?'':`:${port_ed}`
+    let tmp = await Axios.post(`${host_ed}${port}/predict`, { text: tweetList })
     return tmp
 }
 export const displayTag = (list: string[], fullList:string[]=null, colorScheme='telegram') => {
@@ -300,8 +307,8 @@ export const displayTag = (list: string[], fullList:string[]=null, colorScheme='
     } else{
         for (const i in fullList) {
             if (list.includes(fullList[i]))
-                result.push(<Tag m={1} colorScheme={colorScheme} variant="solid">{fullList[i]}</Tag>)
-            else result.push(<Tag m={1} color={'gray.300'}>{fullList[i]}</Tag>)
+                result.push(<Tag m={1} colorScheme={colorScheme} variant="solid" align="center" justify="center">{fullList[i]}</Tag>)
+            else result.push(<Tag m={1} color={'gray.300'} align="center" justify="center">{fullList[i]}</Tag>)
         }
 
     }
@@ -313,8 +320,8 @@ export const displayTagSentiment = (list: string[], fullList:string[]=null) => {
     else if (list[0] == 'neutral') colorScheme = 'yellow'
     return displayTag(list, fullList, colorScheme)
 }
-export const displayTagToxic = (list: string[], fullList:string[]=null) => {
-    let colorScheme = 'red'
-    if (list[0] == 'friendly') colorScheme = 'green'
+export const displayTagED = (list: string[], fullList:string[]=null) => {
+    let colorScheme = 'orange'
+    // if (list[0] == 'others') colorScheme = 'green'
     return displayTag(list, fullList, colorScheme)
 }

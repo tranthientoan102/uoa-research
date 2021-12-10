@@ -68,7 +68,9 @@ export const getAllLabeller = async (authUser: any) => {
 export const refillDb_acc = async (acc: string) => {
     // console.log(process.env.NEXT_PUBLIC_HOST_SCRAPPER)
     // console.log(process.env.NEXT_PUBLIC_PORT_SCRAPPER)
-    let tmp = await Axios.post(`http://${host_scrapper}:${port_scrapper}/trigger/account`, { list: acc })
+
+    let port = host_scrapper.startsWith('https')?'':`:${port_scrapper}`
+    let tmp = await Axios.post(`${host_scrapper}${port}/trigger/account`, { list: acc })
     return tmp
 }
 export const refillDb_kw = async (kws:string[][], outsideTagIsAND= true) => {
@@ -77,7 +79,9 @@ export const refillDb_kw = async (kws:string[][], outsideTagIsAND= true) => {
 
     // console.log(process.env.NEXT_PUBLIC_HOST_SCRAPPER)
     // console.log(process.env.NEXT_PUBLIC_PORT_SCRAPPER)
-    let tmp = await Axios.post(`http://${host_scrapper}:${port_scrapper}/trigger/keyword`
+
+    let port = host_scrapper.startsWith('https')?'':`:${port_scrapper}`
+    let tmp = await Axios.post(`${host_scrapper}${port}/trigger/keyword`
                                 , {list: kws, outsideTagIsAND: outsideTagIsAND})
     return tmp
 }
@@ -85,8 +89,20 @@ export const refillDb_kw = async (kws:string[][], outsideTagIsAND= true) => {
 export const refillDb_acc_kws = async (acc: string[], kws:string[][], outsideTagIsAND= true) => {
 
     // let data = JSON.stringify({"account": acc, "keyword": kw})
-    let tmp = await Axios.post(`http://${host_scrapper}:${port_scrapper}/trigger/combine`
-                                , {account: acc, keyword: kws, outsideTagIsAND: outsideTagIsAND})
+
+    let port = host_scrapper.startsWith('https')?'':`:${port_scrapper}`
+    // let tmp = await Axios.post(`${host_scrapper}${port}/trigger/combine`
+    //                             , {account: acc, keyword: kws, outsideTagIsAND: outsideTagIsAND})
+
+    let tmp = await Axios(
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            url: `${host_scrapper}${port}/trigger/combine`,
+            data: {account: acc, keyword: kws, outsideTagIsAND: outsideTagIsAND}
+
+    })
+
     return tmp
 }
 // export const searchDb_kw = async(kws: string[])=> {
