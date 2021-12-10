@@ -6,8 +6,8 @@ from torch.utils.data import Dataset, DataLoader
 
 
 import pytorch_lightning as pl
-from pytorch_lightning.metrics.functional import accuracy, f1, auroc
-
+# from pytorch_lightning.metrics.functional import accuracy, f1, auroc
+from torchmetrics.functional import auroc
 
 from transformers import BertTokenizerFast as BertTokenizer, BertModel, AdamW, get_linear_schedule_with_warmup
 

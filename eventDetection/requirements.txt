@@ -4,5 +4,6 @@ numpy
 pandas
 sklearn
 torch
-pytorch-lightning
+torchmetrics
+pytorch-lightning==1.5.5
 transformers
