@@ -81,6 +81,8 @@ def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime)
                 print(f'{tweet.hash}')
                 myfirebase.insertData(tweet)
                 counter += 1
+            elif not myfirebase.checkContentIncluded(tweet.hash, 'query'):
+                myfirebase.update(tweet.hash, {'query': query})
 
             # print(f'current insert: {counter}, trigger again with max id = {maxTweetId}')
 

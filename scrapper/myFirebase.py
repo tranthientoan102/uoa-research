@@ -59,8 +59,18 @@ class MyFirebaseService:
         data.insertDbAt = datetime.datetime.now()
         self.getCollectionRef().document(data.hash).set(data.to_dict())
 
+    def update(self, hash, data):
+        self.getCollectionRef().document(hash).update(data)
+
+
     def checkExisted(self, key):
         return self.getCollectionRef().document(key).get().exists
+
+    def checkContentIncluded(self, key, contentK):
+        data = self.getDoc(key)
+        # return self.getCollectionRef().document(key).get().exists
+        return contentK in data
+        # return data.include
 
     def getDoc(self, key):
         return self.getCollectionRef().document(key).get().to_dict()

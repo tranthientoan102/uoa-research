@@ -12,7 +12,9 @@ WORKDIR /app/src
 # Copy everything from ./src directory to /app in the container
 # COPY ./src .
 COPY ./ .
+RUN rm /app/src/config/firebase_prod.json
 # Install the dependencies
+
 RUN pip install -r requirements.txt
 # Run the application in the port 8000
 # uvicorn --host 0.0.0.0 --port 8000 fast:app --reload
