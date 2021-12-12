@@ -11,9 +11,13 @@ WORKDIR /app/src
 
 # Copy everything from ./src directory to /app in the container
 # COPY ./src .
-COPY ./ .
-# Install the dependencies
-RUN pip install -r requirements.txt
+COPY requirements.txt /app/src
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
+
+ENV modelID=1cumVQw4c8FbnZIQO2pW1yF_GBM9e4v3n
+RUN mkdir models
+RUN gdown --id $modelID -O ./models/sa_best_model_state.bin
+
 # Run the application in the port 8000
 # uvicorn --host 0.0.0.0 --port 8001 fast_sa2:app --reload
 CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8001", "fast_sa2:app"]
