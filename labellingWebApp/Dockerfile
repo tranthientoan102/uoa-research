@@ -16,4 +16,4 @@ COPY . .
 # start app
 #RUN npm run build
 EXPOSE 3000
-CMD npm run dev2
+CMD npm run $profile
