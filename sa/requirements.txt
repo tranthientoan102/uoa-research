@@ -1,8 +1,7 @@
-uvicorn
+uvicorn>=0.16.0
 fastapi
 numpy
 pandas
 sklearn
 torch
-pytorch-lightning
 transformers

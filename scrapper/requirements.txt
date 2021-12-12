@@ -1,6 +1,5 @@
-uvicorn
+uvicorn>=0.16.0
 fastapi
 tweepy>=4.1.0
-selenium
 firebase-admin
 google-auth<2.0dev

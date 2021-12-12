@@ -1,6 +1,15 @@
 /.idea/
 /webApp_bk/
+ed
 test*
 /materials/
+/webApp_bk
+/node_modules
 
-/sa/output/
+**/output/
+*/.idea
+*/*log*
+__pycache__
+**/output/
+**/checkpoints
+**.csv
