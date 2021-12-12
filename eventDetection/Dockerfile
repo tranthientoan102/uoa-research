@@ -12,14 +12,14 @@ WORKDIR /app/src
 # Copy everything from ./src directory to /app in the container
 # COPY ./src .
 COPY requirements.txt /app/src
-RUN #--mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
+#RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 RUN pip install -r requirements.txt
 
 COPY ./ .
 
-ENV modelID=1cumVQw4c8FbnZIQO2pW1yF_GBM9e4v3n
+ENV modelID=1cP2DMfSFbDSwUm3YGMTQOh6C535vGL2w
 RUN mkdir models
-RUN gdown --id 1cumVQw4c8FbnZIQO2pW1yF_GBM9e4v3n -O ./models/ed_best_model_state.bin
+RUN gdown --id $modelID -O ./models/ed_best_model_state.bin
 
 # Run the application in the port 8002
 # uvicorn --host 0.0.0.0 --port 8002 fast_ed2:app --reload
