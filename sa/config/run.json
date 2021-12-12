@@ -8,7 +8,7 @@
         "base_model_name" : "bert-base-uncased",
         "num_labels": 3,
         "max_length": 100,
-        "path": "./model/sa_best_model_state.bin",
+        "path": "./models/sa_best_model_state.bin",
         "runOnCPU": true
     }
 }

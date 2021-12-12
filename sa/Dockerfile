@@ -15,6 +15,8 @@ COPY requirements.txt /app/src
 RUN pip install -r requirements.txt
 #RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 
+COPY . .
+
 ENV modelID=1cumVQw4c8FbnZIQO2pW1yF_GBM9e4v3n
 RUN mkdir models
 RUN gdown --id $modelID -O ./models/sa_best_model_state.bin
