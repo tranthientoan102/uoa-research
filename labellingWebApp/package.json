@@ -3,12 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "./node_modules/.bin/env-cmd -f config/.env next dev",
-    "build": "next build",
+    "dev": "rm .env; cp tmp.env .env;  next dev",
+    "dev2": "rm .env; cp development.env .env;  next dev",
+    "dev3": "rm .env; cp production.env .env;  next dev",
+
+    "build": "rm .env; cp tmp.env .env; next build",
+    "build2": "rm .env; cp development.env .env; next build",
+    "build3": "rm .env; cp production.env .env; next build",
+
+    "buildStart": "npm run build && npm run start",
+    "buildStart2": "npm run build2 && npm run start",
+    "buildStart3": "npm run build3 && npm run start",
     "start": "next start",
-    "lint": "next lint",
-    "dev2": "./node_modules/.bin/env-cmd -f config/.env.test  next dev",
-    "dev3": "./node_modules/.bin/env-cmd -f ./config/.env.prod  next dev"
+    "lint": "next lint"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.16",

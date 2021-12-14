@@ -37,7 +37,7 @@ const formatAuthState = (user: firebase.User): Auth => ({
     roles: ['user']
 })
 
-function userProvideAuth() {
+function UserProvideAuth() {
     const [auth, setAuth] = useState<Auth | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -96,7 +96,7 @@ function userProvideAuth() {
 }
 
 export function AuthProvider({ children }: any) {
-    const auth = userProvideAuth();
+    const auth = UserProvideAuth();
     return <authContext.Provider value={auth}>{children}</authContext.Provider>
 }
 export const useAuth = () => useContext(authContext);

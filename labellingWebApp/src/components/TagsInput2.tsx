@@ -3,6 +3,7 @@ import React from "react";
 import TagsInput from "react-tagsinput";
 import {Button, Checkbox, Container} from "@chakra-ui/react";
 import {explainKws} from "../utils/common";
+import {random} from "nanoid";
 // import 'react-tagsinput/react-tagsinput.css'
 
 
@@ -43,7 +44,7 @@ class TagsInput2 extends React.Component<Props> {
         return (
             <Container id={this.props.id} m={0} p={0}>
                 {this.state.defaultEvents.map(de =>
-                    <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'>
+                    <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue' key={''+random(1)}>
                         {de.name}
                     </Checkbox>)
                 }

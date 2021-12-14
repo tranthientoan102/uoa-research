@@ -29,6 +29,7 @@ import {
 import {downloadData} from "../utils/db";
 
 import TagInput2 from "../components/TagsInput2";
+import TagsInputKws from "../components/TagsInputKws";
 
 interface Props {
     data: string[]
@@ -173,7 +174,7 @@ const Predict = (props) => {
 
                                 <Container mx={2} p={0}>
                                     <Text>Keyword</Text>
-                                    <TagInput2 id="searchKeyPredict" defaultEvents={[]} tags={[]} />
+                                    <TagsInputKws id="searchKeyPredict" tags={[]} outsideIsAND={true}/>
                                 </Container>
 
                                 <div id="isMasked">
