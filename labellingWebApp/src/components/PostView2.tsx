@@ -30,6 +30,7 @@ import TagsInput2 from "./TagsInput2";
 import TagsInputKws from "./TagsInputKws";
 import TweetAnnotation from "./TweetAnnotation";
 import InfiniteScroll from "react-infinite-scroll-component";
+import {random} from "nanoid";
 
 interface Props {
     auth,
@@ -208,7 +209,7 @@ class PostView2 extends React.Component<Props> {
                         >
                             {this.state.items.map(data => (
                                     <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
-                                         id={data.hash}>
+                                         id={data.hash} key={data.hash}>
                                         {isMasked(this.state.auth) ? '' :
                                             <Text color="blue.300">
                                                 <a href={data.orig}>{data.orig}</a>
@@ -228,7 +229,9 @@ class PostView2 extends React.Component<Props> {
 
                                         <div id={data.hash + '_events'}>
                                             {this.state.de.map(de => (
-                                                <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'>
+                                                <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
+                                                    key={data.hash+ '_events'+random(1)}
+                                                >
                                                     {de.name}
                                                 </Checkbox>))
                                             }

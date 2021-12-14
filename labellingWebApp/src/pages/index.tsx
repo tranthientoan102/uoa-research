@@ -36,7 +36,7 @@ const Home = (props) => {
                                 New server for Roche users has been deployed at <br/>
                             <b><a href="http://52.189.248.255:3000/">http://52.189.248.255:3000</a></b><br/>
 
-                            Please switch to new server if you're from Roche.<br/>
+                            Please switch to new server if you&#39;re from Roche.<br/>
                             Thank you
                         </Container>
 

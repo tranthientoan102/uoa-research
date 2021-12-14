@@ -45,6 +45,8 @@ import TweetAnnotation from "./TweetAnnotation";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {CheckIcon, SearchIcon} from "@chakra-ui/icons";
 import {MdCheck, MdCheckCircle, MdSettings} from "react-icons/all";
+import {random} from "nanoid";
+
 
 
 interface Props {
@@ -153,7 +155,8 @@ class PostReviewEle extends React.Component<Props> {
                                         , this.state.auth.email
                                     )
 
-                                    this.state.reviewed= true
+                                    // this.state.reviewed= true
+                                    this.setState({reviewed: true})
                                     this.forceUpdate()
                                 }}
                                 isDisabled={this.state.reviewed}
@@ -168,7 +171,10 @@ class PostReviewEle extends React.Component<Props> {
                     > Dont agree
                         <div id={this.state.hash + '_events'}>
                             {this.state.de.map(de => (
-                                <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue' isDisabled={this.state.reviewed}>
+                                <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
+                                          isDisabled={this.state.reviewed}
+                                          key={this.state.hash + '_events' + random(1)}
+                                >
                                     {de}
                                 </Checkbox>))
                             }
@@ -184,8 +190,8 @@ class PostReviewEle extends React.Component<Props> {
                                         , getTagsInput(this.state.hash + '_events')
                                         , this.state.auth.email
                                     )
-                                    this.state.reviewed= true
-                                    this.forceUpdate()
+                                    this.setState({reviewed: true})
+                                    // this.forceUpdate()
                                 }}
                             >
                                 Negative
@@ -199,7 +205,7 @@ class PostReviewEle extends React.Component<Props> {
                                         , getTagsInput(this.state.hash + '_events')
                                         , this.state.auth.email
                                     )
-                                    this.state.reviewed= true
+                                    this.setState({reviewed: true})
                                     this.forceUpdate()
                                 }}
                             >
@@ -214,7 +220,7 @@ class PostReviewEle extends React.Component<Props> {
                                         , getTagsInput(this.state.hash + '_events')
                                         , this.state.auth.email
                                     )
-                                    this.state.reviewed= true
+                                    this.setState({reviewed: true})
                                     this.forceUpdate()
                                 }}
                             >

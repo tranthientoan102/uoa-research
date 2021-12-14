@@ -294,7 +294,8 @@ export const getSAPrediction = async (tweetList: string[]) => {
 export const getEDPrediction = async (tweetList: string[]) => {
     // let tmp = await Axios.post(`http://${host}:8001/trigger/account`, { list: acc })
 
-    let port = host_ed.startsWith('https')?'':`:${port_ed}`
+    let port = host_ed.startsWith('https') ? '' : `:${port_ed}`
+    console.log(`${host_sa}${port}/predict`)
     let tmp = await Axios.post(`${host_ed}${port}/predict`, { text: tweetList })
     return tmp
 }
@@ -322,6 +323,6 @@ export const displayTagSentiment = (list: string[], fullList:string[]=null) => {
 }
 export const displayTagED = (list: string[], fullList:string[]=null) => {
     let colorScheme = 'orange'
-    // if (list[0] == 'others') colorScheme = 'green'
+    if (list[0] == 'no event detected') colorScheme = 'gray'
     return displayTag(list, fullList, colorScheme)
 }

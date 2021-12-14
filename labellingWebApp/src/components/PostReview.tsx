@@ -17,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import InfiniteScroll from "react-infinite-scroll-component";
 import PostReviewEle from "./PostReviewEle";
+import {random} from "nanoid";
 
 interface Props {
     auth,
@@ -138,6 +139,7 @@ class PostReview extends React.Component<Props> {
                         >
                             {this.state.items.map(data => (
                                 <PostReviewEle auth={this.state.auth}
+                                    key={data.hash + '_events' + random(1)}
                                     hash={data.hash}
                                     isMasked={false}
                                     events={data.event}

@@ -53,7 +53,7 @@ const Predict = (props) => {
         // let eventFullList = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate', 'friendly']
         let eventFullList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
                        'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
-                       'advocary/reform', 'others']
+            'advocary/reform', 'no event detected']
 
         let sentimentFullList = ['negative', 'neutral', 'positive']
         // @ts-ignore
@@ -124,14 +124,17 @@ const Predict = (props) => {
                     <Flex align="center" justify="center">
                         Sentiment: {displayTagSentiment([pred_sa.data[i]], sentimentFullList)}
                     </Flex>
-                    Event:
+
                     <Container position="relative" maxW="6xl">
-                        <Grid templateColumns={'repeat(5,auto)'} templateRows={'repeat(3,auto)'} align="center" justify="center">
-                            {
+
+                        <Flex flexDirection="row" flexWrap="wrap"
+                            // templateColumns={'repeat(5,auto)'}
+                              templateRows={'repeat(3,auto)'} align="center" justify="center">
+                            Event:{
                                 (pred_ed.data[i].length>0)? displayTagED(pred_ed.data[i], eventFullList)
-                                    : displayTagED(['others'], eventFullList)
+                                    : displayTagED(['no event detected'], eventFullList)
                             }
-                        </Grid>
+                        </Flex>
                     </Container>
                 </Box>
             )
