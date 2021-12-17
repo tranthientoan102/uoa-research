@@ -9,7 +9,7 @@ import json
 
 # Press the green button in the gutter to run the script.
 
-def run(runConfig, scrapFrom='twitter'):
+def run(runConfig, scrapFrom='twitter', demoMode=False):
 
     auth = tweepy.OAuthHandler(
             runConfig[scrapFrom]["auth"]["consumer_key"]
@@ -55,14 +55,19 @@ def run(runConfig, scrapFrom='twitter'):
                        , []
                        , runConfig[scrapFrom]['outsideTagIsAND']
                        , runConfig[scrapFrom]['tweetLoad']
-                       , datetime.now())
-    else:
+                       , datetime.now()
+                       , demoMode)
+    elif runMode=='keyword':
         subRun_acc_kws(api, myfirebase
                        , runConfig[scrapFrom]['account'][0]
                        , runConfig[scrapFrom]['keyword']
                        , runConfig[scrapFrom]['outsideTagIsAND']
                        , runConfig[scrapFrom]['tweetLoad']
                        , datetime.now())
+    elif runMode == 'full':
+        subRun_acc_kws_full(api, myfirebase)
+    else:
+        subRun_acc_kws_30(api, myfirebase)
 
 def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime):
     query = buildQuery(kws, outsideTagIsAND )
@@ -95,11 +100,11 @@ def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime)
     print(f'done scrapping {counter} tweets with keywords {kws} in {(endTime - startTime).total_seconds()}s')
 
 
-def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, startTime):
+def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, startTime, demoMode):
     counter = 0
     query = f'({buildQuery(kws, outsideTagIsAND )}) (from:{acc})'
     maxTweetId = None
-    print(f'init Tweepy search: @{acc} with {kws}')
+    print(f'init Tweepy search: acc=@{acc} with {kws=}')
     toDate = datetime.now()
     try:
         iter=0
@@ -113,29 +118,35 @@ def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, s
                     # , exclude_replies = True
                     ).items(expectingCount * 3):
 
-            # query = f'({" OR ".join(kws)}) (from:{acc}) (until:{toDate.year}-{toDate.month}-{toDate.day})'
-            # print(f'{query=}')
-            # for status in tweepy.Cursor(api.search
-            #         , q=query
-            #         # , screen_name=acc
-            #         , tweet_mode="extended"
-            #         # , max_id= maxTweetId
-            #         # , exclude_replies = True
-            #         ).items(expectingCount * 3):
+                # query = f'({" OR ".join(kws)}) (from:{acc}) (until:{toDate.year}-{toDate.month}-{toDate.day})'
+                # print(f'{query=}')
+                # for status in tweepy.Cursor(api.search
+                #         , q=query
+                #         # , screen_name=acc
+                #         , tweet_mode="extended"
+                #         # , max_id= maxTweetId
+                #         # , exclude_replies = True
+                #         ).items(expectingCount * 3):
 
                 totalCounter += 1
                 tweet = MyTweet2().parse(status._json, buildQuery(kws, outsideTagIsAND))
+                
+                if demoMode:
+                    print(tweet.to_dict())
+                    # print(toDate.)
+                else:
+                    if checkTextIncludeKeywords(tweet.text, kws) and not myfirebase.checkExisted(tweet.hash):
+                        print(f'{tweet.hash}')
+                        myfirebase.insertData(tweet)
+                        counter +=1
+                    if maxTweetId is None:
+                        maxTweetId = tweet.id
+                    else:
+                        maxTweetId = min(maxTweetId, tweet.id)
+                    # toDate = min(toDate, tweet.postAt)
 
-
-                if checkTextIncludeKeywords(tweet.text, kws) and not myfirebase.checkExisted(tweet.hash):
-                    print(f'{tweet.hash}')
-                    myfirebase.insertData(tweet)
-                    counter +=1
-                if (maxTweetId == None): maxTweetId = tweet.id
-                else: maxTweetId = min(maxTweetId, tweet.id)
-                # toDate = min(toDate, tweet.postAt)
-
-                if (counter >= expectingCount): break
+                    if counter >= expectingCount:
+                        break
 
             iter +=1
             print(f'current insert: {counter}, trigger again with max id = {maxTweetId} (found total {totalCounter})')
@@ -146,6 +157,64 @@ def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, s
 
     endTime = datetime.now()
     print(f'done scrapping {counter} tweets from @{acc} with {kws} in {(endTime - startTime).total_seconds()}s')
+
+def subRun_acc_kws_full(api, myfirebase
+                        # , acc, kws, outsideTagIsAND, expectingCount, startTime, demoMode
+                        ):
+    counter = 0
+    # query = f'({buildQuery(kws, outsideTagIsAND )}) (from:{acc})'
+    maxTweetId = None
+    print(f'init Tweepy search FULL')
+    kws='"national medicine policies"'
+    expectingCount = 100
+    toDate = datetime.now()
+    try:
+        iter=0
+        totalCounter = 0
+        while (iter < 1):
+            for status in tweepy.Cursor(api.search_full_archive
+                    , label='aiml'
+                    , query=kws
+                    , fromDate='201101012315'
+                    # , tweet_mode="extended"
+                    # , max_id=maxTweetId
+                                        # , exclude_replies = True
+            ).items(expectingCount * 3):
+                # tweet = MyTweet2().parse(status._json, kws)
+                # print(tweet.to_dict())
+                print(status)
+    except Exception as e:
+        print(e)
+
+def subRun_acc_kws_30(api, myfirebase
+                        # , acc, kws, outsideTagIsAND, expectingCount, startTime, demoMode
+                        ):
+    counter = 0
+    # query = f'({buildQuery(kws, outsideTagIsAND )}) (from:{acc})'
+    maxTweetId = None
+    print(f'init Tweepy search 30 days')
+    kws='"apple"'
+    expectingCount = 100
+    toDate = datetime.now()
+    try:
+
+        totalCounter = 0
+        f = open('./output/my_file.txt', 'w')
+        for status in tweepy.Cursor(api.search_30_day
+                , label='30days'
+                , query=kws
+                # , fromDate='201101012315'
+                # , tweet_mode="extended"
+                # , max_id=maxTweetId
+                                    # , exclude_replies = True
+        ).items(1000):
+            # tweet = MyTweet2().parse(status._json, kws)
+            # print(tweet.to_dict())
+            f.write(str(status))
+            print('...')
+    except Exception as e:
+        print(e)
+
 
 def checkTextIncludeKeywords(text, keywords):
     result = False
@@ -172,4 +241,11 @@ def buildQuery( kwTags, outsideTagIsAND):
 if __name__ == '__main__':
     with open('./config/run.json') as f:
         runconfig = json.load(f)
-    run(runconfig)
+        runconfig['twitter']['runMode'] = '30'
+        # runconfig['twitter']['account'] = ['elonmusk']
+        run(runconfig, demoMode=True)
+
+        # runconfig['twitter']['runMode'] = 'keyword'
+        # runconfig['twitter']['keyword'] = [['"medicine policy"']]
+        # run(runconfig, demoMode=True)
+

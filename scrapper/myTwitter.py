@@ -5,7 +5,6 @@ import json
 from selenium.webdriver.remote.webelement import WebElement
 
 
-
 def buildTwitterUrl_search(keywords, hashtags=None):
     base = 'https://twitter.com/search?q='
     addup = buildQueryPart(keywords)
@@ -17,16 +16,16 @@ def buildTwitterUrl_search(keywords, hashtags=None):
 def buildTwitterUrl_account(accs):
     return [f'https://twitter.com/{acc}' for acc in accs]
 
-def buildTwitterUrl_advanced(accs, keywords, withBase = False, filterReplies = True):
 
+def buildTwitterUrl_advanced(accs, keywords, withBase=False, filterReplies=True):
     result = []
     base = 'https://twitter.com/search?q='
     for acc in accs:
-        addup =''
-        if (keywords != None):
+        addup = ''
+        if keywords is not None:
             addup += f'{buildQueryPart(keywords)}'
 
-        if (acc != None):
+        if acc != None:
             addup += f' from:{acc}'
 
         if filterReplies:
@@ -38,8 +37,7 @@ def buildTwitterUrl_advanced(accs, keywords, withBase = False, filterReplies = T
     return result
 
 
-
-def buildQueryPart(queryParts, translate = True):
+def buildQueryPart(queryParts, translate=True):
     result = ''
     if len(queryParts) >= 1:
         result = f"{' OR '.join(queryParts)}"
@@ -67,9 +65,7 @@ class MyTweet:
     #     info = json.loads(infoStr)
     #     print(info)
 
-
-
-    def __init__(self, webEle: WebElement, mainTarget:str, configPath='./config/cssSelector.json'):
+    def __init__(self, webEle: WebElement, mainTarget: str, configPath='./config/cssSelector.json'):
         with open(configPath) as f:
             config = json.load(f)
 
@@ -102,25 +98,26 @@ class MyTweet:
             , 'insertDbAt': self.insertDbAt
         }
 
+
 class MyTweet2:
     def __init__(self):
-        self.account=None
-        self.id= None
-        self.orig=None
-        self.postAt=None
-        self.hash=None
-        self.text=None
+        self.account = None
+        self.id = None
+        self.orig = None
+        self.postAt = None
+        self.hash = None
+        self.text = None
         self.query = ''
-        self.rating=None
-        self.event=[]
-        self.labelledBy=None
-        self.insertDbAt=None
+        self.rating = None
+        self.event = []
+        self.labelledBy = None
+        self.insertDbAt = None
 
     def parse(self, initDict, query):
         if 'retweeted_status' in initDict.keys():
             self.parse(initDict['retweeted_status'], query=query)
         else:
-            self.account = ['@'+initDict['user']['screen_name'].lower()]
+            self.account = ['@' + initDict['user']['screen_name'].lower()]
             self.id = initDict['id']
             self.orig = f'https://twitter.com/{initDict["user"]["screen_name"]}/status/{self.id}'
             dt = initDict['created_at'].split(' ')
@@ -134,36 +131,43 @@ class MyTweet2:
             self.insertDbAt = None
         return self
 
-    def parseFromCSV(self, csvData: []):
+    def parseFromCSV(self, csvData: list):
         i = 0
-        self.hash = csvData[i]; i += 1
-        self.account = csvData[i]; i += 1
+        self.hash = csvData[i];
+        i += 1
+        self.account = csvData[i];
+        i += 1
         # 2021-11-13T01:25:11.000Z
         # tmpTime = csvData[i]; i += 1
-        self.postAt = datetime.strptime(csvData[i],  '%Y-%m-%dT%H:%M:%S.%fZ'); i += 1
-        self.insertDbAt = datetime.strptime(csvData[i], '%Y-%m-%dT%H:%M:%S.%fZ'); i += 1
-        self.text = csvData[i]; i += 1
+        self.postAt = datetime.strptime(csvData[i], '%Y-%m-%dT%H:%M:%S.%fZ');
+        i += 1
+        self.insertDbAt = datetime.strptime(csvData[i], '%Y-%m-%dT%H:%M:%S.%fZ');
+        i += 1
+        self.text = csvData[i];
+        i += 1
         if (len(csvData[i]) > 0):
             # print(csvData[i].length > 0)
             self.event = csvData[i].split(',')
-        i+=1
-        self.rating = csvData[i]; i += 1
+        i += 1
+        self.rating = csvData[i]
+        i += 1
         self.labelledBy = csvData[i]
         return self
 
     def to_dict(self):
         return {
-            'account'       : self.account
-            , 'orig'        : self.orig
-            , 'postAt'      : self.postAt
-            , 'hash'        : self.hash
-            , 'text'        : self.text
-            , 'query'       : self.query
-            , 'rating'      : self.rating
-            , 'event'       : self.event
-            , 'labelledBy'  : self.labelledBy
-            , 'insertDbAt'  : self.insertDbAt
+            'account'     : self.account
+            , 'orig'      : self.orig
+            , 'postAt'    : self.postAt
+            , 'hash'      : self.hash
+            , 'text'      : self.text
+            , 'query'     : self.query
+            , 'rating'    : self.rating
+            , 'event'     : self.event
+            , 'labelledBy': self.labelledBy
+            , 'insertDbAt': self.insertDbAt
         }
+
 
 if __name__ == '__main__':
     # test = MyTweet("""test
@@ -185,5 +189,3 @@ if __name__ == '__main__':
     text = 'sahealth'
     obj = md5(text.encode()).hexdigest()
     print(f'{obj=}')
-
-
