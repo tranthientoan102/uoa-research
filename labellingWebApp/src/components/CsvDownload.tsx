@@ -1,6 +1,14 @@
 import React, {Component} from 'react';
 import {CSVLink} from "react-csv";
-import {convertTimeToString, encrypting, getTagsInput, isAdmin, isMasked, maskPersonalDetails} from "../utils/common";
+import {
+    convertDate,
+    convertTimeToString,
+    encrypting,
+    getTagsInput,
+    isAdmin,
+    isMasked,
+    maskPersonalDetails
+} from "../utils/common";
 import {downloadData} from "../utils/db";
 import {Button, SimpleGrid} from "@chakra-ui/react";
 
@@ -20,22 +28,27 @@ const headers = [
     { label: "review1rating", key: "review1rating" },
     { label: "review1event", key: "review1event" },
     { label: "review1by", key: "review1by" },
+    { label: 'review1At', key:'review1At'},
 
     { label: "review2rating", key: "review2rating" },
     { label: "review2event", key: "review2event" },
     { label: "review2by", key: "review2by" },
+    { label: 'review2At', key:'review2At'},
 
     { label: "review3rating", key: "review3rating" },
     { label: "review3event", key: "review3event" },
     { label: "review3by", key: "review3by" },
+    { label: 'review3At', key:'review3At'},
 
     { label: "review4rating", key: "review4rating" },
     { label: "review4event", key: "review4event" },
     { label: "review4by", key: "review4by" },
+    { label: 'review4At', key:'review4At'},
 
     { label: "review5rating", key: "review5rating" },
     { label: "review5event", key: "review5event" },
     { label: "review5by", key: "review5by" },
+    { label: 'review5At', key:'review5At'},
 
 ];
 
@@ -75,21 +88,31 @@ class CsvDownload extends Component<Props> {
                     a.text = maskPersonalDetails(a.text, a.masking)
                 }
 
+                if (a.reviewedAt == undefined){
+                    a.reviewedAt=[]
+                    for (let i =0; i < a.reviewCount; i++){
+                        a.reviewedAt.push(null)
+                    }
+                }
+
                 if ( a.reviewedBy && a.reviewedBy.length > 5) {
                     a.reviewedBy = a.reviewedBy.slice(-5)
                     a.reviewedRating = a.reviewedRating.slice(-5)
                     a.reviewedEvent = a.reviewedEvent.slice(-5)
+                    a.reviewedAt = a.reviewedAt.slice(-5)
                 }else if ( a.reviewedBy && a.reviewedBy.length < 5){
                     let missing = 5-a.reviewedBy.length
                     for (let i = 0; i < missing; i++){
                         a.reviewedBy.push(null)
                         a.reviewedRating.push(null)
                         a.reviewedEvent.push(null)
+                        a.reviewedAt.push(null)
                     }
                 }else {
                     a.reviewedBy = [null,null,null,null,null]
                     a.reviewedRating = [null,null,null,null,null]
                     a.reviewedEvent = [null,null,null,null,null]
+                    a.reviewedAt = [null,null,null,null,null]
                 }
 
                 a.review1rating = a.reviewedRating[0]
@@ -109,6 +132,13 @@ class CsvDownload extends Component<Props> {
                 a.review3by = a.reviewedBy[2]
                 a.review4by = a.reviewedBy[3]
                 a.review5by = a.reviewedBy[4]
+
+                // console.log(a.reviewedAt)
+                a.review1At = convertTimeToString(a.reviewedAt[0])
+                a.review2At = convertTimeToString(a.reviewedAt[1])
+                a.review3At = convertTimeToString(a.reviewedAt[2])
+                a.review4At = convertTimeToString(a.reviewedAt[3])
+                a.review5At = convertTimeToString(a.reviewedAt[4])
 
 
             })

@@ -349,19 +349,29 @@ export const updateReview = async (auth, hash, rating, events, email) =>{
         let data = (await dataRef.get()).data()
 
         let reviewData = {test:4444}
-        if (data.reviewCount) {
+        if (data.reviewCount > 0) {
+
+            if (data.reviewedAt == undefined){
+                data.reviewedAt=[]
+                for (let i =0; i < data.reviewCount; i++){
+                    data.reviewedAt.push(null)
+                }
+            }
+
             await dataRef.update({
                 reviewCount: data.reviewCount+1
                 , reviewedRating: data.reviewedRating.concat(rating)
                 , reviewedEvent: data.reviewedEvent.concat(events.join(','))
                 , reviewedBy: data.reviewedBy.concat(email)
+                , reviewedAt: data.reviewedAt.concat((new Date()))
             })
         }else{
             await dataRef.update({
-                reviewCount: 1
+                reviewCount: data.reviewCount+1
                 , reviewedRating: [rating]
                 , reviewedEvent: [events.join(',')]
                 , reviewedBy: [email]
+                , reviewedAt: [new Date()]
             })
 
         }
@@ -370,7 +380,7 @@ export const updateReview = async (auth, hash, rating, events, email) =>{
         //     // const doc = await t.get(dataRef)
         //     await t.set(dataRef, reviewData)
         // })
-        await dataRef.update({...reviewData})
+        // await dataRef.update({...reviewData})
         console.log('Transaction success');
 
     }catch (e){

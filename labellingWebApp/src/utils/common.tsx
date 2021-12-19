@@ -8,6 +8,7 @@ import {
 } from "./db";
 import Axios from "axios";
 import {Box, GridItem, Tag} from "@chakra-ui/react";
+import dateformat from "dateformat";
 
 export const labelling = async (auth, values) => {
     try {
@@ -135,9 +136,14 @@ export const explainKws = (eleId, lowering=true, outsideTagIsAND = true ) => {
     }
 }
 
+// const dateformat = require('dateformat');
 export const convertTimeToString = (time) => {
-    let tmp = new Date(time['seconds'] * 1000)
-    return tmp.toISOString()
+    if (time) {
+        let tmp = new Date(time['seconds'] * 1000)
+        // return tmp.toISOString()
+        return dateformat(tmp, "yyyy-mm-dd'T'HH:MM:sso")
+    }
+    else return 'null'
     // return `${tmp.toLocaleString('%Y-%b-%d')} ${tmp.toLocaleTimeString()}`
 
 }
@@ -325,4 +331,12 @@ export const displayTagED = (list: string[], fullList:string[]=null) => {
     let colorScheme = 'orange'
     if (list[0] == 'no event detected') colorScheme = 'gray'
     return displayTag(list, fullList, colorScheme)
+}
+
+export const convertDate = (input) => {
+    let result = null
+    if (input){
+        result = new Date(input['seconds'] * 1000)
+    }
+    return result
 }

@@ -6,11 +6,9 @@
     "dev": "rm .env; cp tmp.env .env;  next dev",
     "dev2": "rm .env; cp development.env .env;  next dev",
     "dev3": "rm .env; cp production.env .env;  next dev",
-
     "build": "rm .env; cp tmp.env .env; next build",
     "build2": "rm .env; cp development.env .env; next build",
     "build3": "rm .env; cp production.env .env; next build",
-
     "buildStart": "npm run build && npm run start",
     "buildStart2": "npm run build2 && npm run start",
     "buildStart3": "npm run build3 && npm run start",
@@ -25,6 +23,8 @@
     "@pathofdev/react-tag-input": "^1.0.7",
     "@yaireo/tagify": "^4.7.2",
     "axios": "^0.21.4",
+    "const": "^1.0.0",
+    "dateformat": "^5.0.2",
     "env-cmd": "^10.1.0",
     "firebase": "^8.10.0",
     "firebase-admin": "^9.11.1",

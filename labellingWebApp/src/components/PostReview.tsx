@@ -139,7 +139,7 @@ class PostReview extends React.Component<Props> {
                         >
                             {this.state.items.map(data => (
                                 <PostReviewEle auth={this.state.auth}
-                                    key={data.hash + '_events' + random(1)}
+                                    key={data.hash}
                                     hash={data.hash}
                                     isMasked={false}
                                     events={data.event}
