@@ -233,7 +233,19 @@ export const maskPersonalDetails_names = (text:string, names:string[]) =>{
     if (names != null) {
         // console.log(`masking names: ${names.join(',')}`)
         names.forEach(name => {
-            text = text.replace(new RegExp(name,'gi'), "✱✱✱")
+            try{
+                let pattern = name
+                if (pattern.includes('+')) {
+                    pattern = pattern.replaceAll('+', '\\+')
+                    console.log(pattern)
+                }
+                if (pattern.includes('-')) pattern = pattern.replaceAll('-', '\\-')
+
+                text = text.replace(new RegExp(pattern,'gi'), "✱✱✱")
+            } catch (e){
+                toast.error(`masking fail: ${name}`, {autoClose:false})
+            }
+
         })
     }
     return text
