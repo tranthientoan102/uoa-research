@@ -119,7 +119,6 @@ class PostReviewEle extends React.Component<Props> {
 
                         <Tag colorScheme={"twitter"} mr={2} p={0}
                                 borderRadius={100}
-                                // pr={this.state.isMasked ?0: 2}
                         >
                             <SocialIcon network="twitter" style={{ height: 32, width: 32 }} />
                             <Text justify="center"
@@ -138,8 +137,7 @@ class PostReviewEle extends React.Component<Props> {
                     {this.state.hash}
                 </Text>
                 <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
-                    {/*{this.state.isMasked ? maskPersonalDetails_AtSign(this.state.text) : this.state.text}*/}
-                    {this.state.text}
+                    {this.state.isMasked ? maskPersonalDetails_AtSign(this.state.text) : this.state.text}
                 </Text>
                 <Grid templateColumns='repeat(4, 1fr)' my={3} color={"gray.600"} gap={2}>
                     <p>rating: <br/>{this.state.rating}</p>
