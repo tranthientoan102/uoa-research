@@ -18,10 +18,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import InfiniteScroll from "react-infinite-scroll-component";
 import PostReviewEle from "./PostReviewEle";
 import {random} from "nanoid";
+import {isChecked} from "../utils/common";
 
 interface Props {
     auth,
-    labelledBy: string[]
+    labelledBy: string[],
 
 }
 
@@ -48,7 +49,7 @@ class PostReview extends React.Component<Props> {
         loadEachTime: 10,
         de: this.getDE(),
         hasMore: true,
-        loading: false,
+        loading: true,
     }
 
     constructor(props) {
@@ -92,9 +93,14 @@ class PostReview extends React.Component<Props> {
             , 3
             , this.postAfter
         )
-
+        this.setState({
+                loading: true
+            })
 
         this.counter++;
+        // this.setState({
+        //         loading: true
+        //     })
         // .then(data => result.push)
         // .finally(() => {
         //     console.log(`displaying ${result.length} items`)
@@ -141,7 +147,7 @@ class PostReview extends React.Component<Props> {
                                 <PostReviewEle auth={this.state.auth}
                                     key={data.hash}
                                     hash={data.hash}
-                                    isMasked={false}
+                                    isMasked={isChecked('isMasked')}
                                     events={data.event}
                                     orig={data.orig}
                                     de={this.state.de}
@@ -157,9 +163,14 @@ class PostReview extends React.Component<Props> {
                         </InfiniteScroll>
                         <Flex my={2} align="center" justify="center">
                             {this.state.loading ? <Spinner size="xl" m={1} thickness="10px"
-                                speed="0.65s"
-                                emptyColor="gray.200"
-                                color="blue.500" /> : ''}
+                                    speed="0.65s"
+                                    emptyColor="gray.200"
+                                    color="blue.500"
+                                /> : (
+                                        <Container position="relative" maxW="8xl" align="center" justify="center">
+                                            <Text fontWeight={600} fontSize='2xl' m={10}>End of annotations</Text>
+                                        </Container>
+                            )}
                         </Flex>
 
                     </SimpleGrid>
