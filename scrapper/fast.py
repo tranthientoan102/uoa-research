@@ -4,10 +4,8 @@ import traceback
 from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import multiprocessing
-import main
+
 import main2
-import main3
-import myFirebase
 
 class MyFast (FastAPI):
     cache = {}
