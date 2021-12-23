@@ -271,14 +271,14 @@ export const fetchData = async (accs: string[], kws:string[][], limit= 25
     }
     if ((refillCounter == 0) && (isOldData || !isReachLimit)) {
         toast.info('Auto scrapping latest tweets', { autoClose: 20000 })
-        refillData(accs,kws)
+        refillData(accs,kws, isChecked('isPremium'))
     }
 
     console.log(`fetched ${res.length} tweets`)
     return res;
 
 }
-export const refillData = async (accs:string[], kws:string[][]) => {
+export const refillData = async (accs:string[], kws:string[][], isPremium: boolean) => {
     // setData("...preparing db...")
     //
     // let accs = getTagsInput('searchAcc',true)
@@ -288,10 +288,10 @@ export const refillData = async (accs:string[], kws:string[][]) => {
 
     if (accs.length > 0 && kws.length > 0) {
         // refillDbWithAccount(accs.join(','))
-        refillDb_acc_kws(accs, kws)
+        refillDb_acc_kws(accs, kws, isPremium)
     } else {
         if (accs.length > 0) refillDb_acc(accs.join(','))
-        else if (kws.length > 0) refillDb_kw(kws)
+        else if (kws.length > 0) refillDb_kw(kws, isPremium)
         else {
             toast.error('Please check your input')
             // isWaiting = false

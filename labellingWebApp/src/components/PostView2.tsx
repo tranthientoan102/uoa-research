@@ -81,7 +81,7 @@ class PostView2 extends React.Component<Props> {
         auth: this.props.auth,
 
         items: [],
-        loadEachTime: 10,
+        loadEachTime: 3,
         de: this.getDE(),
         hasMore: true,
         loading: false,
@@ -165,35 +165,30 @@ class PostView2 extends React.Component<Props> {
                             />
                         </Container>
 
+                    </Flex>
+                    <Flex my={2} align="center" justify="center">
                         <div id="isMasked">
                             {isAdmin(this.state.auth) ?
                                 <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
                                 : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
                             }
                         </div>
+                        <div id="isPremium">
+
+                                <Checkbox colorScheme='blue' isDisabled={!isAdmin(this.state.auth)} mx={2} color={'twitter.600'}>
+                                    <b>PREMIUM SEARCH</b>
+                                </Checkbox>
+
+                        </div>
                         <Button
                             m={3}
                             onClick={() => {
-                                // this.setState({
-                                //     items: []
-                                //     , loading: true
-                                //     , postAfter: new Date()
-                                // })
                                 this.counter=0;
                                 this.fetchMoreData()
-
                             }}
-                            // colorScheme="blue"
-                            // background="gray"
-                            // color="lightgreen"
-                            // onClick={() => process(
-                            //     getTagsInput('searchAcc', true)
-                            //     , getKwInput('searchKey', false)
-                            // )}
                         >
                             <p>Load more</p>
                         </Button>
-
                     </Flex>
 
 
@@ -230,7 +225,7 @@ class PostView2 extends React.Component<Props> {
                                         <div id={data.hash + '_events'}>
                                             {this.state.de.map(de => (
                                                 <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
-                                                    key={data.hash+ '_events'+random(1)}
+                                                    key={data.hash+ '_events_' + de.name}
                                                 >
                                                     {de.name}
                                                 </Checkbox>))
