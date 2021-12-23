@@ -49,7 +49,7 @@ def run(runConfig, scrapFrom='twitter', demoMode=False):
                    , runConfig[scrapFrom]['outsideTagIsAND']
                    , runConfig[scrapFrom]['tweetLoad']
                    , datetime.now())
-    elif runMode=='account':
+    elif runMode == 'account':
         subRun_acc_kws(api, myfirebase
                        , runConfig[scrapFrom]["account"][0]
                        , []
@@ -57,7 +57,7 @@ def run(runConfig, scrapFrom='twitter', demoMode=False):
                        , runConfig[scrapFrom]['tweetLoad']
                        , datetime.now()
                        , demoMode)
-    elif runMode=='keyword':
+    elif runMode == 'combine':
         subRun_acc_kws(api, myfirebase
                        , runConfig[scrapFrom]['account'][0]
                        , runConfig[scrapFrom]['keyword']
@@ -65,7 +65,15 @@ def run(runConfig, scrapFrom='twitter', demoMode=False):
                        , runConfig[scrapFrom]['tweetLoad']
                        , datetime.now())
     elif runMode == 'full':
-        subRun_acc_kws_full(api, myfirebase)
+        acc = runConfig[scrapFrom][runMode]['account'][0] if len(runConfig[scrapFrom][runMode]['account']) > 0 else ''
+        subRun_acc_kws_full(api, myfirebase
+                            , acc
+                            , runConfig[scrapFrom][runMode]['keyword']
+                            , runConfig[scrapFrom]['outsideTagIsAND']
+                            , runConfig[scrapFrom][runMode]['tweetLoad']
+                            , datetime.now()
+                            , False
+                            )
     else:
         subRun_acc_kws_30(api, myfirebase)
 
@@ -100,7 +108,7 @@ def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime)
     print(f'done scrapping {counter} tweets with keywords {kws} in {(endTime - startTime).total_seconds()}s')
 
 
-def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, startTime, demoMode):
+def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, startTime, demoMode=False):
     counter = 0
     query = f'({buildQuery(kws, outsideTagIsAND )}) (from:{acc})'
     maxTweetId = None
@@ -159,30 +167,50 @@ def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, s
     print(f'done scrapping {counter} tweets from @{acc} with {kws} in {(endTime - startTime).total_seconds()}s')
 
 def subRun_acc_kws_full(api, myfirebase
-                        # , acc, kws, outsideTagIsAND, expectingCount, startTime, demoMode
+                            , acc, kws, outsideTagIsAND, expectingCount, startTime, demoMode
                         ):
     counter = 0
     # query = f'({buildQuery(kws, outsideTagIsAND )}) (from:{acc})'
     maxTweetId = None
-    print(f'init Tweepy search FULL')
-    kws='"national medicine policies"'
-    expectingCount = 100
-    toDate = datetime.now()
+
+    queryKws = buildQuery(kws, outsideTagIsAND )
+    fromAcc = f'(from:{acc})' if len(acc) > 0 else ''
+    query = f'{queryKws} {fromAcc}'
+
+    print(f'init Tweepy search FULL: {query}')
+    # toDate = datetime.now()
     try:
-        iter=0
-        totalCounter = 0
-        while (iter < 1):
-            for status in tweepy.Cursor(api.search_full_archive
-                    , label='aiml'
-                    , query=kws
-                    , fromDate='201101012315'
-                    # , tweet_mode="extended"
-                    # , max_id=maxTweetId
-                                        # , exclude_replies = True
-            ).items(expectingCount * 3):
-                # tweet = MyTweet2().parse(status._json, kws)
-                # print(tweet.to_dict())
-                print(status)
+        # iter=0
+        totalCounter=0
+        counter = 0
+        # while (iter < 1):
+        for status in tweepy.Cursor(api.search_full_archive
+                                        , label='aiml'
+                                        , query=query
+                                        , fromDate='201501010000'
+                                        , maxResults= expectingCount
+                                        # , tweet_mode="extended"
+                                    ).items(expectingCount):
+            # tweet = MyTweet2().parse(status._json, kws)
+            # print(tweet.to_dict())
+            totalCounter += 1
+            if demoMode:
+                fname = datetime.now()
+                with open(f'./output/{fname}.txt', 'w') as file:
+                    file.write(f'{str(status)}\n')
+            else:
+                try:
+                    tweet = MyTweet2().parse(status._json, query)
+                    if not myfirebase.checkExisted(tweet.hash):
+                        print(f'{queryKws} -> {tweet.hash}')
+                        myfirebase.insertData(tweet)
+                        counter += 1
+                except Exception as e:
+                    fname = datetime.now()
+                    with open(f'./output/exception_{fname}.txt', 'w') as file:
+                        file.write(f'{status._json}\n{e}\n\n')
+        print(f'inserted {counter}/{totalCounter} tweets ')
+
     except Exception as e:
         print(e)
 
@@ -238,14 +266,36 @@ def buildQuery( kwTags, outsideTagIsAND):
             result.append(f'({tmp})' )
         return ' OR '.join(result)
 
+def testAccQuota():
+    with open('./config/run.json') as f:
+        runConfig = json.load(f)
+        scrapFrom= 'twitter'
+        auth = tweepy.OAuthHandler(
+                runConfig[scrapFrom]["auth"]["consumer_key"]
+                , runConfig[scrapFrom]["auth"]["consumer_secret"]
+        )
+        auth.set_access_token(
+                runConfig[scrapFrom]["auth"]["access_token"]
+                , runConfig[scrapFrom]["auth"]["access_token_secret"]
+        )
+
+        api = tweepy.API(auth)
+        print(api.rate_limit_status())
+
+
+
 if __name__ == '__main__':
     with open('./config/run.json') as f:
         runconfig = json.load(f)
-        runconfig['twitter']['runMode'] = '30'
+        runconfig['twitter']['runMode'] = 'full'
         # runconfig['twitter']['account'] = ['elonmusk']
-        run(runconfig, demoMode=True)
+        runconfig['twitter']['full']['account'] = ''
+        runconfig['twitter']['full']['keyword'] = [["\"International Micronutrient Malnutrition Prevention\""]]
+        run(runconfig, demoMode=False)
 
         # runconfig['twitter']['runMode'] = 'keyword'
         # runconfig['twitter']['keyword'] = [['"medicine policy"']]
         # run(runconfig, demoMode=True)
+
+    # testAccQuota()
 

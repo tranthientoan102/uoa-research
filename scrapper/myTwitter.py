@@ -124,7 +124,14 @@ class MyTweet2:
             dt2 = f'{dt[1]} {dt[2]} {dt[5]} {dt[3]}'
             self.postAt = datetime.strptime(dt2, '%b %d %Y %H:%M:%S')
             # print(f'converting {dt2} -> {self.postAt}')
-            self.text = initDict['full_text']
+
+            tmpText = ''
+            if 'full_text' in initDict.keys(): tmpText = initDict['full_text']
+            elif 'extended_tweet' in initDict.keys() : tmpText = initDict['extended_tweet']['full_text']
+            else: tmpText = initDict['text']
+            self.text = tmpText
+
+
             self.query = query
             self.rating = -10
             self.hash = md5(self.text.encode()).hexdigest()

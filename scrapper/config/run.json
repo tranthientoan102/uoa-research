@@ -16,12 +16,22 @@
         "keyword": [
             "sydney"
         ],
-        "full": [
-            ""
-        ],
-        "30days": [
-            ""
-        ],
+        "full": {
+            "tweetLoad": 100,
+            "account": [
+            ],
+            "keyword": [
+               "sydney"
+            ]
+        },
+        "30days": {
+            "tweetLoad": 100,
+            "account": [
+            ],
+            "keyword": [
+               "sydney"
+            ]
+        },
         "outsideTagIsAND": true,
         "hashtag": [
             "#healthcare",
