@@ -2,7 +2,6 @@ from hashlib import md5
 from datetime import datetime
 import json
 
-from selenium.webdriver.remote.webelement import WebElement
 
 
 def buildTwitterUrl_search(keywords, hashtags=None):
@@ -53,50 +52,50 @@ def translateSpecialChar(query):
         .replace('+', '%20AND%20')
 
 
-class MyTweet:
-    # def __init__(self, initText):
-    #     self.hash = md5(initText.encode()).hexdigest()
-    #     self.isRelated = None
-    #     self.rating = None
-    #     self.text = initText
-    #     self.insertDbAt = None
-
-    # def __init__(self, infoStr:str):
-    #     info = json.loads(infoStr)
-    #     print(info)
-
-    def __init__(self, webEle: WebElement, mainTarget: str, configPath='./config/cssSelector.json'):
-        with open(configPath) as f:
-            config = json.load(f)
-
-        tmpAcc = webEle.find_element_by_css_selector(f"{config['tweet']['account']}").text.lower()
-        self.account = [tmpAcc]
-        if (not mainTarget.__eq__(tmpAcc)) & (len(mainTarget) > 0):
-            self.account.append(mainTarget)
-
-        self.orig = webEle.find_element_by_css_selector(f"{config['tweet']['orig']}").get_property('href')
-
-        dtFormat = '%Y-%m-%dT%H:%M:%S'
-        self.postAt = datetime.strptime(webEle.find_element_by_css_selector(f"{config['tweet']['orig']}")
-                                        .find_element_by_css_selector('time').get_attribute('datetime')
-                                        .split('.')[0],
-                                        dtFormat)
-
-        self.text = webEle.find_element_by_css_selector(f"{config['tweet']['text']}").text
-        self.hash = md5(self.text.encode()).hexdigest()
-        self.rating = -10
-        self.insertDbAt = None
-
-    def to_dict(self):
-        return {
-            'account'     : self.account
-            , 'orig'      : self.orig
-            , 'postAt'    : self.postAt
-            , 'hash'      : self.hash
-            , 'text'      : self.text
-            , 'rating'    : self.rating
-            , 'insertDbAt': self.insertDbAt
-        }
+# class MyTweet:
+#     # def __init__(self, initText):
+#     #     self.hash = md5(initText.encode()).hexdigest()
+#     #     self.isRelated = None
+#     #     self.rating = None
+#     #     self.text = initText
+#     #     self.insertDbAt = None
+#
+#     # def __init__(self, infoStr:str):
+#     #     info = json.loads(infoStr)
+#     #     print(info)
+#
+#     def __init__(self, webEle: WebElement, mainTarget: str, configPath='./config/cssSelector.json'):
+#         with open(configPath) as f:
+#             config = json.load(f)
+#
+#         tmpAcc = webEle.find_element_by_css_selector(f"{config['tweet']['account']}").text.lower()
+#         self.account = [tmpAcc]
+#         if (not mainTarget.__eq__(tmpAcc)) & (len(mainTarget) > 0):
+#             self.account.append(mainTarget)
+#
+#         self.orig = webEle.find_element_by_css_selector(f"{config['tweet']['orig']}").get_property('href')
+#
+#         dtFormat = '%Y-%m-%dT%H:%M:%S'
+#         self.postAt = datetime.strptime(webEle.find_element_by_css_selector(f"{config['tweet']['orig']}")
+#                                         .find_element_by_css_selector('time').get_attribute('datetime')
+#                                         .split('.')[0],
+#                                         dtFormat)
+#
+#         self.text = webEle.find_element_by_css_selector(f"{config['tweet']['text']}").text
+#         self.hash = md5(self.text.encode()).hexdigest()
+#         self.rating = -10
+#         self.insertDbAt = None
+#
+#     def to_dict(self):
+#         return {
+#             'account'     : self.account
+#             , 'orig'      : self.orig
+#             , 'postAt'    : self.postAt
+#             , 'hash'      : self.hash
+#             , 'text'      : self.text
+#             , 'rating'    : self.rating
+#             , 'insertDbAt': self.insertDbAt
+#         }
 
 
 class MyTweet2:
