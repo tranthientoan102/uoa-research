@@ -113,7 +113,7 @@ class PostReviewEle extends React.Component<Props> {
         return (
 
             <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
-                 id={this.state.hash}>
+                 id={this.state.hash} bgColor={this.state.reviewed?'yellow.50':'white'}>
 
                 <Flex colorScheme="teal" justify="left" align="center" style={{ height: 32 }}>
 
@@ -164,7 +164,7 @@ class PostReviewEle extends React.Component<Props> {
                                     this.setState({reviewed: true})
                                     this.forceUpdate()
                                 }}
-                                isDisabled={this.state.reviewed}
+                                // isDisabled={this.state.reviewed}
                         >
                             Agree
                             <Icon as={CheckIcon} ml={3}/>️</Button>
@@ -177,7 +177,7 @@ class PostReviewEle extends React.Component<Props> {
                         <div id={this.state.hash + '_events'}>
                             {this.state.de.map(de => (
                                 <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
-                                          isDisabled={this.state.reviewed}
+                                          // isDisabled={this.state.reviewed}
                                           key={this.state.hash + '_events_' + de}
                                 >
                                     {de}
@@ -187,7 +187,7 @@ class PostReviewEle extends React.Component<Props> {
                         <Flex align="center" justify="center" mt={3}>
 
                             <Button
-                                isDisabled={this.state.reviewed}
+                                // isDisabled={this.state.reviewed}
                                 mx={2} mb={4}
                                 colorScheme="red"
                                 onClick={() => {
@@ -202,7 +202,7 @@ class PostReviewEle extends React.Component<Props> {
                                 Negative
                             </Button>
                             <Button
-                                isDisabled={this.state.reviewed}
+                                // isDisabled={this.state.reviewed}
                                 mx={2} mb={4}
                                 colorScheme="yellow"
                                 onClick={() => {
@@ -217,7 +217,7 @@ class PostReviewEle extends React.Component<Props> {
                                 Neutral
                             </Button>
                             <Button
-                                isDisabled={this.state.reviewed}
+                                // isDisabled={this.state.reviewed}
                                 ml={2} mb={4}
                                 colorScheme="green"
                                 onClick={() => {

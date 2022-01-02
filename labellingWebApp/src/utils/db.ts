@@ -364,7 +364,7 @@ export const updateReview = async (auth, hash, rating, events, email) =>{
 
         let data = (await dataRef.get()).data()
 
-        let reviewData = {test:4444}
+
         if (data.reviewCount > 0) {
 
             if (data.reviewedAt == undefined){
@@ -374,16 +374,31 @@ export const updateReview = async (auth, hash, rating, events, email) =>{
                 }
             }
 
-            await dataRef.update({
-                reviewCount: data.reviewCount+1
-                , reviewedRating: data.reviewedRating.concat(rating)
-                , reviewedEvent: data.reviewedEvent.concat(events.join(','))
-                , reviewedBy: data.reviewedBy.concat(email)
-                , reviewedAt: data.reviewedAt.concat((new Date()))
-            })
+            let oldIndex = data.reviewedBy.findIndex((x)=> x==email)
+            if (oldIndex>=0){
+                data.reviewedRating[oldIndex] = rating
+                data.reviewedEvent[oldIndex] = events.join(',')
+                data.reviewedAt[oldIndex] = new Date()
+
+                // await dataRef.update({
+                //     reviewedRating: data.reviewedRating,
+                //     reviewedEvent: data.reviewedEvent,
+                //     reviewedAt: data.reviewedAt
+                // })
+                await dataRef.update({...data})
+                console.log(`update existing review ${oldIndex}: ${rating}, ${events}`)
+            }else {
+                await dataRef.update({
+                    reviewCount: data.reviewCount + 1
+                    , reviewedRating: data.reviewedRating.concat(rating)
+                    , reviewedEvent: data.reviewedEvent.concat(events.join(','))
+                    , reviewedBy: data.reviewedBy.concat(email)
+                    , reviewedAt: data.reviewedAt.concat((new Date()))
+                })
+            }
         }else{
             await dataRef.update({
-                reviewCount: data.reviewCount+1
+                reviewCount: 1
                 , reviewedRating: [rating]
                 , reviewedEvent: [events.join(',')]
                 , reviewedBy: [email]
