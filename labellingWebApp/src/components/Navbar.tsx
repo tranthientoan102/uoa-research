@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Divider, Flex, Heading, Link } from "@chakra-ui/layout";
-import { Input } from "@chakra-ui/react"
+import {Image, Input} from "@chakra-ui/react"
 // import { useRouter } from "next/dist/client/router";
 import { useRouter } from "next/router";
 import { useAuth } from "../lib/auth";
@@ -17,7 +17,7 @@ const Navbar: React.FC<{}> = () => {
                     <Heading onClick={() => router.push('/')} as="button" mx={2}>
                         {process.env.NEXT_PUBLIC_NAME}
                     </Heading>
-                    <img src={process.env.NEXT_PUBLIC_LOGO} width="64px"/>
+                    <Image src={process.env.NEXT_PUBLIC_LOGO} width="64px" alt={'logo'}/>
                 </Flex>
                 <Box my={1}>
                     {auth ? (

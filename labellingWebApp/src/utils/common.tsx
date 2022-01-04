@@ -158,7 +158,7 @@ export const isAdmin = (auth) => {
     return auth.roles.includes('admin')
 }
 export const isChecked = (id) => {
-    let result = true
+    let result = false
     let ele = document.getElementById(id)
     if (ele != null) result= ele.querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes()
     return result
