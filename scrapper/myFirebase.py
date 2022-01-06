@@ -11,7 +11,7 @@ from firebase_admin import firestore
 class MyFirebaseService:
     def __init__(self
                  , certPath='./config/firebase.json'
-                 ,collectionName = 'tweets_health'
+                 , collectionName='tweets_health'
                  ):
         self.appName = ''
         self.collectionRef = None

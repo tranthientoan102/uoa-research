@@ -199,4 +199,13 @@ def findKeywordFromText(kwList, text:str):
                 break
     return result
 
-
+@app.get('/about')
+async def about():
+    result = []
+    with open('./config/firebase.json') as f:
+        default = json.load(f)
+        result.append(f'firebase: {default["project_id"]}')
+    with open('./config/run.json') as f:
+        default = json.load(f)
+        result.append(f'twitter license: {default["twitter"]["auth"]["consumer_key"]}')
+    return result
