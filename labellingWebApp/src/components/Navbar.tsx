@@ -28,7 +28,7 @@ const Navbar: React.FC<{}> = () => {
                                     console.log('going /')
                                     router.push('/')
                                 }}
-                                bg={(router.asPath=='/')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/')? 'white':'black'}
                             >
                                 Annotation
@@ -40,7 +40,7 @@ const Navbar: React.FC<{}> = () => {
                                     console.log('going /review')
                                     router.push('/review')
                                 }}
-                                bg={(router.asPath=='/review')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/review')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/review')? 'white':'black'}
                             >
                                 Review
@@ -52,7 +52,7 @@ const Navbar: React.FC<{}> = () => {
                                     console.log('going /predict')
                                     router.push('/predict')
                                 }}
-                                bg={(router.asPath=='/predict')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/predict')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/predict')? 'white':'black'}
 
                             >
@@ -64,7 +64,7 @@ const Navbar: React.FC<{}> = () => {
                                     console.log('going /download')
                                     router.push('/download')
                                 }}
-                                bg={(router.asPath=='/download')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/download')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/download')? 'white':'black'}
                             >
                                 Download
@@ -76,7 +76,7 @@ const Navbar: React.FC<{}> = () => {
                                     console.log('going /admin')
                                     router.push('/admin')
                                 }}
-                                bg={(router.asPath=='/admin')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/admin')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/admin')? 'white':'black'}
                             >
                                 Admin

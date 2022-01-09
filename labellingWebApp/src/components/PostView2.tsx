@@ -22,7 +22,7 @@ import {
     isAdmin,
     isMasked,
     explainKws,
-    maskPersonalDetails,
+    // maskPersonalDetails,
     maskPersonalDetails_AtSign
 } from "../utils/common";
 import DefaultEvent, {DE} from "./DefaultEvent";
@@ -31,6 +31,7 @@ import TagsInputKws from "./TagsInputKws";
 import TweetAnnotation from "./TweetAnnotation";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {random} from "nanoid";
+import PostView2Decoration from "./PostView2Decoration";
 
 interface Props {
     auth,
@@ -218,9 +219,16 @@ class PostView2 extends React.Component<Props> {
                                         <Text color="teal">
                                             {data.hash}
                                         </Text>
-                                        <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
-                                            {isMasked(this.state.auth) ? maskPersonalDetails_AtSign(data.text) : data.text}
-                                        </Text>
+                                        {/*<Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">*/}
+                                        {/*    {isMasked(this.state.auth) ? maskPersonalDetails_AtSign(*/}
+                                        {/*                                            highlightKws(data.text*/}
+                                        {/*                                                        , getKwInput('searchKey', false)))*/}
+                                        {/*                                : data.text}*/}
+
+                                        {/*</Text>*/}
+                                        <PostView2Decoration text={data.text} hash={data.hash}
+                                                             kws={getKwInput('searchKey', false)}
+                                        />
 
                                         <div id={data.hash + '_events'}>
                                             {this.state.de.map(de => (

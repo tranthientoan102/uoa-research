@@ -91,7 +91,6 @@ export const getKwInput= (eleId, lowering = true, withWarning=true) => {
         let nonSepaKw = ''
         //  "christmas eve" "new year eve"
         for (let tmptmp of tmpSubTags){
-            console.log(tmptmp)
             if (tmptmp.startsWith('"')) {
                 // tmptmp = tmptmp.split("\"")[1]
                 insideQuoteMark = true
@@ -229,6 +228,19 @@ export const maskPersonalDetails_AtSign = (text:string) => {
     return text.replace(/(\w+)@/gi, "✱✱✱@")
                 .replace(/@(\w+)/gi, "@✱✱✱")
 }
+
+// export const maskPersonalDetails_AtSign = (text:string) => {
+//     let result = []
+//     for (let i in text){
+//         result.push(text[i].toString().replace(/(\w+)@/gi, "✱✱✱@")
+//                 .replace(/@(\w+)/gi, "@✱✱✱"))
+//     }
+//     return result
+//
+//     // return text.replace(/(\w+)@/gi, "✱✱✱@")
+//     //             .replace(/@(\w+)/gi, "@✱✱✱")
+// }
+
 export const maskPersonalDetails_names = (text:string, names:string[]) =>{
     if (names != null) {
         // console.log(`masking names: ${names.join(',')}`)
@@ -349,6 +361,28 @@ export const convertDate = (input) => {
     let result = null
     if (input){
         result = new Date(input['seconds'] * 1000)
+    }
+    return result
+}
+
+export const highlightKws = (text, kws) => {
+    let result = []
+    
+    for (let i in kws){
+        // let tag = <Tag m={0} p={0} borderRadius={0} bgColor={'telegram.400'} color={'white'}>${kws[i]}</Tag>
+        //
+        // // let newPart = `${tag}${kws[i]}${tagEnd}`
+        // text = text.split(`/${kws[i]}/ig`).join(<Tag m={0} p={0} borderRadius={0} bgColor={'telegram.400'} color={'white'} key={'1'}>${kws[i]}</Tag>
+        // )
+        // console.log(text)
+        // text= text.replace(`/${kws[i]}/ig`, `<Tag m={0} p={0} borderRadius={0} bgColor={'telegram.400'} color={'white'} key={'1'}>${kws[i]}</Tag>`)
+        let textSep = text.split(kws[i])
+        for (let i in textSep){
+            result.push(textSep[i])
+            // result.push(<Tag m={0} p={0} borderRadius={0} bgColor={'telegram.400'} color={'white'} key={'1'}>${kws[i]}</Tag>)
+            result.push(<pre>${kws[i]}</pre>)
+        }
+        result.pop()
     }
     return result
 }

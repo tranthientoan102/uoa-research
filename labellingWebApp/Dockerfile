@@ -26,4 +26,4 @@ RUN echo $buildArg
 #RUN npm run build
 EXPOSE 3000
 
-CMD npm run $buildArg
+#CMD npm run $buildArg
