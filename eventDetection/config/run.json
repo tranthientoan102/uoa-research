@@ -1,7 +1,7 @@
 {
     "runningModel": {
         "base_model_name" : "bert-base-uncased",
-        "path": "./checkpoints/ed_best_model_state.bin",
+        "path": "./models/ed_best_model_state.bin",
         "runOnCPU": true
     }
 }

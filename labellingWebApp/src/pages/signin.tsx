@@ -6,7 +6,12 @@ import { FcGoogle } from 'react-icons/fc';
 import Navbar from "../components/Navbar";
 import { useAuth } from "../lib/auth";
 
-const signin = () => {
+interface Props {
+    data: string[]
+}
+
+
+const Signin = (props) => {
     const { auth, signinWithGoogle } = useAuth();
     const router = useRouter()
 
@@ -36,4 +41,4 @@ const signin = () => {
 
 };
 
-export default signin;
+export default Signin;

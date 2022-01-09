@@ -13,7 +13,7 @@ toast.configure()
 // require('dotenv').config({path: './config/.e2222nv.development.dev'})
 
 const expectingPost = 10
-const dbLookupLimit = 1000
+const dbLookupLimit = 500
 
 // export const host = 'localhost'
 // export const host = '20.37.47.186'
@@ -73,20 +73,34 @@ export const refillDb_acc = async (acc: string) => {
     let tmp = await Axios.post(`${host_scrapper}${port}/trigger/account`, { list: acc })
     return tmp
 }
-export const refillDb_kw = async (kws:string[][], outsideTagIsAND= true) => {
+export const refillDb_kw = async (kws:string[][], isPremium: boolean, outsideTagIsAND= true) => {
 
     // let data = JSON.stringify({"account": acc, "keyword": kw})
 
     // console.log(process.env.NEXT_PUBLIC_HOST_SCRAPPER)
     // console.log(process.env.NEXT_PUBLIC_PORT_SCRAPPER)
 
+    console.log(`isPremium = ${isPremium}`)
     let port = host_scrapper.startsWith('https')?'':`:${port_scrapper}`
-    let tmp = await Axios.post(`${host_scrapper}${port}/trigger/keyword`
-                                , {list: kws, outsideTagIsAND: outsideTagIsAND})
+
+    // let api = isPremium?'/trigger/full':'/trigger/keyword'
+    let api = '/trigger/keyword'
+    let data
+    if (isPremium){
+        api = '/trigger/full'
+        data = {account: [], keyword: kws, outsideTagIsAND: outsideTagIsAND}
+    } else{
+        data= {list: kws, outsideTagIsAND: outsideTagIsAND}
+    }
+
+
+
+    let tmp = await Axios.post(`${host_scrapper}${port}${api}`
+                                , data)
     return tmp
 }
 
-export const refillDb_acc_kws = async (acc: string[], kws:string[][], outsideTagIsAND= true) => {
+export const refillDb_acc_kws = async (acc: string[], kws:string[][], isPremium: boolean, outsideTagIsAND= true) => {
 
     // let data = JSON.stringify({"account": acc, "keyword": kw})
 
@@ -94,6 +108,8 @@ export const refillDb_acc_kws = async (acc: string[], kws:string[][], outsideTag
     // let tmp = await Axios.post(`${host_scrapper}${port}/trigger/combine`
     //                             , {account: acc, keyword: kws, outsideTagIsAND: outsideTagIsAND})
 
+
+    // console.log(`isPremium = ${isPremium}`)
     let tmp = await Axios(
         {
             method: 'post',
@@ -171,7 +187,7 @@ export const loadUnlabelledPostByAccount = async (accs: string[], postAfter=new 
         result = dataRef.docs.map((doc) => (
             { id: doc.id, ...doc.data() })
         )
-        console.log(`finish load ${result.length} unlabelled post By ${accs} `)
+        // console.log(`finish load ${result.length} unlabelled post By ${accs} `)
         // console.log(result)
         return result
     } catch (err) {
@@ -187,7 +203,7 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][
     // }
 
     while (result.length < limit) {
-        console.log('query by date: ' + postAfter)
+        // console.log('query by date: ' + postAfter)
         let data = await loadUnlabelledPostByAccount(accs, postAfter, dbLookupLimit)
         if (data.length == 0) break
         for (const doc of data){
@@ -201,7 +217,7 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][
     }
 
 
-    console.log(`finish load ${result.length} unlabelled post By ${accs} with keywords ${kws}`)
+    // console.log(`finish load ${result.length} unlabelled post By ${accs} with keywords ${kws}`)
     return result
 }
 
@@ -348,20 +364,45 @@ export const updateReview = async (auth, hash, rating, events, email) =>{
 
         let data = (await dataRef.get()).data()
 
-        let reviewData = {test:4444}
-        if (data.reviewCount) {
-            await dataRef.update({
-                reviewCount: data.reviewCount+1
-                , reviewedRating: data.reviewedRating.concat(rating)
-                , reviewedEvent: data.reviewedEvent.concat(events.join(','))
-                , reviewedBy: data.reviewedBy.concat(email)
-            })
+
+        if (data.reviewCount > 0) {
+
+            if (data.reviewedAt == undefined){
+                data.reviewedAt=[]
+                for (let i =0; i < data.reviewCount; i++){
+                    data.reviewedAt.push(null)
+                }
+            }
+
+            let oldIndex = data.reviewedBy.findIndex((x)=> x==email)
+            if (oldIndex>=0){
+                data.reviewedRating[oldIndex] = rating
+                data.reviewedEvent[oldIndex] = events.join(',')
+                data.reviewedAt[oldIndex] = new Date()
+
+                // await dataRef.update({
+                //     reviewedRating: data.reviewedRating,
+                //     reviewedEvent: data.reviewedEvent,
+                //     reviewedAt: data.reviewedAt
+                // })
+                await dataRef.update({...data})
+                console.log(`update existing review ${oldIndex}: ${rating}, ${events}`)
+            }else {
+                await dataRef.update({
+                    reviewCount: data.reviewCount + 1
+                    , reviewedRating: data.reviewedRating.concat(rating)
+                    , reviewedEvent: data.reviewedEvent.concat(events.join(','))
+                    , reviewedBy: data.reviewedBy.concat(email)
+                    , reviewedAt: data.reviewedAt.concat((new Date()))
+                })
+            }
         }else{
             await dataRef.update({
                 reviewCount: 1
                 , reviewedRating: [rating]
                 , reviewedEvent: [events.join(',')]
                 , reviewedBy: [email]
+                , reviewedAt: [new Date()]
             })
 
         }
@@ -370,7 +411,7 @@ export const updateReview = async (auth, hash, rating, events, email) =>{
         //     // const doc = await t.get(dataRef)
         //     await t.set(dataRef, reviewData)
         // })
-        await dataRef.update({...reviewData})
+        // await dataRef.update({...reviewData})
         console.log('Transaction success');
 
     }catch (e){

@@ -26,8 +26,6 @@ class FastSA2 (FastAPI):
 
         self.tokenizer = BertTokenizer.from_pretrained(base_model_name)
 
-        # model = BertForSequenceClassification.from_pretrained(model_name, num_labels=num_labels)
-        # model.load_state_dict(torch.load(path, map_location=torch.device('cpu')))
         self.model = ModelNero(base_model_name, num_labels, path)
 
 

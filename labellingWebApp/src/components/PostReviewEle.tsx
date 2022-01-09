@@ -25,9 +25,6 @@ import {
 import {useAuth} from "../lib/auth";
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
-import TagInput2 from './TagsInput2';
 import {
     fetchData,
     getKwInput,
@@ -38,13 +35,9 @@ import {
     maskPersonalDetails,
     maskPersonalDetails_AtSign
 } from "../utils/common";
-import DefaultEvent, {DE} from "./DefaultEvent";
-import TagsInput2 from "./TagsInput2";
-import TagsInputKws from "./TagsInputKws";
-import TweetAnnotation from "./TweetAnnotation";
-import InfiniteScroll from "react-infinite-scroll-component";
 import {CheckIcon, SearchIcon} from "@chakra-ui/icons";
-import {MdCheck, MdCheckCircle, MdSettings} from "react-icons/all";
+import { SocialIcon } from 'react-social-icons';
+
 
 
 interface Props {
@@ -83,6 +76,7 @@ class PostReviewEle extends React.Component<Props> {
         name: 'PostReviewEle'
         , auth: this.props.auth
 
+        // , isMasked: isChecked('isMasked')
         , isMasked: this.props.isMasked
 
         , hash: this.props.hash
@@ -119,13 +113,26 @@ class PostReviewEle extends React.Component<Props> {
         return (
 
             <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
-                 id={this.state.hash}>
+                 id={this.state.hash} bgColor={this.state.reviewed?'yellow.50':'white'}>
 
-                <Text colorScheme="teal">
-                    <Tag colorScheme={"twitter"} mr={2}><b>{this.state.isMasked ? '': this.state.account}</b></Tag>
-                    {(new Date(this.state.postAt * 1000).toString())}
+                <Flex colorScheme="teal" justify="left" align="center" style={{ height: 32 }}>
 
-                </Text>
+                        <Tag colorScheme={"twitter"} mr={2} p={0}
+                                borderRadius={100}
+                        >
+                            <SocialIcon network="twitter" style={{ height: 32, width: 32 }} />
+                            <Text justify="center"
+                                  pl={this.state.isMasked ?0: 1}
+                                  pr={this.state.isMasked ?0: 3}
+                            >
+                                <b>{this.state.isMasked ? '': this.state.account}</b>
+                            </Text>
+                        </Tag>
+                        <Text py={'1fr'}>
+                            {(new Date(this.state.postAt * 1000).toString())}
+                        </Text>
+
+                </Flex>
                 <Text color="teal">
                     {this.state.hash}
                 </Text>
@@ -153,10 +160,11 @@ class PostReviewEle extends React.Component<Props> {
                                         , this.state.auth.email
                                     )
 
-                                    this.state.reviewed= true
+                                    // this.state.reviewed= true
+                                    this.setState({reviewed: true})
                                     this.forceUpdate()
                                 }}
-                                isDisabled={this.state.reviewed}
+                                // isDisabled={this.state.reviewed}
                         >
                             Agree
                             <Icon as={CheckIcon} ml={3}/>️</Button>
@@ -168,7 +176,10 @@ class PostReviewEle extends React.Component<Props> {
                     > Dont agree
                         <div id={this.state.hash + '_events'}>
                             {this.state.de.map(de => (
-                                <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue' isDisabled={this.state.reviewed}>
+                                <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
+                                          // isDisabled={this.state.reviewed}
+                                          key={this.state.hash + '_events_' + de}
+                                >
                                     {de}
                                 </Checkbox>))
                             }
@@ -176,7 +187,7 @@ class PostReviewEle extends React.Component<Props> {
                         <Flex align="center" justify="center" mt={3}>
 
                             <Button
-                                isDisabled={this.state.reviewed}
+                                // isDisabled={this.state.reviewed}
                                 mx={2} mb={4}
                                 colorScheme="red"
                                 onClick={() => {
@@ -184,14 +195,14 @@ class PostReviewEle extends React.Component<Props> {
                                         , getTagsInput(this.state.hash + '_events')
                                         , this.state.auth.email
                                     )
-                                    this.state.reviewed= true
-                                    this.forceUpdate()
+                                    this.setState({reviewed: true})
+                                    // this.forceUpdate()
                                 }}
                             >
                                 Negative
                             </Button>
                             <Button
-                                isDisabled={this.state.reviewed}
+                                // isDisabled={this.state.reviewed}
                                 mx={2} mb={4}
                                 colorScheme="yellow"
                                 onClick={() => {
@@ -199,14 +210,14 @@ class PostReviewEle extends React.Component<Props> {
                                         , getTagsInput(this.state.hash + '_events')
                                         , this.state.auth.email
                                     )
-                                    this.state.reviewed= true
+                                    this.setState({reviewed: true})
                                     this.forceUpdate()
                                 }}
                             >
                                 Neutral
                             </Button>
                             <Button
-                                isDisabled={this.state.reviewed}
+                                // isDisabled={this.state.reviewed}
                                 ml={2} mb={4}
                                 colorScheme="green"
                                 onClick={() => {
@@ -214,7 +225,7 @@ class PostReviewEle extends React.Component<Props> {
                                         , getTagsInput(this.state.hash + '_events')
                                         , this.state.auth.email
                                     )
-                                    this.state.reviewed= true
+                                    this.setState({reviewed: true})
                                     this.forceUpdate()
                                 }}
                             >

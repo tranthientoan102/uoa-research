@@ -21,14 +21,15 @@ import { useAuth } from "../lib/auth";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createDefaultEvent, deleteDefaultEvent, getAllLabeller, getDefaultEventList } from "../utils/db";
-import { getCheckedItemFromGrid, getTagsInput } from "../utils/common";
+import {getCheckedItemFromGrid, getTagsInput, isAdmin} from "../utils/common";
 import PostReview from "../components/PostReview";
 
 interface Props {
     data: string[]
 }
-
+// class Review extends React.Component<Props> {
 const Review = (props) => {
+
     const id = 'review'
 
     // const formData = JSON.parse(props.formData);
@@ -97,7 +98,11 @@ const Review = (props) => {
 
     }
 
-    let r = undefined
+    const startReviewing = () => {
+        setLabelledBy(getCheckedEmails())
+        setUpdate(true)
+
+    }
 
     return (
         <div>
@@ -111,16 +116,16 @@ const Review = (props) => {
 
                     {isAuthoriesed(auth) ? (
                         <Container position="relative" maxW="8xl">
-                            <Flex >
+                            <Flex bg={'gray.50'} m={2} p={2}>
 
                                 <IconButton aria-label='Search labellers'
                                     icon={<SearchIcon />}
                                     onClick={() => generateListLabeller()}
                                     mr={2}
-                                    mt={2}
+
                                 />
 
-                                <Grid my={2} align="center" justify="center">
+                                <Grid align="center" justify="center">
                                     {/*<Button onClick={()=> generateListLabeller()}>*/}
                                     {/*    Load labellers*/}
                                     {/*</Button>*/}
@@ -135,22 +140,25 @@ const Review = (props) => {
                             </Flex>
                             <SimpleGrid position="relative" maxW="8xl">
                                 <Flex align="center" justify="center" >
+                                    <div id="isMasked">
+                                        {isAdmin(auth) ?
+                                            <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
+                                            : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
+                                        }
+                                    </div>
+
                                     <Button onClick={() => {
                                         setUpdate(false)
 
                                     }} m={2}>Clean view</Button>
                                     <Button onClick={() => {
-
-                                        setUpdate(true)
-                                        setLabelledBy(getCheckedEmails())
-                                        r = new PostReview({ auth: auth, labelledBy: getCheckedEmails() })
-                                        // setReview(r.render())
+                                        startReviewing()
                                     }}
                                         m={2}
                                         colorScheme={"twitter"}> Start reviewing
                                     </Button>
                                 </Flex>
-                                {r}
+                                {/*{r}*/}
                                 {update ? <PostReview auth={auth} labelledBy={labelledBy} /> : ''}
                                 {/*{review}*/}
                             </SimpleGrid>

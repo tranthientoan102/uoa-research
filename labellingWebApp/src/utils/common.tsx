@@ -8,6 +8,7 @@ import {
 } from "./db";
 import Axios from "axios";
 import {Box, GridItem, Tag} from "@chakra-ui/react";
+import dateformat from "dateformat";
 
 export const labelling = async (auth, values) => {
     try {
@@ -135,9 +136,14 @@ export const explainKws = (eleId, lowering=true, outsideTagIsAND = true ) => {
     }
 }
 
+// const dateformat = require('dateformat');
 export const convertTimeToString = (time) => {
-    let tmp = new Date(time['seconds'] * 1000)
-    return tmp.toISOString()
+    if (time) {
+        let tmp = new Date(time['seconds'] * 1000)
+        // return tmp.toISOString()
+        return dateformat(tmp, "yyyy-mm-dd'T'HH:MM:sso")
+    }
+    else return 'null'
     // return `${tmp.toLocaleString('%Y-%b-%d')} ${tmp.toLocaleTimeString()}`
 
 }
@@ -152,7 +158,7 @@ export const isAdmin = (auth) => {
     return auth.roles.includes('admin')
 }
 export const isChecked = (id) => {
-    let result = true
+    let result = false
     let ele = document.getElementById(id)
     if (ele != null) result= ele.querySelector('.chakra-checkbox__control.css-xxkadm').hasChildNodes()
     return result
@@ -227,7 +233,19 @@ export const maskPersonalDetails_names = (text:string, names:string[]) =>{
     if (names != null) {
         // console.log(`masking names: ${names.join(',')}`)
         names.forEach(name => {
-            text = text.replace(new RegExp(name,'gi'), "✱✱✱")
+            try{
+                let pattern = name
+                if (pattern.includes('+')) {
+                    pattern = pattern.replaceAll('+', '\\+')
+                    console.log(pattern)
+                }
+                if (pattern.includes('-')) pattern = pattern.replaceAll('-', '\\-')
+
+                text = text.replace(new RegExp(pattern,'gi'), "✱✱✱")
+            } catch (e){
+                toast.error(`masking fail: ${name}`, {autoClose:false})
+            }
+
         })
     }
     return text
@@ -253,14 +271,14 @@ export const fetchData = async (accs: string[], kws:string[][], limit= 25
     }
     if ((refillCounter == 0) && (isOldData || !isReachLimit)) {
         toast.info('Auto scrapping latest tweets', { autoClose: 20000 })
-        refillData(accs,kws)
+        refillData(accs,kws, isChecked('isPremium'))
     }
 
     console.log(`fetched ${res.length} tweets`)
     return res;
 
 }
-export const refillData = async (accs:string[], kws:string[][]) => {
+export const refillData = async (accs:string[], kws:string[][], isPremium: boolean) => {
     // setData("...preparing db...")
     //
     // let accs = getTagsInput('searchAcc',true)
@@ -270,10 +288,10 @@ export const refillData = async (accs:string[], kws:string[][]) => {
 
     if (accs.length > 0 && kws.length > 0) {
         // refillDbWithAccount(accs.join(','))
-        refillDb_acc_kws(accs, kws)
+        refillDb_acc_kws(accs, kws, isPremium)
     } else {
         if (accs.length > 0) refillDb_acc(accs.join(','))
-        else if (kws.length > 0) refillDb_kw(kws)
+        else if (kws.length > 0) refillDb_kw(kws, isPremium)
         else {
             toast.error('Please check your input')
             // isWaiting = false
@@ -294,7 +312,8 @@ export const getSAPrediction = async (tweetList: string[]) => {
 export const getEDPrediction = async (tweetList: string[]) => {
     // let tmp = await Axios.post(`http://${host}:8001/trigger/account`, { list: acc })
 
-    let port = host_ed.startsWith('https')?'':`:${port_ed}`
+    let port = host_ed.startsWith('https') ? '' : `:${port_ed}`
+    console.log(`${host_sa}${port}/predict`)
     let tmp = await Axios.post(`${host_ed}${port}/predict`, { text: tweetList })
     return tmp
 }
@@ -322,6 +341,14 @@ export const displayTagSentiment = (list: string[], fullList:string[]=null) => {
 }
 export const displayTagED = (list: string[], fullList:string[]=null) => {
     let colorScheme = 'orange'
-    // if (list[0] == 'others') colorScheme = 'green'
+    if (list[0] == 'no event detected') colorScheme = 'gray'
     return displayTag(list, fullList, colorScheme)
+}
+
+export const convertDate = (input) => {
+    let result = null
+    if (input){
+        result = new Date(input['seconds'] * 1000)
+    }
+    return result
 }

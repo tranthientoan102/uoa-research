@@ -17,7 +17,7 @@ RUN pip install -r requirements.txt
 # Copy everything from ./src directory to /app in the container
 # COPY ./src .
 COPY ./ .
-RUN rm /app/src/config/firebase_prod.json
+RUN rm /app/src/config/firebase.json; cp /app/src/config/firebase_prod.json /app/src/config/firebase.json
 # Install the dependencies
 
 

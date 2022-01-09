@@ -24,11 +24,13 @@ import {
     getSAPrediction,
     getTagsInput,
     isAdmin,
-    isMasked, maskPersonalDetails_AtSign
+    isMasked, maskPersonalDetails_AtSign, isChecked
 } from "../utils/common";
 import {downloadData} from "../utils/db";
 
 import TagInput2 from "../components/TagsInput2";
+import TagsInputKws from "../components/TagsInputKws";
+import PredictionDownload from "../components/PredictionDownload";
 
 interface Props {
     data: string[]
@@ -43,17 +45,23 @@ const Predict = (props) => {
     toast.configure()
     const { auth, signinWithGoogle } = useAuth();
     const [data, setData] = useState("init data");
+    const [downloadAvailable, setDownloadAvailable] = useState(false)
+
+    const [text, setText] = useState([])
+    // const [ pred_sa, setPred_sa] = useState([])
+    // const [ pred_ed, setPred_ed] = useState([])
 
 
+    let tweetList = []
 
     const processPredict = async () => {
         let result = []
-        let tweetList = []
+        // let tweetList = []
 
         // let eventFullList = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate', 'friendly']
         let eventFullList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
                        'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
-                       'advocary/reform', 'others']
+            'advocary/reform', 'no event detected']
 
         let sentimentFullList = ['negative', 'neutral', 'positive']
         // @ts-ignore
@@ -94,14 +102,22 @@ const Predict = (props) => {
         let pred_ed
         let promise1 = getSAPrediction(tweetList)
         let promise2 = getEDPrediction(tweetList)
-        await Promise.all([promise1, promise2]).then(data=>{
-            pred_sa= data[0]
-            pred_ed = data[1]
+        await Promise.all([promise1, promise2]).then(promises=>{
+            pred_sa= promises[0].data
+            pred_ed = promises[1].data
+
+            // setText(tweets)
+            // setPred_sa(promises[0].data)
+            // setPred_ed(promises[1].data)
         })
 
 
 
-        // console.log(pred)
+        console.log(tweets)
+        console.log(pred_sa)
+        console.log(pred_ed)
+
+        result.push(<PredictionDownload text={tweetList} sa={pred_sa} ed={pred_ed} isMasked={isChecked('isMasked')} />)
 
         for (const i in tweets) {
             let tweet = tweets[i]
@@ -122,16 +138,22 @@ const Predict = (props) => {
                         {isMasked(auth) ? maskPersonalDetails_AtSign(tweet.text): tweet.text}
                     </Text>
                     <Flex align="center" justify="center">
-                        Sentiment: {displayTagSentiment([pred_sa.data[i]], sentimentFullList)}
+                        {/*Sentiment: {displayTagSentiment([pred_sa.data[i]], sentimentFullList)}*/}
+                        Sentiment: {displayTagSentiment([pred_sa[i]], sentimentFullList)}
                     </Flex>
-                    Event:
+
                     <Container position="relative" maxW="6xl">
-                        <Grid templateColumns={'repeat(5,auto)'} templateRows={'repeat(3,auto)'} align="center" justify="center">
-                            {
-                                (pred_ed.data[i].length>0)? displayTagED(pred_ed.data[i], eventFullList)
-                                    : displayTagED(['others'], eventFullList)
+
+                        <Flex flexDirection="row" flexWrap="wrap"
+                            // templateColumns={'repeat(5,auto)'}
+                              templateRows={'repeat(3,auto)'} align="center" justify="center">
+                            Event:{
+                                // (pred_ed.data[i].length>0)? displayTagED(pred_ed.data[i], eventFullList)
+                                //     : displayTagED(['no event detected'], eventFullList)
+                                (pred_ed[i].length>0)? displayTagED(pred_ed[i], eventFullList)
+                                    : displayTagED(['no event detected'], eventFullList)
                             }
-                        </Grid>
+                        </Flex>
                     </Container>
                 </Box>
             )
@@ -139,9 +161,6 @@ const Predict = (props) => {
         // @ts-ignore
         setData(result)
 
-
-
-        // setData(result)
         console.log(`done download data`)
 
         // return result
@@ -170,7 +189,7 @@ const Predict = (props) => {
 
                                 <Container mx={2} p={0}>
                                     <Text>Keyword</Text>
-                                    <TagInput2 id="searchKeyPredict" defaultEvents={[]} tags={[]} />
+                                    <TagsInputKws id="searchKeyPredict" tags={[]} outsideIsAND={true}/>
                                 </Container>
 
                                 <div id="isMasked">

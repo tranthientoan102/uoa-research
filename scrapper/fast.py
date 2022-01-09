@@ -4,10 +4,8 @@ import traceback
 from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import multiprocessing
-import main
+
 import main2
-import main3
-import myFirebase
 
 class MyFast (FastAPI):
     cache = {}
@@ -125,6 +123,38 @@ async def triggerCombine(initConfig=Body(...)):
         multiprocessing.Process(target=main2.run, args=(default,)).start()
     return "PROCESSING"
 
+@app.post("/trigger/full")
+async def triggerFull(initConfig=Body(...)):
+    default = getDefaultRunConfig()
+
+    # {"account": ["@sahealth","@7newsadelaide"], "keyword": ["mask"]}
+    # {"account": ["@7newsadelaide"], "keyword": ["restriction"]}
+    # {"account": ["@ap","@afp"], "keyword": ["BREAKING"]}
+
+    # update = json.loads(initConfig)
+    # print(update['account'])
+
+    print(initConfig)
+
+    default['twitter']['runMode'] = 'full'
+    # default['twitter']['account'] = update['account'].__str__().replace('@','')
+    default['twitter']['full']['account'] = []
+    default['twitter']['full']['keyword'] = initConfig['keyword']
+    default['twitter']['outsideTagIsAND'] = initConfig['outsideTagIsAND']
+
+    if len(initConfig['account']) > 0:
+        for x in initConfig['account']:
+            default['twitter']['full']['account'] = [x.replace('@' , '')]
+            multiprocessing.Process(target=main2.run, args=(default,)).start()
+    else:
+        multiprocessing.Process(target=main2.run, args=(default,)).start()
+
+        # proc = multiprocessing.Process(target=main3.run, args=(default,app.cache))
+        # proc.start()
+        # multiprocessing.Process(target=main3.run, args=(default, app.cache)).start()
+
+    return "PROCESSING"
+
 @app.get("/search/combine")
 async def searchCombine(initConfig):
     # {"account": ["@sahealth", "@7newsadelaide"], "keyword": ["mask"]}
@@ -169,4 +199,13 @@ def findKeywordFromText(kwList, text:str):
                 break
     return result
 
-
+@app.get('/about')
+async def about():
+    result = []
+    with open('./config/firebase.json') as f:
+        default = json.load(f)
+        result.append(f'firebase: {default["project_id"]}')
+    with open('./config/run.json') as f:
+        default = json.load(f)
+        result.append(f'twitter license: {default["twitter"]["auth"]["consumer_key"]}')
+    return result

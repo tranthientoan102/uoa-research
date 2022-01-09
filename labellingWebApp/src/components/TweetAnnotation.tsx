@@ -66,7 +66,9 @@ class TweetAnnotation extends React.Component<Props> {
 
     renderProcess = () => {
         return this.state.items.map((data) => (
-                    <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl" id={data.hash}>
+                    <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
+                             id={data.hash} key={data.hash}
+                    >
                         {isMasked(this.state.auth) ? '' :
                             <Text color="blue.300">
                                 <a href={data.orig}>{data.orig}</a>
@@ -137,7 +139,9 @@ class TweetAnnotation extends React.Component<Props> {
                 loader={<h4>Init...</h4>}
             >
                 {this.state.items.map(data=>(
-                        <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl" id={data.hash}>
+                        <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
+                                id={data.hash} key={data.hash}
+                        >
                             {data}
                         </Box>
                     )

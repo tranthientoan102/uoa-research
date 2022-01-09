@@ -5,13 +5,13 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 
 
-from myTwitter import MyTweet
+# from myTwitter import MyTweet
 
 
 class MyFirebaseService:
     def __init__(self
                  , certPath='./config/firebase.json'
-                 ,collectionName = 'tweets_health'
+                 , collectionName='tweets_health'
                  ):
         self.appName = ''
         self.collectionRef = None
@@ -55,7 +55,8 @@ class MyFirebaseService:
                 print(f'ERROR fail to get info from {doc.to_dict()}')
         print(f'dbState contains {len(cache)} records')
 
-    def insertData(self, data: MyTweet):
+    # def insertData(self, data: MyTweet):
+    def insertData(self, data):
         data.insertDbAt = datetime.datetime.now()
         self.getCollectionRef().document(data.hash).set(data.to_dict())
 

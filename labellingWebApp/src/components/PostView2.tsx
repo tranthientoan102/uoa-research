@@ -30,6 +30,7 @@ import TagsInput2 from "./TagsInput2";
 import TagsInputKws from "./TagsInputKws";
 import TweetAnnotation from "./TweetAnnotation";
 import InfiniteScroll from "react-infinite-scroll-component";
+import {random} from "nanoid";
 
 interface Props {
     auth,
@@ -80,7 +81,7 @@ class PostView2 extends React.Component<Props> {
         auth: this.props.auth,
 
         items: [],
-        loadEachTime: 10,
+        loadEachTime: 3,
         de: this.getDE(),
         hasMore: true,
         loading: false,
@@ -164,35 +165,30 @@ class PostView2 extends React.Component<Props> {
                             />
                         </Container>
 
+                    </Flex>
+                    <Flex my={2} align="center" justify="center">
                         <div id="isMasked">
                             {isAdmin(this.state.auth) ?
                                 <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
                                 : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
                             }
                         </div>
+                        <div id="isPremium">
+
+                                <Checkbox colorScheme='blue' isDisabled={!isAdmin(this.state.auth)} mx={2} color={'twitter.600'}>
+                                    <b>PREMIUM SEARCH</b>
+                                </Checkbox>
+
+                        </div>
                         <Button
                             m={3}
                             onClick={() => {
-                                // this.setState({
-                                //     items: []
-                                //     , loading: true
-                                //     , postAfter: new Date()
-                                // })
                                 this.counter=0;
                                 this.fetchMoreData()
-
                             }}
-                            // colorScheme="blue"
-                            // background="gray"
-                            // color="lightgreen"
-                            // onClick={() => process(
-                            //     getTagsInput('searchAcc', true)
-                            //     , getKwInput('searchKey', false)
-                            // )}
                         >
                             <p>Load more</p>
                         </Button>
-
                     </Flex>
 
 
@@ -208,7 +204,7 @@ class PostView2 extends React.Component<Props> {
                         >
                             {this.state.items.map(data => (
                                     <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
-                                         id={data.hash}>
+                                         id={data.hash} key={data.hash}>
                                         {isMasked(this.state.auth) ? '' :
                                             <Text color="blue.300">
                                                 <a href={data.orig}>{data.orig}</a>
@@ -228,7 +224,9 @@ class PostView2 extends React.Component<Props> {
 
                                         <div id={data.hash + '_events'}>
                                             {this.state.de.map(de => (
-                                                <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'>
+                                                <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
+                                                    key={data.hash+ '_events_' + de.name}
+                                                >
                                                     {de.name}
                                                 </Checkbox>))
                                             }
