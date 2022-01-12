@@ -17,7 +17,7 @@
             "sydney"
         ],
         "full": {
-            "tweetLoad": 100,
+            "tweetLoad": 1250,
             "account": [
             ],
             "keyword": [
@@ -25,7 +25,7 @@
             ]
         },
         "30days": {
-            "tweetLoad": 100,
+            "tweetLoad": 1250,
             "account": [
             ],
             "keyword": [
