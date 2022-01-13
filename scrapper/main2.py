@@ -187,8 +187,8 @@ def subRun_acc_kws_full(api, myfirebase
         for status in tweepy.Cursor(api.search_full_archive
                                         , label='aiml'
                                         , query=query
-                                        , fromDate='201501010000'
-                                        , maxResults= expectingCount
+                                        # , fromDate='201501010000'
+                                        # , maxResults= expectingCount
                                         # , tweet_mode="extended"
                                     ).items(expectingCount):
             # tweet = MyTweet2().parse(status._json, kws)
@@ -290,7 +290,7 @@ if __name__ == '__main__':
         runconfig['twitter']['runMode'] = 'full'
         # runconfig['twitter']['account'] = ['elonmusk']
         runconfig['twitter']['full']['account'] = ''
-        runconfig['twitter']['full']['keyword'] = [["\"International Micronutrient Malnutrition Prevention\""]]
+        runconfig['twitter']['full']['keyword'] = [['"national medicines policy"']]
         run(runconfig, demoMode=False)
 
         # runconfig['twitter']['runMode'] = 'keyword'
