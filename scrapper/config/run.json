@@ -3,6 +3,7 @@
     "scrapFrom": "twitter",
     "twitter": {
         "auth": {
+            "bearer_token" : "AAAAAAAAAAAAAAAAAAAAAEjWTgEAAAAAmF2H4wRcIDJHMe6x7dXZlrk7jEQ%3DFzx6yzXxhyJ5x1a8Qw5i4GC9RXrLBFU8GQdYCZzya8oiSxL3nv",
             "consumer_key" : "lgBu13nhDXA1sYkHpMn6gZdnH",
             "consumer_secret": "spagOJXGx3NSVAp9jccWAYIXHEBhmNJuBqfHUoFNvd6svZlxXE",
             "access_token": "1221687331452674049-CEsgd7VOyISy6EK6YivTLgiWQ5lzYA",
@@ -26,6 +27,13 @@
         },
         "30days": {
             "tweetLoad": 1250,
+            "account": [
+            ],
+            "keyword": [
+               "sydney"
+            ]
+        },
+        "countRecent": {
             "account": [
             ],
             "keyword": [
