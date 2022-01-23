@@ -4,7 +4,7 @@ import crypto from "crypto";
 import {
     loadUnlabelledPost_accs_kws
     , loadUnlabelledPostByAccount
-    , host_scrapper, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw
+    , host_scrapper, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw, port_scrapper
 } from "./db";
 import Axios from "axios";
 import {Box, GridItem, Tag} from "@chakra-ui/react";
@@ -329,6 +329,17 @@ export const getEDPrediction = async (tweetList: string[]) => {
     let tmp = await Axios.post(`${host_ed}${port}/predict`, { text: tweetList })
     return tmp
 }
+
+export const getCountRecent = async (kws: string[]) => {
+    // let tmp = await Axios.post(`http://${host}:8001/trigger/account`, { list: acc })
+
+    let port = host_scrapper.startsWith('https') ? '' : `:${port_scrapper}`
+    console.log(`${host_scrapper}${port}/count/recent`)
+    let data = {keyword: kws, outsideTagIsAND: true}
+    let tmp = await Axios.post(`${host_scrapper}${port}/count/recent`,  {keyword: kws, outsideTagIsAND: true})
+    return tmp
+}
+
 export const displayTag = (list: string[], fullList:string[]=null, colorScheme='telegram') => {
     let result = []
     if (fullList == null) {

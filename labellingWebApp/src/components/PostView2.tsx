@@ -23,7 +23,7 @@ import {
     isMasked,
     explainKws,
     // maskPersonalDetails,
-    maskPersonalDetails_AtSign
+    maskPersonalDetails_AtSign, getCountRecent
 } from "../utils/common";
 import DefaultEvent, {DE} from "./DefaultEvent";
 import TagsInput2 from "./TagsInput2";
@@ -82,10 +82,11 @@ class PostView2 extends React.Component<Props> {
         auth: this.props.auth,
 
         items: [],
-        loadEachTime: 3,
+        loadEachTime: 10,
         de: this.getDE(),
         hasMore: true,
         loading: false,
+        tweetCount: undefined,
     }
 
 
@@ -97,6 +98,17 @@ class PostView2 extends React.Component<Props> {
         } else {
             toast.error('Please login to start labelling')
         }
+    }
+
+    getCount = async () => {
+        let tmp = 0
+        await getCountRecent(getKwInput('searchKey', false)).then(data => {
+            tmp = data.data
+        })
+         this.setState({
+                tweetCount: tmp
+            })
+
     }
 
 
@@ -185,11 +197,19 @@ class PostView2 extends React.Component<Props> {
                             m={3}
                             onClick={() => {
                                 this.counter=0;
+                                this.setState({
+                                    tweetCount: undefined
+                                })
+                                this.getCount()
                                 this.fetchMoreData()
                             }}
                         >
                             <p>Load more</p>
                         </Button>
+
+                    </Flex>
+                    <Flex my={2} align="center" justify="center">
+                        {this.state.tweetCount ? `appears on Twitter ${this.state.tweetCount} times` : ''}
                     </Flex>
 
 
