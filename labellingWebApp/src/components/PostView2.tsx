@@ -28,7 +28,6 @@ import {
 import DefaultEvent, {DE} from "./DefaultEvent";
 import TagsInput2 from "./TagsInput2";
 import TagsInputKws from "./TagsInputKws";
-import TweetAnnotation from "./TweetAnnotation";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {random} from "nanoid";
 import PostView2Decoration from "./PostView2Decoration";
@@ -102,7 +101,7 @@ class PostView2 extends React.Component<Props> {
 
     getCount = async () => {
         let tmp = 0
-        await getCountRecent(getKwInput('searchKey', false)).then(data => {
+        await getCountRecent(getKwInput('searchKey', false, !this.state.loading)).then(data => {
             tmp = data.data
         })
          this.setState({
@@ -126,8 +125,8 @@ class PostView2 extends React.Component<Props> {
         }
         let result = this.state.items
         let res = await fetchData(
-            getTagsInput('searchAcc', true)
-            , getKwInput('searchKey', false)
+            getTagsInput('searchAcc', true, false, !this.state.loading)
+            , getKwInput('searchKey', false, !this.state.loading)
             , this.state.loadEachTime
             , this.postAfter
             , this.counter
@@ -247,7 +246,7 @@ class PostView2 extends React.Component<Props> {
 
                                         {/*</Text>*/}
                                         <PostView2Decoration text={data.text} hash={data.hash}
-                                                             kws={getKwInput('searchKey', false)}
+                                                             kws={getKwInput('searchKey', false, !this.state.loading)}
                                         />
 
                                         <div id={data.hash + '_events'}>
