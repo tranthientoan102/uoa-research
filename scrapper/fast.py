@@ -183,8 +183,8 @@ async def countRecent(initConfig=Body(...)):
     default['twitter']['runMode'] = 'countRecent'
 
     print(initConfig)
-    default['twitter']['full']['account'] = []
-    default['twitter']['full']['keyword'] = initConfig['keyword']
+    default['twitter']['countRecent']['account'] = []
+    default['twitter']['countRecent']['keyword'] = initConfig['keyword']
     default['twitter']['outsideTagIsAND'] = initConfig['outsideTagIsAND']
 
     return main3.get_recent_tweets_count(default)

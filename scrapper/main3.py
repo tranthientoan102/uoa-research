@@ -1,5 +1,5 @@
 
-# Press the green button in the gutter to run the script.
+import json
 import tweepy
 
 import myFirebase
@@ -17,31 +17,42 @@ def get_recent_tweets_count(runConfig, scrapFrom='twitter', demoMode=False):
     runMode = runConfig[scrapFrom]["runMode"]
     query = buildQuery(runConfig[scrapFrom][runMode]['keyword']
                             , runConfig[scrapFrom]['outsideTagIsAND'])
-    return api.get_recent_tweets_count(query).meta['total_tweet_count']
+
+    result = api.get_recent_tweets_count(query).meta['total_tweet_count']
+    print(f'{query}: {result} times')
+    return result
 
 
 if __name__ == '__main__':
     # runConfig = getDefaultRunConfig()
 
-    runConfig = []
-    scrapFrom = 'twitter'
+    with open('./config/run.json')as f:
+        config = json.load(f)
 
-    # auth = tweepy.OAuth2Bearer(
-    #         runConfig[scrapFrom]["auth"]["bearer_token"]
-    #         # , runConfig[scrapFrom]["auth"]["consumer_secret"]
-    # )
-    # auth.set_access_token(
-    #         runConfig[scrapFrom]["auth"]["access_token"]
-    #         , runConfig[scrapFrom]["auth"]["access_token_secret"]
-    # )
-    #
-    # auth = tweepy.AppAuthHandler(runConfig[scrapFrom]["auth"]["consumer_key"]
-    #                              , runConfig[scrapFrom]["auth"]["consumer_secret"]
-    #                              )
 
-    api = tweepy.Client(runConfig[scrapFrom]["auth"]["bearer_token"])
-    query = 'national OR medicines OR policy'
-    result = api.get_recent_tweets_count(query=query, granularity='day')
-    print(result)
-    print(result.meta['total_tweet_count'])
+        scrapFrom = 'twitter'
+        runMode = 'countRecent'
+
+        # auth = tweepy.OAuth2Bearer(
+        #         runConfig[scrapFrom]["auth"]["bearer_token"]
+        #         # , runConfig[scrapFrom]["auth"]["consumer_secret"]
+        # )
+        # auth.set_access_token(
+        #         runConfig[scrapFrom]["auth"]["access_token"]
+        #         , runConfig[scrapFrom]["auth"]["access_token_secret"]
+        # )
+        #
+        # auth = tweepy.AppAuthHandler(runConfig[scrapFrom]["auth"]["consumer_key"]
+        #                              , runConfig[scrapFrom]["auth"]["consumer_secret"]
+        #                              )
+
+        api = tweepy.Client(config[scrapFrom]["auth"]["bearer_token"])
+        query = buildQuery(config[scrapFrom][runMode]['keyword'], config[scrapFrom]['outsideTagIsAND'])
+
+        print(query)
+        result = get_recent_tweets_count(config)
+        # result = api.get_recent_tweets_count(query=query, granularity='day')
+        print(result)
+        # print(result.meta['total_tweet_count'])
+
 
