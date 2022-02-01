@@ -31,6 +31,7 @@ import {downloadData} from "../utils/db";
 import TagInput2 from "../components/TagsInput2";
 import TagsInputKws from "../components/TagsInputKws";
 import PredictionDownload from "../components/PredictionDownload";
+import PostView2Decoration from "../components/PostView2Decoration";
 
 interface Props {
     data: string[]
@@ -134,9 +135,11 @@ const Predict = (props) => {
                     <Text color="teal">
                         {tweet.hash}
                     </Text>
-                    <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
-                        {isMasked(auth) ? maskPersonalDetails_AtSign(tweet.text): tweet.text}
-                    </Text>
+                    <PostView2Decoration
+                            text={tweet.text}
+                            hash={tweet.hash}
+                            kws={getKwInput('searchKeyPredict', false, false)} />
+
                     <Flex align="center" justify="center">
                         {/*Sentiment: {displayTagSentiment([pred_sa.data[i]], sentimentFullList)}*/}
                         Sentiment: {displayTagSentiment([pred_sa[i]], sentimentFullList)}
