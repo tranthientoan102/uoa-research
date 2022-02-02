@@ -9,7 +9,7 @@ import {
     HStack,
     Button,
     Spacer,
-    Checkbox, Grid, Spinner
+    Checkbox, Grid, Spinner, Tag
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import React, { useState } from 'react';
@@ -17,16 +17,14 @@ import Navbar from '../components/Navbar';
 import { useAuth } from "../lib/auth";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import TagsInput2 from "../components/TagsInput2";
 import {
-    convertTimeToString, displayTag, displayTagSentiment, displayTagED, explainKws,
+    displayTagSentiment, displayTagED, explainKws,
     fetchData, getEDPrediction, getKwInput,
     getSAPrediction,
     getTagsInput,
     isAdmin,
-    isMasked, maskPersonalDetails_AtSign, isChecked, calcPercentage
+    isMasked, isChecked, calcAmountSummary
 } from "../utils/common";
-import {downloadData} from "../utils/db";
 
 import TagInput2 from "../components/TagsInput2";
 import TagsInputKws from "../components/TagsInputKws";
@@ -127,7 +125,7 @@ const Predict = (props) => {
 
         console.log(tweets)
         console.log(pred_sa)
-        console.log(`${pred_ed}`)
+        console.log(pred_ed)
 
         let buttonView = []
 
@@ -137,11 +135,28 @@ const Predict = (props) => {
 
         // result.push(<PredictionDownload text={tweetList} sa={pred_sa} ed={pred_ed} isMasked={isChecked('isMasked')} />)
 
-        let percentage = calcPercentage(pred_sa, sentimentFullList)
-        result.push(`Among the ${numberPredict} latest tweets, there are predicted to have`)
-        for (let k in percentage){
-            console.log(`${percentage[k]*100}% ${k}`)
-            result.push(<div>{(percentage[k]*100).toFixed(2)}% {k}</div>)
+        let percentageSA = calcAmountSummary(pred_sa, sentimentFullList, true)
+        let countED = calcAmountSummary(pred_ed.flat(), eventFullList, false)
+
+        result.push(<Text mt={4}>Among the {tweets.length} latest tweets, there are predicted to have</Text>)
+        let tmpResult = []
+        for (let k in percentageSA){
+            let color = ''
+            if (k == sentimentFullList[0]) color='red'
+            else if (k == sentimentFullList[1]) color='yellow'
+            else color='green'
+            tmpResult.push(<Flex align="center" justify="center" mr={2} p={0}>{(percentageSA[k]*100).toFixed(2)}% <Tag colorScheme={color} variant="solid">{k}</Tag></Flex>)
+        }
+        result.push(
+            <Flex flexDirection="row" flexWrap="wrap"
+                              align="center" justify="center" pb={3}>
+                {tmpResult}
+            </Flex>
+        )
+        for (let c in countED){
+            // console.log(`${countED[c]}`)
+            if (countED[c]>0)
+                result.push(<Flex align="center" justify="center" m={0.5}><Tag colorScheme={'orange'} m={0.5} variant="solid">{c}</Tag> is detected in {countED[c]} tweets</Flex>)
         }
 
         for (const i in tweets) {

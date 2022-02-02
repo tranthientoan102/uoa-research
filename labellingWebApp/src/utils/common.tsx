@@ -419,13 +419,16 @@ export const highlightKws = (text, kws) => {
     return result
 }
 
-export const calcPercentage = (input: [string], fullCate:string[]) => {
+export const calcAmountSummary = (input: [string], fullCate:string[], percentage:boolean) => {
     let total = input.length
     let result = {}
 
 
     fullCate.forEach(c => {
-        result[c] = (input.filter(i => i == c).length / total).toFixed(4)
+        if (percentage)
+            result[c] = (input.filter(i => i == c).length / total).toFixed(4)
+        else result[c] = input.filter(i => i == c).length
+
     })
     console.log(result)
     return result
