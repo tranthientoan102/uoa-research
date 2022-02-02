@@ -24,7 +24,7 @@ import {
     getSAPrediction,
     getTagsInput,
     isAdmin,
-    isMasked, maskPersonalDetails_AtSign, isChecked
+    isMasked, maskPersonalDetails_AtSign, isChecked, calcPercentage
 } from "../utils/common";
 import {downloadData} from "../utils/db";
 
@@ -46,9 +46,15 @@ const Predict = (props) => {
     toast.configure()
     const { auth, signinWithGoogle } = useAuth();
     const [data, setData] = useState("init data");
+
     const [downloadAvailable, setDownloadAvailable] = useState(false)
+    const [buttonExport, setButtonExport] = useState(<PredictionDownload text={[]} sa={[]} ed={[]}
+                                                    isMasked={true}
+                                                    disabled={true}/>)
 
     const [text, setText] = useState([])
+
+    let numberPredict = 25
     // const [ pred_sa, setPred_sa] = useState([])
     // const [ pred_ed, setPred_ed] = useState([])
 
@@ -56,6 +62,11 @@ const Predict = (props) => {
     let tweetList = []
 
     const processPredict = async () => {
+
+        setButtonExport(<PredictionDownload text={[]} sa={[]} ed={[]}
+                                                    isMasked={true}
+                                                    disabled={true}/>)
+
         let result = []
         // let tweetList = []
 
@@ -75,7 +86,7 @@ const Predict = (props) => {
         let tweets = await fetchData(
                                         getTagsInput('searchAcc',true )
                                         , getKwInput('searchKeyPredict', false)
-                                        , 25
+                                        , numberPredict
                                     ).then((res) => {
             res.forEach(a =>{
                 // console.log(`converting ${a.id}`)
@@ -116,9 +127,22 @@ const Predict = (props) => {
 
         console.log(tweets)
         console.log(pred_sa)
-        console.log(pred_ed)
+        console.log(`${pred_ed}`)
 
-        result.push(<PredictionDownload text={tweetList} sa={pred_sa} ed={pred_ed} isMasked={isChecked('isMasked')} />)
+        let buttonView = []
+
+        setButtonExport(<PredictionDownload text={tweetList} sa={pred_sa} ed={pred_ed}
+                                                    isMasked={isChecked('isMasked')}
+                                                    disabled={false}/>)
+
+        // result.push(<PredictionDownload text={tweetList} sa={pred_sa} ed={pred_ed} isMasked={isChecked('isMasked')} />)
+
+        let percentage = calcPercentage(pred_sa, sentimentFullList)
+        result.push(`Among the ${numberPredict} latest tweets, there are predicted to have`)
+        for (let k in percentage){
+            console.log(`${percentage[k]*100}% ${k}`)
+            result.push(<div>{(percentage[k]*100).toFixed(2)}% {k}</div>)
+        }
 
         for (const i in tweets) {
             let tweet = tweets[i]
@@ -194,7 +218,8 @@ const Predict = (props) => {
                                     <Text>Keyword</Text>
                                     <TagsInputKws id="searchKeyPredict" tags={[]} outsideIsAND={true}/>
                                 </Container>
-
+                            </Flex>
+                            <Flex  my={2} align="center" justify="center" >
                                 <div id="isMasked">
                                 {isAdmin(auth) ?
                                     <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
@@ -211,6 +236,7 @@ const Predict = (props) => {
                                 >
                                     <p>Load & Predict</p>
                                 </Button>
+                                {buttonExport}
 
 
                                 {/*<Button*/}

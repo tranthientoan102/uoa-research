@@ -340,7 +340,11 @@ export const getCountRecent = async (kws: string[]) => {
     return tmp
 }
 
-export const displayTag = (list: string[], fullList:string[]=null, colorScheme='telegram') => {
+export const displayTag = (list: string[]
+                           , fullList:string[]=null
+                           , colorScheme='telegram'
+                           , percentage:number[]=null
+) => {
     let result = []
     if (fullList == null) {
         for (const i in list) {
@@ -348,9 +352,26 @@ export const displayTag = (list: string[], fullList:string[]=null, colorScheme='
         }
     } else{
         for (const i in fullList) {
+            let percent = ''
+            if (percentage != null){
+                percent = percent[i]
+            }
             if (list.includes(fullList[i]))
-                result.push(<Tag m={1} colorScheme={colorScheme} variant="solid" align="center" justify="center">{fullList[i]}</Tag>)
-            else result.push(<Tag m={1} color={'gray.300'} align="center" justify="center">{fullList[i]}</Tag>)
+                result.push(
+                    <span>
+                        <Tag m={1} colorScheme={colorScheme} variant="solid" align="center" justify="center">{fullList[i]}
+                        </Tag>
+                        {percent}
+                    </span>
+                )
+            else result.push(
+                <span>
+                    <Tag m={1} color={'gray.300'} align="center" justify="center">{fullList[i]}
+                    </Tag>
+                    {percent}
+                </span>
+
+            )
         }
 
     }
@@ -395,5 +416,17 @@ export const highlightKws = (text, kws) => {
         }
         result.pop()
     }
+    return result
+}
+
+export const calcPercentage = (input: [string], fullCate:string[]) => {
+    let total = input.length
+    let result = {}
+
+
+    fullCate.forEach(c => {
+        result[c] = (input.filter(i => i == c).length / total).toFixed(4)
+    })
+    console.log(result)
     return result
 }
