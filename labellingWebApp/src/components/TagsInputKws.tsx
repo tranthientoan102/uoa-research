@@ -3,8 +3,8 @@ import React from "react";
 import TagsInput from "react-tagsinput";
 import {Button, Checkbox, Container} from "@chakra-ui/react";
 import {explainKws} from "../utils/common";
-// import 'react-tagsinput/react-tagsinput.css'
-
+import {random} from "nanoid";
+import {getDefaultKws} from "../utils/db";
 
 const tagProps = { className: "react-tagsinput-tag" };
 
@@ -18,18 +18,21 @@ interface DE{
 interface Props {
     id: string,
     tags: string[],
-    outsideIsAND: boolean
+    outsideIsAND: boolean,
 }
 
 class TagsInputKws extends React.Component<Props> {
-    // constructor(init: Props) {
-    //     super(init)
-    //     console.log(init.defaultEvents)
-    // }
+
     state = {
+        name:'TagsInputKws',
+        id: this.props.id,
+        isLoading: false,
         tags: this.props.tags,
-        outsideIsAND: this.props.outsideIsAND
+        outsideIsAND: this.props.outsideIsAND,
+        // items : []
     };
+    items = []
+    itemExplain = ''
 
     handleTagsinput = tags => {
         this.setState({ tags });
@@ -39,9 +42,33 @@ class TagsInputKws extends React.Component<Props> {
     //     document.getElementById(hash).
     // }
 
+    collectItem = async() => {
+        this.setState({
+            'isLoading': true,
+        })
+        this.items = []
+        await getDefaultKws().then(data => {
+            data.forEach((i) =>  this.items.push(i))
+        })
+        this.setState({
+            'isLoading': false,
+        })
+    }
+
+    componentDidMount() {
+
+        console.log(`${this.state.name}::componentDidMount`)
+        this.collectItem()
+
+
+    }
+
     render() {
+        // console.log(`${this.state.name}::render`)
+
         return (
-            <Container id={this.props.id} m={0} p={0}>
+            <Container id={this.props.id} m={0} p={0} justify="center" align="start">
+
                 <TagsInput
                     className="react-tagsinput"
                     onChange={this.handleTagsinput}
@@ -50,6 +77,13 @@ class TagsInputKws extends React.Component<Props> {
                     inputProps={inputProps}
                 >
                 </TagsInput>
+
+                {this.items.map(i =>
+                    <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue' key={i.id}
+                    >
+                        {i.name}
+                    </Checkbox>)
+                }
                 {/*<Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'*/}
                 {/*          value ={(this.state.outsideIsAND)?'checked':'unchecked'}*/}
                 {/*          onChange={()=> {*/}

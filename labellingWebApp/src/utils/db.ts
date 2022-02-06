@@ -1,9 +1,6 @@
-import { IdProvider } from "@chakra-ui/react";
 
 import firebase from "../lib/firebase";
-
 import Axios from "axios";
-import {database} from "firebase-admin/lib/database";
 import {toast} from 'react-toastify';
 
 
@@ -453,6 +450,38 @@ export const deleteDefaultEvent = async (hash: string) => {
 
     try{
         await firebase.firestore().collection("default_events").doc(hash).delete()
+    }catch (e) {
+        console.log(`Delete failure: ${hash}`, e);
+    }
+
+}
+
+export const createDefaultKws = async (kwsList: string[], auth?) => {
+    var collectionPath = '/default_kws'
+    var fire = await firebase.firestore()
+    var crypto = require('crypto')
+    for (const e of kwsList){
+        let doc = {
+            id: crypto.createHash('md5').update(e).digest('hex'),
+            name: e,
+            createdBy: auth?auth.email:'testAcc'
+        }
+        fire.doc(`${collectionPath}/${doc.id}`).set(doc)
+    }
+
+}
+export const getDefaultKws = async () => {
+    let dataRef = await firebase.firestore().collection("default_kws").get()
+    let defKws = dataRef.docs.map(doc => (
+        { id: doc.id, name:doc.data().name,...doc.data() })
+    )
+
+    return defKws
+}
+export const deleteDefaultKws = async (hash: string) => {
+
+    try{
+        await firebase.firestore().collection("default_kws").doc(hash).delete()
     }catch (e) {
         console.log(`Delete failure: ${hash}`, e);
     }

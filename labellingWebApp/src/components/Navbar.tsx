@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Divider, Flex, Heading, Link } from "@chakra-ui/layout";
-import {Image, Input} from "@chakra-ui/react"
+import {Image, Input, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react"
 // import { useRouter } from "next/dist/client/router";
 import { useRouter } from "next/router";
 import { useAuth } from "../lib/auth";
@@ -21,7 +21,7 @@ const Navbar: React.FC<{}> = () => {
                 </Flex>
                 <Box my={1}>
                     {auth ? (
-                        <Box p={2}>
+                        <Flex p={2} flexDirection="row" flexWrap="wrap" justify="right">
                             <Link
                                 p={2}
                                 onClick={() => {
@@ -84,9 +84,9 @@ const Navbar: React.FC<{}> = () => {
                             <Link p={2} onClick={() => signOut()} bg={'tomato'} color={'white'}>
                                 {auth.email.split('@')[0]} | Logout
                             </Link>
-                        </Box>
+                        </Flex>
                     ) : (
-                        <Box p={2}>
+                        <Flex p={2}>
                             <Link
                                 p={2}
                                 onClick={() => router.push('/signin')}
@@ -96,7 +96,7 @@ const Navbar: React.FC<{}> = () => {
                             >
                                 Sign In
                             </Link>
-                        </Box>
+                        </Flex>
                     )}
                 </Box>
             </Flex>

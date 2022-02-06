@@ -7,7 +7,7 @@ import {
     updateLabel,
     loadUnlabelledPost_accs_kws,
     refillDb_kw,
-    refillDb_acc_kws, loadLabelledPostByLabelledBy
+    refillDb_acc_kws, loadLabelledPostByLabelledBy, getDefaultKws
 } from '../utils/db';
 import {useAuth} from "../lib/auth";
 import {toast} from 'react-toastify';
@@ -174,6 +174,7 @@ class PostView2 extends React.Component<Props> {
                             <Text>Keyword</Text>
                             <TagsInputKws id="searchKey" tags={[]}
                                           outsideIsAND={true}
+                                          // items={this.kw}
                             />
                         </Container>
 
@@ -208,7 +209,7 @@ class PostView2 extends React.Component<Props> {
 
                     </Flex>
                     <Flex my={2} align="center" justify="center">
-                        {this.state.tweetCount ? `appears on Twitter ${this.state.tweetCount} times` : ''}
+                        {this.state.tweetCount ? `appears on Twitter ${this.state.tweetCount} times in last 7 days` : ''}
                     </Flex>
 
 
