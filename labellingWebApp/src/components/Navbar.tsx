@@ -12,7 +12,7 @@ const Navbar: React.FC<{}> = () => {
     console.log(router.asPath)
     return (
         <>
-            <Flex justify="space-between" m={1}  align="center" di>
+            <Flex justify="space-between" m={1}  align="center">
                 <Flex>
                     <Heading onClick={() => router.push('/')} as="button" mx={2}>
                         {process.env.NEXT_PUBLIC_NAME}
