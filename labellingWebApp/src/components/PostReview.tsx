@@ -167,9 +167,9 @@ class PostReview extends React.Component<Props> {
                                     emptyColor="gray.200"
                                     color="blue.500"
                                 /> : (
-                                        <Container position="relative" maxW="8xl" align="center" justify="center">
+                                        <Grid position="relative" maxW="8xl" align="center" justify="center">
                                             <Text fontWeight={600} fontSize='2xl' m={10}>End of annotations</Text>
-                                        </Container>
+                                        </Grid>
                             )}
                         </Flex>
 
