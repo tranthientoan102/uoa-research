@@ -86,7 +86,7 @@ class ItemCrd extends React.Component<Props> {
             </Flex>)
         else {
             return (
-                <SimpleGrid flexDirection="column" flexWrap="wrap" align="center" m={0} p={0}>
+                <SimpleGrid m={0} p={0}>
                     <Button onClick={() => this.getFnc()} >
                         {this.compTittle}
                     </Button>
