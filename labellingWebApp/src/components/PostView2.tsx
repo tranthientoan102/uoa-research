@@ -216,7 +216,7 @@ class PostView2 extends React.Component<Props> {
                     {/* </Flex> */}
                 </Container>
                 <Container maxW="8xl">
-                    <SimpleGrid my={2} align="center">
+                    <SimpleGrid my={2}>
                         <InfiniteScroll
                             dataLength={this.state.items.length}
                             next={this.fetchMoreData}

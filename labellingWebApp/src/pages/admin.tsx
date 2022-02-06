@@ -82,24 +82,24 @@ const Admin = (props) => {
                 {isAuthoriesed(auth)? (
                     <Flex pt={6} px={4} flexDirection="row" flexWrap="wrap" justify="center" align="start">
 
-                        <SimpleGrid width={childWidth} align="center" justify="center" px={5}>
+                        <Flex width={childWidth} align="center" justify="center" px={5}>
                             <ItemCrd  auth={auth} compTittle={'Load Default Event'}
                                       createFnc={createDefaultEvent}
                                       getFnc={getDefaultEventList}
                                       deleteFnc={deleteDefaultEvent}
                                       inputId={'defaultEvent'}/>
-                        </SimpleGrid>
+                        </Flex>
 
-                        <SimpleGrid width={childWidth} align="center" justify="center" px={5}>
+                        <Flex width={childWidth} align="center" justify="center" px={5}>
                             <ItemCrd  auth={auth} compTittle={'Load Default Keywords'}
                                       createFnc={createDefaultKws}
                                       getFnc={getDefaultKws}
                                       deleteFnc={deleteDefaultKws}
                                       inputId={'defaultKeywords'}/>
-                        </SimpleGrid>
+                        </Flex>
 
 
-                        <SimpleGrid align="center" justify="top" pt={5} px={5}>
+                        <Flex align="center" justify="top" pt={5} px={5}>
                             <Text fontSize="2xl">Encrypted data</Text>
                             <Textarea id="encrypted"
                                    onChange={event => {
@@ -108,7 +108,7 @@ const Admin = (props) => {
                             <Text id="decrypted" readOnly={true}>{decrypted.map(function (d, idx){
                                 return (<p key={idx}>{d}</p>)
                             })}</Text>
-                        </SimpleGrid>
+                        </Flex>
 
 
                     </Flex>
