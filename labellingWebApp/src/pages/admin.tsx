@@ -75,31 +75,31 @@ const Admin = (props) => {
             </Head>
             <main>
                 <Navbar />
-                <SimpleGrid align="center" justify="center">
+                <Flex align="center" justify="center">
                     <Text fontSize="3xl" mb={4} color='dodgerblue'>This is Admin page</Text>
-                </SimpleGrid>
+                </Flex>
                 {/*<Flex maxW="6xl" pt={6}>*/}
                 {isAuthoriesed(auth)? (
                     <Flex pt={6} px={4} flexDirection="row" flexWrap="wrap" justify="center" align="start">
 
-                        <Flex width={childWidth} align="center" justify="center" px={5}>
+                        <Grid width={childWidth} align="center" justify="center" px={5} >
                             <ItemCrd  auth={auth} compTittle={'Load Default Event'}
                                       createFnc={createDefaultEvent}
                                       getFnc={getDefaultEventList}
                                       deleteFnc={deleteDefaultEvent}
                                       inputId={'defaultEvent'}/>
-                        </Flex>
+                        </Grid>
 
-                        <Flex width={childWidth} align="center" justify="center" px={5}>
+                        <Grid width={childWidth} align="center" justify="center" px={5}>
                             <ItemCrd  auth={auth} compTittle={'Load Default Keywords'}
                                       createFnc={createDefaultKws}
                                       getFnc={getDefaultKws}
                                       deleteFnc={deleteDefaultKws}
                                       inputId={'defaultKeywords'}/>
-                        </Flex>
+                        </Grid>
 
 
-                        <Flex align="center" justify="top" pt={5} px={5}>
+                        <Grid align="center" justify="top" pt={5} px={5}>
                             <Text fontSize="2xl">Encrypted data</Text>
                             <Textarea id="encrypted"
                                    onChange={event => {
@@ -108,7 +108,7 @@ const Admin = (props) => {
                             <Text id="decrypted" readOnly={true}>{decrypted.map(function (d, idx){
                                 return (<p key={idx}>{d}</p>)
                             })}</Text>
-                        </Flex>
+                        </Grid>
 
 
                     </Flex>
