@@ -1,7 +1,7 @@
 import React from "react";
 // react plugin that creates an input with badges
 import TagsInput from "react-tagsinput";
-import {Button, Checkbox, Container, Grid} from "@chakra-ui/react";
+import {Box, Button, Checkbox, Container, Flex, Grid} from "@chakra-ui/react";
 import {explainKws} from "../utils/common";
 import {random} from "nanoid";
 import {getDefaultKws} from "../utils/db";
@@ -67,7 +67,7 @@ class TagsInputKws extends React.Component<Props> {
         // console.log(`${this.state.name}::render`)
 
         return (
-            <Grid id={this.props.id} m={0} p={0} justify="center" align="start">
+            <Box id={this.props.id} m={0} p={0} justify="center" align="start">
 
                 <TagsInput
                     className="react-tagsinput"
@@ -93,7 +93,7 @@ class TagsInputKws extends React.Component<Props> {
                 {/*        /!*{this.props.outsideIsAND}*!/ tag {this.state.outsideIsAND?'AND':'OR'} tag*/}
                 {/*</Checkbox>*/}
                 <p>{explainKws(this.props.id)}</p>
-            </Grid>
+            </Box>
         );
     }
 }

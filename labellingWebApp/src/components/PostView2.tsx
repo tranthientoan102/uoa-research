@@ -164,8 +164,8 @@ class PostView2 extends React.Component<Props> {
         console.log(`render ${this.state.name}`)
         return (
             <div>
-                <Container position="relative" maxW="8xl">
-                    <Flex my={2} align="center" justify="center">
+                <Container position="relative" maxW="12xl">
+                    <Flex my={2} align="top" justify="center">
                         <Container mx={2} p={0}>
                             <Text>Twitter account</Text>
                             <TagInput2 id="searchAcc" defaultEvents={[]} tags={[]}/>

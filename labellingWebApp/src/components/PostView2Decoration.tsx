@@ -109,9 +109,9 @@ class PostView2Decoration extends React.Component<Props> {
         //     let textSep = this.state.text.split(`/${this.state.kws[i]}/ig`)
         //
         // }
-        let result = []
-        let result2=''
         let refinedKws = this.kwsRefine()
+
+        let result = refinedKws.length>0?[]:[this.state.text]
         for (let i in refinedKws){
             // let kw = this.state.kws[i][0].replaceAll('"', '').trim().toUpperCase()
             let kw = refinedKws[i].replaceAll('"', '').trim().toUpperCase()
