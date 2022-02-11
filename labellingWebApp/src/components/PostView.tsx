@@ -14,7 +14,6 @@ import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-import TagInput2 from './TagsInput2';
 import {
     fetchData,
     getKwInput,
@@ -234,7 +233,7 @@ const PostView = (props) => {
                     {/*<Container  align="top" justify="center" >*/}
                         <Container mx={2} p={0}>
                             <Text>Twitter account</Text>
-                            <TagInput2 id="searchAcc" defaultEvents={[]} tags={[]} />
+                            <TagsInput2 id="searchAcc" defaultEvents={[]} tags={[]} />
                         </Container>
                     {/*</Container>*/}
 

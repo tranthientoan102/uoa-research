@@ -10,6 +10,14 @@ import Axios from "axios";
 import {Box, GridItem, Tag} from "@chakra-ui/react";
 import dateformat from "dateformat";
 
+
+export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
+                            'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
+                            'advocary/reform']
+export const eventFullList = [eventList, 'no event detected'].flat()
+export const sentimentFullList = ['negative', 'neutral', 'positive']
+
+
 export const labelling = async (auth, values) => {
     try {
         const header = {
@@ -432,4 +440,25 @@ export const calcAmountSummary = (input: [string], fullCate:string[], percentage
     })
     console.log(result)
     return result
+}
+
+export const checkExpect = (prop: string[], expected: string[], mode='in') => {
+
+
+    let result = false
+    prop = [prop].flat()
+    if (expected.length == 0) result=true
+    else if (mode=='in'){
+        for (const p of prop){
+            console.log(`${p}`)
+            if (expected.includes(p)){
+                result = true
+                break
+            }
+        }
+    }
+
+    console.log(`${prop} is included in ${expected}: ${result}`)
+    return result
+
 }

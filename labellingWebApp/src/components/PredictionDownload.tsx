@@ -20,7 +20,7 @@ const headers = [
 ];
 
 interface Props {
-    text: string[],
+    text: any[],
     sa: string[],
     ed: string[],
     isMasked: boolean,
@@ -42,12 +42,15 @@ class PredictionDownload extends Component<Props> {
     csvLinkEl = React.createRef();
 
     download = async () => {
+
+        console.log(this.props.text)
         // const data = await this.getData();
         let data =  []
         // for (let i = 0; i < this.state.text.length; i++){
         //     let text= this.state.text[i]
         for (let i = 0; i < this.props.text.length; i++){
-            let text= this.props.text[i]
+            let text= this.props.text[i].text
+            console.log(text)
             text = text.replaceAll("\"","[doubleQuote]")
                     .replaceAll("\n", "[newLine]")
             // if (this.state.isMasked){
