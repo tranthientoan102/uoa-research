@@ -40,6 +40,7 @@ import PostView2Decoration from "./PostView2Decoration";
 import Head from "next/head";
 import Navbar from "./Navbar";
 import PredictionDownload from "./PredictionDownload";
+import TweetHeader from "./TweetHeader";
 
 interface Props {
     auth,
@@ -99,17 +100,11 @@ class PredictView extends React.Component<Props> {
                 console.log(`i=${i}\n text=${tweet.text}`)
                 result.push(
                     <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl" id={this.props.tweets[i].hash}>
-                        {isMasked(this.props.auth) ? '' :
-                            <Text color="blue.300">
-                                <a href={tweet.orig}>{tweet.orig}</a>
-                            </Text>}
-                        <Text colorScheme="teal">
-                            {isMasked(this.props.auth) ? '' :
-                                <b>{tweet.account}</b>} {(new Date(this.props.tweets[i].postAt['seconds'] * 1000).toString())}
-                        </Text>
-                        <Text color="teal">
-                            {this.props.tweets[i].hash}
-                        </Text>
+
+                        <TweetHeader isMasked={isMasked(this.props.auth)}
+                             acc={tweet.account} engage={tweet.engage} geo={tweet.geo}
+                             hash={tweet.hash} orig={tweet.orig} postSec={tweet.postAt['seconds']}/>
+
                         <PostView2Decoration
                             text={this.props.tweets[i].text}
                             hash={this.props.tweets[i].hash}

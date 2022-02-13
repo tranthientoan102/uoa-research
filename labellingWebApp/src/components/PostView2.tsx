@@ -1,4 +1,17 @@
-import {Box, Button, Checkbox, Container, Divider, Flex, Grid, SimpleGrid, Spinner, Tag, Text} from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    Checkbox,
+    Container,
+    Divider,
+    Flex,
+    Grid,
+    HStack,
+    SimpleGrid,
+    Spinner,
+    Tag,
+    Text
+} from '@chakra-ui/react';
 import React, {useState} from 'react';
 import {
     getDefaultEventList,
@@ -31,7 +44,10 @@ import TagsInputKws from "./TagsInputKws";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {random} from "nanoid";
 import PostView2Decoration from "./PostView2Decoration";
+import {SocialIcon} from "react-social-icons";
 
+import {MdOutlinePlace, MdOutlineTrendingUp} from 'react-icons/md';
+import TweetHeader from "./TweetHeader";
 interface Props {
     auth,
 
@@ -81,7 +97,7 @@ class PostView2 extends React.Component<Props> {
         auth: this.props.auth,
 
         items: [],
-        loadEachTime: 10,
+        loadEachTime: 20,
         de: this.getDE(),
         hasMore: true,
         loading: false,
@@ -131,6 +147,7 @@ class PostView2 extends React.Component<Props> {
             , this.postAfter
             , this.counter
         )
+        res = res.sort((a,b)=>{return (b['engage'] - a['engage'])})
         this.counter++;
         // .then(data => result.push)
         // .finally(() => {
@@ -174,7 +191,7 @@ class PostView2 extends React.Component<Props> {
                             <Text>Keyword</Text>
                             <TagsInputKws id="searchKey" tags={[]}
                                           outsideIsAND={true}
-                                          // items={this.kw}
+                                // items={this.kw}
                             />
                         </Container>
 
@@ -188,9 +205,10 @@ class PostView2 extends React.Component<Props> {
                         </div>
                         <div id="isPremium">
 
-                                <Checkbox colorScheme='blue' isDisabled={!isAdmin(this.state.auth)} mx={2} color={'twitter.600'}>
-                                    <b>PREMIUM SEARCH</b>
-                                </Checkbox>
+                            <Checkbox colorScheme='blue' isDisabled={!isAdmin(this.state.auth)} mx={2}
+                                      color={'twitter.600'}>
+                                <b>PREMIUM SEARCH</b>
+                            </Checkbox>
 
                         </div>
                         <Button
@@ -226,19 +244,11 @@ class PostView2 extends React.Component<Props> {
                             {this.state.items.map(data => (
                                     <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
                                          id={data.hash} key={data.hash}>
-                                        {isMasked(this.state.auth) ? '' :
-                                            <Text color="blue.300">
-                                                <a href={data.orig}>{data.orig}</a>
-                                            </Text>}
-                                        <Text colorScheme="teal">
-                                            {isMasked(this.state.auth) ? '' :
-                                                <b>{data.account}</b>}
-                                            {(new Date(data.postAt['seconds'] * 1000).toString())}
 
-                                        </Text>
-                                        <Text color="teal">
-                                            {data.hash}
-                                        </Text>
+                                        <TweetHeader isMasked={isMasked(this.state.auth)}
+                                                     acc={data.account} engage={data.engage} geo={data.geo}
+                                                     hash={data.hash} orig={data.orig} postSec={data.postAt['seconds']}/>
+
                                         {/*<Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">*/}
                                         {/*    {isMasked(this.state.auth) ? maskPersonalDetails_AtSign(*/}
                                         {/*                                            highlightKws(data.text*/}
@@ -253,7 +263,7 @@ class PostView2 extends React.Component<Props> {
                                         <div id={data.hash + '_events'}>
                                             {this.state.de.map(de => (
                                                 <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
-                                                    key={data.hash+ '_events_' + de.name}
+                                                          key={data.hash + '_events_' + de.name}
                                                 >
                                                     {de.name}
                                                 </Checkbox>))
@@ -313,6 +323,7 @@ class PostView2 extends React.Component<Props> {
                 </Container>
             </div>
         );
+
     }
 }
 

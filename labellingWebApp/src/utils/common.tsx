@@ -295,7 +295,9 @@ export const fetchData = async (accs: string[], kws:string[][], limit= 25
     }
 
     console.log(`fetched ${res.length} tweets`)
-    return res;
+
+    return res.sort((a,b)=>{return (b['engage'] - a['engage'])});
+    // return res;
 
 }
 export const refillData = async (accs:string[], kws:string[][], isPremium: boolean) => {

@@ -9,7 +9,7 @@ toast.configure()
 // dotenv.config()
 // require('dotenv').config({path: './config/.e2222nv.development.dev'})
 
-const expectingPost = 10
+const expectingPost = 30
 const dbLookupLimit = 500
 
 // export const host = 'localhost'
