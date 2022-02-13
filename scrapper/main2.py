@@ -147,6 +147,7 @@ def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, s
                 tweet = MyTweet2().parse(status._json, buildQuery(kws, outsideTagIsAND))
                 
                 if demoMode:
+                    print(status._json)
                     print(tweet.to_dict())
                     # print(toDate.)
                 else:
@@ -299,7 +300,7 @@ if __name__ == '__main__':
         # runconfig['twitter']['full']['account'] = ''
         # runconfig['twitter']['full']['keyword'] = [['"national medicines policy"']]
 
-        runconfig['twitter']['runMode'] = 'keyword'
+        runconfig['twitter']['runMode'] = 'account'
         # runconfig['twitter']['account'] = ['elonmusk']
         # runconfig['twitter']['keyword']['keyword'] = [['"national medicines policy"']]
 

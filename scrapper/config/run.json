@@ -15,14 +15,15 @@
             "abcaustralia"
         ],
         "keyword": [
-            "sydney"
+            ["sydney"]
         ],
         "full": {
             "tweetLoad": 1250,
             "account": [
+                "abcaustralia"
             ],
             "keyword": [
-               "sydney"
+                ["vaccine"]
             ]
         },
         "30days": {

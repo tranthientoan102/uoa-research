@@ -139,8 +139,9 @@ class MyTweet2:
             self.fav = initDict['favorite_count']
             self.comment = initDict['reply_count'] if 'reply_count' in initDict.keys() else 0
             self.engage = self.retweet + self.fav + self.comment
-
-            self.geo = initDict['geo'] if initDict['geo'] else 'unknown location'
+            self.geo = 'unknown location'
+            if initDict['place']:
+                self.geo = f'{initDict["place"]["full_name"]}, {initDict["place"]["country"]}'
 
 
             self.query = query
@@ -184,7 +185,7 @@ class MyTweet2:
             , 'fav'       : self.fav
             , 'comment'   : self.comment
             , 'engage'    : self.engage
-            , 'geo': self.geo
+            , 'geo'       : self.geo
 
             , 'query'     : self.query
             , 'rating'    : self.rating
