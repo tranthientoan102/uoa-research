@@ -81,45 +81,50 @@ class MyFirebaseService:
             firebase_admin.delete_app(firebase_admin.get_app())
 
 if __name__ == '__main__':
-    # docs = initCollectionRef().stream()
-    # for doc in docs:
-    #     print(f'{doc.id} => {doc.to_dict()}')
+    # # docs = initCollectionRef().stream()
+    # # for doc in docs:
+    # #     print(f'{doc.id} => {doc.to_dict()}')
+    #
+    # # doc = initCollectionRef().document('abc').get()
+    # # if doc.exists:
+    # #     print(doc.to_dict())
+    # # else:
+    # #     print('No such document!')
+    #
+    # service = MyFirebaseService()
+    #
+    # # tweet = MyTweet('test2')
+    # # doc = service.getCollectionRef().document(tweet.hash).set(tweet.to_dict())
+    #
+    # # docRead = service.getCollectionRef().where("rating", "!=", -10).get()
+    # docRead = service.getCollectionRef().get()
+    #
+    # # .collection("tweets_health")
+    # # .where("account", "array-contains-any", ["@abcaustralia"])
+    #
+    #
+    # # if docRead.exists:
+    # #     print(docRead.to_dict())
+    # # else:
+    # #     print('No such document!')
+    #
+    # counter = -1
+    # for doc in docRead:
+    #     # if len(doc.to_dict()['account'])>1:
+    #     a = doc.to_dict()
+    #     # a['rating'] = -10
+    #     # a['event'] = []
+    #     #
+    #     # service.getCollectionRef().document(a['hash']).set(a)
+    #     # print(f'{a}')
+    #
+    #     service.getCollectionRef().document(a['hash']).delete()
+    #     print(a['hash'])
+    #     # counter -= 1
+    #     # if counter == 0: break
+    # print(f'done deleting {counter} tweets')
 
-    # doc = initCollectionRef().document('abc').get()
-    # if doc.exists:
-    #     print(doc.to_dict())
-    # else:
-    #     print('No such document!')
-
-    service = MyFirebaseService()
-
-    # tweet = MyTweet('test2')
-    # doc = service.getCollectionRef().document(tweet.hash).set(tweet.to_dict())
-
-    # docRead = service.getCollectionRef().where("rating", "!=", -10).get()
-    docRead = service.getCollectionRef().get()
-
-    # .collection("tweets_health")
-    # .where("account", "array-contains-any", ["@abcaustralia"])
+    service = MyFirebaseService(collectionName='default_kws')
+    print(service.getDbRef().collection())
 
 
-    # if docRead.exists:
-    #     print(docRead.to_dict())
-    # else:
-    #     print('No such document!')
-
-    counter = -1
-    for doc in docRead:
-        # if len(doc.to_dict()['account'])>1:
-        a = doc.to_dict()
-        # a['rating'] = -10
-        # a['event'] = []
-        #
-        # service.getCollectionRef().document(a['hash']).set(a)
-        # print(f'{a}')
-
-        service.getCollectionRef().document(a['hash']).delete()
-        print(a['hash'])
-        # counter -= 1
-        # if counter == 0: break
-    print(f'done deleting {counter} tweets')

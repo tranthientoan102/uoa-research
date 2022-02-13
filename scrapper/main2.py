@@ -48,7 +48,8 @@ def run(runConfig, scrapFrom='twitter', demoMode=False):
                    , runConfig[scrapFrom]['keyword']
                    , runConfig[scrapFrom]['outsideTagIsAND']
                    , runConfig[scrapFrom]['tweetLoad']
-                   , datetime.now())
+                   , datetime.now()
+                   , demoMode)
     elif runMode == 'account':
         subRun_acc_kws(api, myfirebase
                        , runConfig[scrapFrom]["account"][0]
@@ -77,7 +78,7 @@ def run(runConfig, scrapFrom='twitter', demoMode=False):
     else:
         subRun_acc_kws_30(api, myfirebase)
 
-def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime):
+def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime, demoMode):
     query = buildQuery(kws, outsideTagIsAND )
     print(f'init Tweepy search with keywords {query}')
     counter = 0
@@ -87,19 +88,25 @@ def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime)
                 , q=query
                 , tweet_mode="extended"
                 , lang='en'
+                , result_type='popular'
                                     ).items(expectingCount * 5):
-            tmp+=1
-            tweet = MyTweet2().parse(status._json, query)
-            if not myfirebase.checkExisted(tweet.hash):
-                print(f'{tweet.hash}')
-                myfirebase.insertData(tweet)
-                counter += 1
-            elif not myfirebase.checkContentIncluded(tweet.hash, 'query'):
-                myfirebase.update(tweet.hash, {'query': query})
+            tmp += 1
+            if demoMode:
+                # print(f'${status._json}\n\n')
+                tweet = MyTweet2().parse(status._json, query)
+                print(tweet.to_dict())
+            else :
+                tweet = MyTweet2().parse(status._json, query)
+                if not myfirebase.checkExisted(tweet.hash):
+                    print(f'{tweet.hash}')
+                    myfirebase.insertData(tweet)
+                    counter += 1
+                elif not myfirebase.checkContentIncluded(tweet.hash, 'query'):
+                    myfirebase.update(tweet.hash, {'query': query})
 
-            # print(f'current insert: {counter}, trigger again with max id = {maxTweetId}')
+                # print(f'current insert: {counter}, trigger again with max id = {maxTweetId}')
 
-            if (counter >= expectingCount): break
+                if (counter >= expectingCount): break
         print(f'current insert: {counter} (found total {tmp})')
     except Exception as e:
         print(e)
@@ -263,7 +270,7 @@ def buildQuery( kwTags, outsideTagIsAND):
     else:
         for kwTag in kwTags:
             tmp = ' '.join(kwTag)
-            result.append(f'({tmp})' )
+            result.append(f'({tmp})')
         return ' OR '.join(result)
 
 def testAccQuota():
@@ -287,10 +294,16 @@ def testAccQuota():
 if __name__ == '__main__':
     with open('./config/run.json') as f:
         runconfig = json.load(f)
-        runconfig['twitter']['runMode'] = 'full'
+        # runconfig['twitter']['runMode'] = 'full'
+        # # runconfig['twitter']['account'] = ['elonmusk']
+        # runconfig['twitter']['full']['account'] = ''
+        # runconfig['twitter']['full']['keyword'] = [['"national medicines policy"']]
+
+        runconfig['twitter']['runMode'] = 'keyword'
         # runconfig['twitter']['account'] = ['elonmusk']
-        runconfig['twitter']['full']['account'] = ''
-        runconfig['twitter']['full']['keyword'] = [['"national medicines policy"']]
+        # runconfig['twitter']['keyword']['keyword'] = [['"national medicines policy"']]
+
+
         run(runconfig, demoMode=False)
 
         # runconfig['twitter']['runMode'] = 'keyword'
