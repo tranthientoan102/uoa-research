@@ -110,8 +110,9 @@ class PostView2Decoration extends React.Component<Props> {
         //
         // }
         let refinedKws = this.kwsRefine()
+        let displayingText = maskPersonalDetails_AtSign(this.props.text.replaceAll("&amp;","&"))
 
-        let result = refinedKws.length>0?[]:[this.props.text]
+        let result = refinedKws.length>0?[]:[displayingText]
         for (let i in refinedKws){
             // let kw = this.state.kws[i][0].replaceAll('"', '').trim().toUpperCase()
             let kw = refinedKws[i].replaceAll('"', '').trim().toUpperCase()
@@ -119,7 +120,7 @@ class PostView2Decoration extends React.Component<Props> {
             console.log(pattern)
             if (result.length == 0){
 
-                let tmpResult = maskPersonalDetails_AtSign(this.props.text).split(pattern)
+                let tmpResult = displayingText.split(pattern)
                 for (let i in tmpResult){
                     result.push(tmpResult[i])
                     result.push(<Tag fontSize="2xl" m={0} p={0} pt={1} borderRadius={0}
@@ -131,8 +132,8 @@ class PostView2Decoration extends React.Component<Props> {
                 result = result.flat()
                 for (let i in result){
                     try{
-                        console.log(result[i])
-                        console.log(pattern)
+                        // console.log(result[i])
+                        // console.log(pattern)
                         let tmpResult = result[i].split(pattern).map(i => {
                             let a = []
                             a.push(i)

@@ -54,7 +54,7 @@ class TweetHeader extends React.Component<Props> {
                             <MdOutlinePlace size={18}/>
                             <Text m={1} pt={1} mr={3}>{this.props.geo}</Text>
                             <MdOutlineTrendingUp size={18}/>
-                            <Text m={1} pt={1}>{this.props.engage}</Text>
+                            <Text m={1} pt={1}><b>{this.props.engage?this.props.engage.toLocaleString():''}</b></Text>
 
 
                         </Flex>

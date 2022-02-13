@@ -16,11 +16,13 @@ const headers = [
     { label: "text", key: "text" },
     { label: "sa", key: "sa" },
     { label: "ed", key: "ed" },
+    { label: "location", key: "location" },
+    { label: "#LRC", key: "#LRC" },
 
 ];
 
 interface Props {
-    text: any[],
+    tweets: any[],
     sa: string[],
     ed: string[],
     isMasked: boolean,
@@ -43,16 +45,16 @@ class PredictionDownload extends Component<Props> {
 
     download = async () => {
 
-        console.log(this.props.text)
+        console.log(this.props.tweets)
         // const data = await this.getData();
         let data =  []
         // for (let i = 0; i < this.state.text.length; i++){
         //     let text= this.state.text[i]
-        for (let i = 0; i < this.props.text.length; i++){
-            let text= this.props.text[i].text
-            console.log(text)
+        for (let i = 0; i < this.props.tweets.length; i++){
+            let text= this.props.tweets[i].text
             text = text.replaceAll("\"","[doubleQuote]")
                     .replaceAll("\n", "[newLine]")
+                    .replaceAll("&amp;","&")
             // if (this.state.isMasked){
             if (this.props.isMasked){
                 text = maskPersonalDetails_AtSign(text)
@@ -60,14 +62,14 @@ class PredictionDownload extends Component<Props> {
 
             data.push({
                 text: text,
-                // sa: this.state.sa[i],
-                // ed: this.state.ed[i]
                 sa: this.props.sa[i],
-                ed: this.props.ed[i]
+                ed: this.props.ed[i],
+                location: this.props.tweets[i].geo,
+                '#LRC': this.props.tweets[i].engage,
             })
 
         }
-        console.log(this.props.text)
+        console.log(this.props.tweets)
         // console.log(this.state.text)
         this.setState({data: data}, () => {
             setTimeout(() => {

@@ -36,7 +36,7 @@ const Predict = () => {
     const { auth, signinWithGoogle } = useAuth();
     const [stats, setStats] = useState(<div/>)
 
-    const [buttonExport, setButtonExport] = useState(<PredictionDownload text={[]} sa={[]} ed={[]}
+    const [buttonExport, setButtonExport] = useState(<PredictionDownload tweets={[]} sa={[]} ed={[]}
                                                     isMasked={true}
                                                     disabled={true}/>)
     const [predictView, setPredictView] = useState(<div/>)
@@ -55,7 +55,7 @@ const Predict = () => {
 
     const processPredict = async () => {
 
-        setButtonExport(<PredictionDownload text={[]} sa={[]} ed={[]}
+        setButtonExport(<PredictionDownload tweets={[]} sa={[]} ed={[]}
                                                     isMasked={true}
                                                     disabled={true}/>)
         // @ts-ignore
@@ -120,7 +120,7 @@ const Predict = () => {
     }
 
     const displayStats = () => {
-        setButtonExport(<PredictionDownload text={tweets} sa={pred_sa} ed={pred_ed}
+        setButtonExport(<PredictionDownload tweets={tweets} sa={pred_sa} ed={pred_ed}
                                                     isMasked={isChecked('isMasked')}
                                                     disabled={false}/>)
 
@@ -162,7 +162,7 @@ const Predict = () => {
         setPredictView(<PredictView  auth={auth} tweets={tweets}
                           pred_ed={pred_ed} pred_sa={pred_sa}/>)
 
-        setButtonExport(<PredictionDownload text={tweets} sa={pred_sa} ed={pred_ed}
+        setButtonExport(<PredictionDownload tweets={tweets} sa={pred_sa} ed={pred_ed}
                                     isMasked={isChecked('isMasked')}
                                     disabled={false}/>)
 
