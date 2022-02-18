@@ -30,7 +30,7 @@ import {
 import TagsInput2 from "../components/TagsInput2";
 import {decrypting, getTagsInput, testEncrypt} from "../utils/common";
 import ItemCrd from "../components/ItemCrd";
-
+import Pie2 from '../components/Pie2';
 interface Props {
     data: string[]
 }
@@ -110,6 +110,20 @@ const Admin = (props) => {
                             })}</Text>
                         </Grid>
 
+                        <Pie2
+                            // data={this.state.piedata}
+                            // width={this.state.width}
+                            // height={this.state.height}
+                            // innerRadius={0}
+                            // outerRadius={this.state.height / 2}
+                            data={[{ name: 'apple', value: 10 / 130 }
+                                , { name: 'banana', value: 20 / 130 }
+                                , { name: 'melon', value: 100 / 130 }]}
+                            width={700}
+                            height={500}
+                            innerRadius={0}
+                            outerRadius={500 / 2}
+                        />
 
                     </Flex>
                     ):('Authorities required') }

@@ -1,10 +1,11 @@
 import React from "react";
 // react plugin that creates an input with badges
 import TagsInput from "react-tagsinput";
-import {Box, Button, Checkbox, Container, Flex, Grid} from "@chakra-ui/react";
-import {explainKws} from "../utils/common";
+import { Box, Button, Checkbox, Container, Flex, Grid, Link, Tag } from "@chakra-ui/react";
+import { explainKws, explainKws_arrayOfArray, tags_arrayOfArray } from "../utils/common";
 import {random} from "nanoid";
 import {getDefaultKws} from "../utils/db";
+import { toast } from "react-toastify";
 
 const tagProps = { className: "react-tagsinput-tag" };
 
@@ -29,13 +30,15 @@ class TagsInputKws extends React.Component<Props> {
         isLoading: false,
         tags: this.props.tags,
         outsideIsAND: this.props.outsideIsAND,
+        exp: ''
         // items : []
     };
     items = []
     itemExplain = ''
 
     handleTagsinput = tags => {
-        this.setState({ tags });
+        this.setState({ tags, exp: explainKws_arrayOfArray(tags_arrayOfArray(tags)) });
+
     }
 
     // clickDefaultEvent = de => {
@@ -65,6 +68,7 @@ class TagsInputKws extends React.Component<Props> {
 
     render() {
         // console.log(`${this.state.name}::render`)
+        this.itemExplain = explainKws(this.props.id)
 
         return (
             <Box id={this.props.id} m={0} p={0} justify="center" align="start">
@@ -78,11 +82,29 @@ class TagsInputKws extends React.Component<Props> {
                 >
                 </TagsInput>
 
+                <Box p={1}></Box>
+
                 {this.items.map(i =>
-                    <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue' key={i.id}
+                    <Link pt={2} fontSize={13} colorScheme='blue' key={i.id}
+                        onClick={() => {
+                            let a = this.state.tags
+                            if (a.includes(i.name)) {
+                                a = a.filter(x => x != i.name)
+                            } else a = [a, i.name].flat()
+
+                            console.log(a)
+                            this.handleTagsinput(a)
+
+                            // this.setState({ isLoading: true, exp: explainKws(this.props.id) })
+                            // this.itemExplain = explainKws(this.props.id)
+                            // this.setState({ isLoading: false })
+                            // console.log(`${i.name} is clicked\nthis.itemExplain=${this.itemExplain}\nthis.state.exp=${this.state.exp}`)
+                            // this.setState({ isLoading: false })
+
+                        }}
                     >
-                        {i.name}
-                    </Checkbox>)
+                        <Tag mr={3} mb={2} px={3} py={1} borderRadius={100}>{i.name}</Tag>
+                    </Link>)
                 }
                 {/*<Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'*/}
                 {/*          value ={(this.state.outsideIsAND)?'checked':'unchecked'}*/}
@@ -92,7 +114,7 @@ class TagsInputKws extends React.Component<Props> {
                 {/*>*/}
                 {/*        /!*{this.props.outsideIsAND}*!/ tag {this.state.outsideIsAND?'AND':'OR'} tag*/}
                 {/*</Checkbox>*/}
-                <p>{explainKws(this.props.id)}</p>
+                <Box mt={2}>{this.state.exp.length == 0 ? 'no tag selected' : this.state.exp}</Box>
             </Box>
         );
     }

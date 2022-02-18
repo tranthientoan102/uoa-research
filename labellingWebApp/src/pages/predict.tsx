@@ -3,7 +3,7 @@ import {
     Flex,
     Text,
     Button,
-    Checkbox, Spinner, Tag
+    Checkbox, Spinner, Tag, Input
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import React, { useState } from 'react';
@@ -16,7 +16,7 @@ import {
     getSAPrediction,
     getTagsInput,
     isAdmin,
-    isMasked, isChecked, calcAmountSummary
+    isMasked, isChecked, calcAmountSummary, sentimentFullList, getTextInput_defaultVal
 } from "../utils/common";
 
 import TagInput2 from "../components/TagsInput2";
@@ -47,11 +47,11 @@ const Predict = () => {
     let pred_sa
     let pred_ed
 
-    let eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
+    const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
                    'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
         'advocary/reform']
-    let eventFullList = [eventList, 'no event detected'].flat()
-    let sentimentFullList = ['negative', 'neutral', 'positive']
+    const eventFullList = [eventList, 'no event detected'].flat()
+    const sentimentFullList = ['negative', 'neutral', 'positive']
 
     const processPredict = async () => {
 
@@ -75,10 +75,10 @@ const Predict = () => {
                     </Flex>)
 
         await fetchData(
-                                        getTagsInput('searchAcc',true )
-                                        , getKwInput('searchKeyPredict', false)
-                                        , numberPredict
-                                    ).then((res) => {
+            getTagsInput('searchAcc', true)
+            , getKwInput('searchKeyPredict', false)
+            , getTextInput_defaultVal('numPrediction', process.env.NEXT_PUBLIC_NUM_PREDICTIONS)
+        ).then((res) => {
             res.forEach(a =>{
                 // console.log(`converting ${a.id}`)
                 // a.postAt = convertTimeToString(a.postAt)
@@ -199,6 +199,10 @@ const Predict = () => {
                                     : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
                                 }
                                 </div>
+                                <Input p={0} pl={1} ml={4} id='numPrediction'
+                                    maxW={'20'}
+                                    defaultValue={process.env.NEXT_PUBLIC_NUM_PREDICTIONS}
+                                />
                                 <Button
                                     m={3}
                                     // colorScheme="blue"

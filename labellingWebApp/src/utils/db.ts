@@ -194,6 +194,8 @@ export const loadUnlabelledPostByAccount = async (accs: string[], postAfter=new 
 export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][]
                                                   , limit= expectingPost
                                                   , postAfter = new Date()) => {
+    console.log(`load unlabelled post By ${accs} with keywords ${kws}`)
+
     let result = []
     // if (postAfter == None) {
     //     postAfter = new Date()

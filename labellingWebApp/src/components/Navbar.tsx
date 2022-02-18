@@ -25,6 +25,16 @@ const Navbar: React.FC<{}> = () => {
                             <Link
                                 p={2}
                                 onClick={() => {
+                                    router.push('/summary')
+                                }}
+                                bg={(router.asPath == '/summary') ? 'yellowgreen' : 'white'}
+                                color={(router.asPath == '/summary') ? 'black' : 'black'}
+                            >
+                                SUMMARY
+                            </Link>
+                            <Link
+                                p={2}
+                                onClick={() => {
                                     console.log('going /')
                                     router.push('/')
                                 }}
@@ -89,6 +99,16 @@ const Navbar: React.FC<{}> = () => {
                         <Flex p={2}>
                             <Link
                                 p={2}
+                                    onClick={() => {
+                                        router.push('/summary')
+                                    }}
+                                    bg={(router.asPath == '/summary') ? 'yellowgreen' : 'white'}
+                                    color={(router.asPath == '/summary') ? 'white' : 'black'}
+                                >
+                                    SUMMARY
+                                </Link>
+                                <Link
+                                    p={2}
                                 onClick={() => router.push('/signin')}
                                 fontWeight={
                                     router.pathname === '/signin' ? 'extrabold' : 'normal'

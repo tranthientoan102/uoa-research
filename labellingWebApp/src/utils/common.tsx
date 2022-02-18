@@ -91,52 +91,67 @@ export const getCheckedItemFromGrid =(eleId, isTwitterAcc=false, lowering = true
 export const getKwInput= (eleId, lowering = true, withWarning=true) => {
 
     let tmpTags = getTagsInput(eleId, false, lowering, withWarning)
+
+    return tags_arrayOfArray(tmpTags)
+}
+export const tags_arrayOfArray = (tagsArray) => {
     let tags = []
-    for (let tmpTag of tmpTags){
+    for (let tmpTag of tagsArray) {
         let tmpSubTags = (tmpTag + " ").split(/\s+/)
         let subTags = []
         let insideQuoteMark = false
         let nonSepaKw = ''
         //  "christmas eve" "new year eve"
-        for (let tmptmp of tmpSubTags){
+        for (let tmptmp of tmpSubTags) {
             if (tmptmp.startsWith('"')) {
                 // tmptmp = tmptmp.split("\"")[1]
                 insideQuoteMark = true
             }
-            if (insideQuoteMark){
-
-                if (tmptmp.endsWith('"')) {
+            if (insideQuoteMark) {
+                // console.log(tmptmp)
+                if ((tmptmp.length > 1 || nonSepaKw.length > 1) && tmptmp.endsWith('"')) {
                     // tmptmp = tmptmp.split("\"")[0]
                     insideQuoteMark = false
                     nonSepaKw += ' ' + tmptmp
                     subTags.push(nonSepaKw)
                     nonSepaKw = ''
                 } else nonSepaKw += ' ' + tmptmp
+                // console.log(nonSepaKw)
             } else {
                 // if (nonSepaKw.length != 0) {
                 //     subTags.push(nonSepaKw)
                 //     nonSepaKw = ''
                 // }
-                if (tmptmp.length > 0) subTags.push (tmptmp)
+                if (tmptmp.length > 0) subTags.push(tmptmp)
             }
         }
         tags.push(subTags)
     }
     return tags
+
+
 }
 
 
 export const explainKws = (eleId, lowering=true, outsideTagIsAND = true ) => {
-    let kwTags = getKwInput(eleId, lowering, false)
-
+    try {
+        let kwTags = getKwInput(eleId, lowering, false)
+        return explainKws_arrayOfArray(kwTags, outsideTagIsAND)
+    } catch (error) {
+        console.log(error)
+        return `error ${eleId}`
+    }
+}
+export const explainKws_arrayOfArray = (tags, outsideTagIsAND = true) => {
     let result = []
-    if (outsideTagIsAND){
-        for (const tag of kwTags){
+    if (outsideTagIsAND) {
+        for (const tag of tags) {
+            // console.log(tag)
             result.push(`(${tag.join(' OR ')})`)
         }
         return result.join(' AND ')
-    }else {
-        for (const tag of kwTags){
+    } else {
+        for (const tag of tags) {
             result.push(`(${tag.join(' AND ')})`)
         }
         return result.join(' OR ')
@@ -462,5 +477,67 @@ export const checkExpect = (prop: string[], expected: string[], mode='in') => {
 
     console.log(`${prop} is included in ${expected}: ${result}`)
     return result
+
+}
+
+export const processPredict = async (accInputId, kwsInputId, numberPredict,) => {
+
+    let tweets = []
+    let pred_sa
+    let pred_ed
+
+    await fetchData(
+        getTagsInput(accInputId, true)
+        , getKwInput(kwsInputId, false)
+        , numberPredict
+    ).then((res) => {
+        res.forEach(a => {
+            // console.log(`converting ${a.id}`)
+            // a.postAt = convertTimeToString(a.postAt)
+            // a.insertDbAt = convertTimeToString(a.insertDbAt)
+
+            // tweetList.push(a.text)
+            tweets.push(a)
+
+        })
+        return res
+    })
+    // toast.info('Predicting...')
+
+
+    // let pred_sa = await getSAPrediction(tweetList)
+    // let pred_ed = await getEDPrediction(tweetList)
+
+
+    let promise1 = getSAPrediction(tweets)
+    let promise2 = getEDPrediction(tweets)
+    await Promise.all([promise1, promise2]).then(promises => {
+        pred_sa = promises[0].data
+        pred_ed = promises[1].data
+
+        // setText(tweets)
+        // setPred_sa(promises[0].data)
+        // setPred_ed(promises[1].data)
+    })
+
+
+
+    console.log(tweets)
+    console.log(pred_sa)
+    console.log(pred_ed)
+
+    return [tweets, pred_sa, pred_ed]
+}
+
+
+export const getTextInput_defaultVal = (eleId, defaultVal) => {
+    try {
+        let tmp = document.getElementById(eleId).value
+        console.log(tmp)
+        return parseInt(tmp)
+    } catch (error) {
+        toast.error(`Invalid input. Using default value: ${defaultVal}`)
+        return defaultVal
+    }
 
 }
