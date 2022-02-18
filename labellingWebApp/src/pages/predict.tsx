@@ -35,6 +35,8 @@ const Predict = () => {
     toast.configure()
     const { auth, signinWithGoogle } = useAuth();
     const [stats, setStats] = useState(<div/>)
+    const [num, setNum] = useState(parseInt(process.env.NEXT_PUBLIC_NUM_PREDICTIONS))
+    const [btnEnable, setBtnEnable] = useState(true)
 
     const [buttonExport, setButtonExport] = useState(<PredictionDownload tweets={[]} sa={[]} ed={[]}
                                                     isMasked={true}
@@ -77,7 +79,7 @@ const Predict = () => {
         await fetchData(
             getTagsInput('searchAcc', true)
             , getKwInput('searchKeyPredict', false)
-            , getTextInput_defaultVal('numPrediction', process.env.NEXT_PUBLIC_NUM_PREDICTIONS)
+            , num
         ).then((res) => {
             res.forEach(a =>{
                 // console.log(`converting ${a.id}`)
@@ -195,14 +197,24 @@ const Predict = () => {
                             <Flex  my={2} align="center" justify="center" >
                                 <div id="isMasked">
                                 {isAdmin(auth) ?
-                                    <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
-                                    : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
+                                        <Checkbox colorScheme='blue' defaultIsChecked pr={4}>privacy</Checkbox>
+                                        : <Checkbox colorScheme='blue' defaultIsChecked pr={4} isDisabled={true}>privacy</Checkbox>
                                 }
                                 </div>
-                                <Input p={0} pl={1} ml={4} id='numPrediction'
+                                # of predctions
+                                <Input p={0} pl={1} ml={1} id='numPrediction'
                                     maxW={'20'}
                                     defaultValue={process.env.NEXT_PUBLIC_NUM_PREDICTIONS}
-                                />
+                                    onChange={(event) => {
+                                        let a = parseInt(event.target.value)
+                                        if (!isNaN(a)) {
+                                            setBtnEnable(true)
+                                            setNum(a)
+                                        } else {
+                                            toast.error('Invalid input')
+                                            setBtnEnable(false)
+                                        }
+                                    }} />
                                 <Button
                                     m={3}
                                     // colorScheme="blue"
@@ -210,6 +222,7 @@ const Predict = () => {
                                     // color="lightgreen"
                                     onClick={() => processPredict()}
                                     colorScheme={'telegram'}
+                                    disabled={!btnEnable}
                                 >
                                     <p>Load & Predict</p>
                                 </Button>

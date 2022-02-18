@@ -41,7 +41,7 @@ const ArcText = ({ data, index, createArc, colors, format }) => (
             fill={colors[index * 2 + 1]}
             fontSize="20"
         >
-            {data.value > 0 ? format(data.value) * 100 + '%' : ''}
+            {data.value > 0 ? format(data.value * 100) + '%' : ''}
         </text>
     </g>
 );

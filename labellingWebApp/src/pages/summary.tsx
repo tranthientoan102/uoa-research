@@ -21,6 +21,8 @@ const Summary = () => {
     //     width={300} height={300}
     // />)
     const [sumView, setSumView] = useState(<div />)
+    const [num, setNum] = useState(parseInt(process.env.NEXT_PUBLIC_NUM_PREDICTIONS))
+    const [btnEnable, setBtnEnable] = useState(true)
 
 
     return (
@@ -52,9 +54,20 @@ const Summary = () => {
                             }
                         </div> */}
                         # of predctions
-                        <Input p={0} pl={1} ml={4} id='numPrediction'
+                        <Input p={0} pl={1} ml={1} id='numPrediction'
                             maxW={'20'}
-                            defaultValue={process.env.NEXT_PUBLIC_NUM_PREDICTIONS}
+                            variant='filled'
+                            defaultValue={num}
+                            onChange={(event) => {
+                                let a = parseInt(event.target.value)
+                                if (!isNaN(a)) {
+                                    setBtnEnable(true)
+                                    setNum(a)
+                                } else {
+                                    toast.error('Invalid input')
+                                    setBtnEnable(false)
+                                }
+                            }}
                         />
                         <Button
                             m={3}
@@ -75,6 +88,7 @@ const Summary = () => {
                                 })
 
                             }}
+                            disabled={!btnEnable}
                             colorScheme={'telegram'}
                         >
                             <p>Load & Predict & Summary</p>

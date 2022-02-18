@@ -530,14 +530,3 @@ export const processPredict = async (accInputId, kwsInputId, numberPredict,) => 
 }
 
 
-export const getTextInput_defaultVal = (eleId, defaultVal) => {
-    try {
-        let tmp = document.getElementById(eleId).value
-        console.log(tmp)
-        return parseInt(tmp)
-    } catch (error) {
-        toast.error(`Invalid input. Using default value: ${defaultVal}`)
-        return defaultVal
-    }
-
-}
