@@ -16,7 +16,7 @@ import {
     getSAPrediction,
     getTagsInput,
     isAdmin,
-    isMasked, isChecked, calcAmountSummary, sentimentFullList, getTextInput_defaultVal
+    isMasked, isChecked, calcAmountSummary, sentimentFullList,
 } from "../utils/common";
 
 import TagInput2 from "../components/TagsInput2";

@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import TagsInputKws from '../components/TagsInputKws'
 import TagsInput2 from '../components/TagsInput2'
 
-import { getTextInput_defaultVal, isAdmin, processPredict } from '../utils/common'
+import { isAdmin, processPredict } from '../utils/common'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head';
@@ -78,9 +78,7 @@ const Summary = () => {
                                 setSumView(
                                     <div />
                                 )
-                                processPredict('searchAcc', 'searchKeySummary',
-                                    getTextInput_defaultVal('numPrediction', process.env.NEXT_PUBLIC_NUM_PREDICTIONS)
-                                ).then(res => {
+                                processPredict('searchAcc', 'searchKeySummary', num).then(res => {
                                     console.log(res.length)
                                     setSumView(
                                         <SummaryView tweets={res[0]} pred_sa={res[1]} pred_ed={res[2]} />

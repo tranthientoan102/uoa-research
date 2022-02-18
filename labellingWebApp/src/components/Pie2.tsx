@@ -35,7 +35,8 @@ const ArcText = ({ data, index, createArc, colors, format }) => (
         <text
             transform={`translate(${createArc
                 .centroid(data)
-                .map((c) => (c * 4.5) / 3)})`}
+                // .map((c) => (c * 4) / 3)
+                })`}
             textAnchor="middle"
             dominantBaseline="after-edge"
             fill={colors[index * 2 + 1]}
