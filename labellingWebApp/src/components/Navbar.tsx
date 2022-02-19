@@ -30,7 +30,7 @@ const Navbar: React.FC<{}> = () => {
                                 bg={(router.asPath == '/summary') ? 'yellowgreen' : 'white'}
                                 color={(router.asPath == '/summary') ? 'black' : 'black'}
                             >
-                                SUMMARY
+                                Summary
                             </Link>
                             <Link
                                 p={2}
@@ -105,7 +105,7 @@ const Navbar: React.FC<{}> = () => {
                                     bg={(router.asPath == '/summary') ? 'yellowgreen' : 'white'}
                                     color={(router.asPath == '/summary') ? 'white' : 'black'}
                                 >
-                                    SUMMARY
+                                    Summary
                                 </Link>
                                 <Link
                                     p={2}

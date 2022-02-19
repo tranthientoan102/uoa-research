@@ -221,7 +221,7 @@ const Predict = () => {
                                     // background="gray"
                                     // color="lightgreen"
                                     onClick={() => processPredict()}
-                                    colorScheme={'telegram'}
+                                    colorScheme={'twitter'}
                                     disabled={!btnEnable}
                                 >
                                     <p>Load & Predict</p>

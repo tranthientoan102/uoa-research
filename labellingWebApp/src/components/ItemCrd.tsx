@@ -109,7 +109,7 @@ class ItemCrd extends React.Component<Props> {
                         ))}
                     </Grid>
                     <TagsInput2 id={this.inputId} tags={[]} defaultEvents={[]}/>
-                    <Button my={2} colorScheme='telegram' onClick={() => {
+                    <Button my={2} colorScheme='twitter' onClick={() => {
                             console.log(this.inputId)
                             this.createFnc(getTagsInput(this.inputId), this.state.auth)
                             this.getFnc()

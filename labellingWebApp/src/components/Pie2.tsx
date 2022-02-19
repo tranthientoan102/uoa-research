@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
-import { Box } from "@chakra-ui/react";
+import { positionTranslate } from "../utils/svgCommon";
 
 interface Props {
     data,
@@ -35,14 +35,29 @@ const ArcText = ({ data, index, createArc, colors, format }) => (
         <text
             transform={`translate(${createArc
                 .centroid(data)
-                // .map((c) => (c * 4) / 3)
+                .map((c) => (c * 4.5) / 3)
                 })`}
             textAnchor="middle"
             dominantBaseline="after-edge"
             fill={colors[index * 2 + 1]}
-            fontSize="20"
+            fontSize="15"
         >
-            {data.value > 0 ? format(data.value * 100) + '%' : ''}
+            {data.value > 0 ? `${data.data.name}` : ''}
+        </text>
+        <text
+            transform={`translate(
+                ${positionTranslate(createArc
+                .centroid(data)
+                .map((c) => (c * 4.5) / 3)
+                , [0, -17])
+                // .map((c) => ${c.x} ${c.y - 10} `)
+                })`}
+            textAnchor="middle"
+            dominantBaseline="after-edge"
+            fill={colors[index * 2 + 1]}
+            fontSize="15"
+        >
+            {data.value > 0 ? `${format(data.value * 100)}%` : ''}
         </text>
     </g>
 );
@@ -78,6 +93,7 @@ class Pie2 extends Component<Props> {
 
         console.log(this.colors)
         this.data.map((d, i) => { console.log(`d=${JSON.stringify(d)}, i=${i}`) })
+
 
         return (
             <svg

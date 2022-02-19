@@ -1,4 +1,4 @@
-import { Button, Checkbox, Container, Flex, Input, Text } from "@chakra-ui/react";
+import { Button, Checkbox, Container, Flex, Input, Spinner, Text } from "@chakra-ui/react";
 import React, { Component, useState } from "react";
 import Navbar from "../components/Navbar";
 
@@ -76,7 +76,12 @@ const Summary = () => {
                             // color="lightgreen"
                             onClick={() => {
                                 setSumView(
-                                    <div />
+                                    <Flex my={2} align="center" justify="center" > Loading predictions
+                                        <Spinner size="md" m={1} thickness="4px"
+                                            speed="0.65s"
+                                            emptyColor="gray.200"
+                                            color="blue.500" />
+                                    </Flex>
                                 )
                                 processPredict('searchAcc', 'searchKeySummary', num).then(res => {
                                     console.log(res.length)
@@ -87,7 +92,7 @@ const Summary = () => {
 
                             }}
                             disabled={!btnEnable}
-                            colorScheme={'telegram'}
+                            colorScheme={'twitter'}
                         >
                             <p>Load & Predict & Summary</p>
                         </Button>
