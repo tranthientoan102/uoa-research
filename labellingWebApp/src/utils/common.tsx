@@ -9,6 +9,7 @@ import {
 import Axios from "axios";
 import {Box, GridItem, Tag} from "@chakra-ui/react";
 import dateformat from "dateformat";
+import React from "react";
 
 
 export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
@@ -16,6 +17,25 @@ export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 
                             'advocary/reform']
 export const eventFullList = [eventList, 'no event detected'].flat()
 export const sentimentFullList = ['negative', 'neutral', 'positive']
+
+
+export const findByType = (children, component) => {
+    const result = [];
+    /* This is the array of result since Article can have multiple times the same sub-component */
+    const type = [component.displayName] || [component.name];
+    /* We can store the actual name of the component through the displayName or name property of our sub-component */
+    React.Children.forEach(children, (child) => {
+        const childType =
+            child && child.type && (child.type.displayName || child.type.name);
+        if (type.includes(childType)) {
+            result.push(child);
+        }
+    });
+    /* Then we go through each React children, if one of matches the name of the sub-component we’re looking for we put it in the result array */
+    return result[0];
+};
+
+
 
 
 export const labelling = async (auth, values) => {
@@ -287,7 +307,8 @@ export const maskPersonalDetails_names = (text:string, names:string[]) =>{
 }
 
 export const fetchData = async (accs: string[], kws:string[][], limit= 25
-                                , postAfter = new Date(), refillCounter = 0
+    , postAfter = new Date(), refillCounter = 0
+    , sortAtt = 'engage'
 ) => {
     // setData(`loading post from ${accs} with keywords ${kws}`)
     let res = null
@@ -311,7 +332,7 @@ export const fetchData = async (accs: string[], kws:string[][], limit= 25
 
     console.log(`fetched ${res.length} tweets`)
 
-    return res.sort((a,b)=>{return (b['engage'] - a['engage'])});
+    return res.sort((a, b) => { return (b[sortAtt] - a[sortAtt]) });
     // return res;
 
 }
@@ -373,7 +394,7 @@ export const displayTag = (list: string[]
     let result = []
     if (fullList == null) {
         for (const i in list) {
-            result.push(<Tag m={1} colorScheme={colorScheme} variant="solid">{list[i]}</Tag>)
+            result.push(<Tag m={1} colorScheme={colorScheme} variant="solid" borderRadius={100}>{list[i]}</Tag>)
         }
     } else{
         for (const i in fullList) {
@@ -384,14 +405,14 @@ export const displayTag = (list: string[]
             if (list.includes(fullList[i]))
                 result.push(
                     <span>
-                        <Tag m={1} colorScheme={colorScheme} variant="solid" align="center" justify="center">{fullList[i]}
+                        <Tag m={1} colorScheme={colorScheme} variant="solid" align="center" justify="center" borderRadius={100}>{fullList[i]}
                         </Tag>
                         {percent}
                     </span>
                 )
             else result.push(
                 <span>
-                    <Tag m={1} color={'gray.300'} align="center" justify="center">{fullList[i]}
+                    <Tag m={1} color={'gray.300'} align="center" justify="center" borderRadius={100}>{fullList[i]}
                     </Tag>
                     {percent}
                 </span>

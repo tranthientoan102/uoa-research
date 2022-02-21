@@ -47,7 +47,7 @@ interface Props {
     tweets,
     pred_sa,
     pred_ed,
-
+    sortBy
 }
 
 class PredictView extends React.Component<Props> {
@@ -102,8 +102,13 @@ class PredictView extends React.Component<Props> {
                     <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl" id={this.props.tweets[i].hash}>
 
                         <TweetHeader isMasked={isMasked(this.props.auth)}
-                             acc={tweet.account} engage={tweet.engage} geo={tweet.geo}
-                             hash={tweet.hash} orig={tweet.orig} postSec={tweet.postAt['seconds']}/>
+                            acc={tweet.account}
+                            geo={tweet.geo}
+                            like={tweet.fav} comment={tweet.comment} retweet={tweet.retweet}
+                            engage={tweet.engage}
+                            hash={tweet.hash} orig={tweet.orig} postSec={tweet.postAt['seconds']}
+                            sortBy={this.props.sortBy}
+                        />
 
                         <PostView2Decoration
                             text={this.props.tweets[i].text}

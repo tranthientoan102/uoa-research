@@ -156,7 +156,11 @@ class PostReview extends React.Component<Props> {
                                     labelledBy={data.labelledBy}
                                     rating={data.rating}
                                     account={data.account}
-                                    engage={data.engage} geo={data.geo} />
+                                    like={data.fav}
+                                    comment={data.comment}
+                                    retweet={data.retweet}
+                                    engage={data.engage}
+                                    geo={data.geo} />
                             )
                             )}
 

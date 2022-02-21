@@ -3,7 +3,7 @@ import {
     Flex,
     Text,
     Button,
-    Checkbox, Spinner, Tag, Input
+    Checkbox, Spinner, Tag, Input, Box
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import React, { useState } from 'react';
@@ -23,6 +23,7 @@ import TagInput2 from "../components/TagsInput2";
 import TagsInputKws from "../components/TagsInputKws";
 import PredictionDownload from "../components/PredictionDownload";
 import PredictView from "../components/PredictView";
+import SelectOption, { SelectionMode } from '../components/SelectOption';
 
 
 
@@ -48,6 +49,8 @@ const Predict = () => {
     let tweets = []
     let pred_sa
     let pred_ed
+
+    let sortBy = ''
 
     const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
                    'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
@@ -92,6 +95,8 @@ const Predict = () => {
             })
             return res
         })
+        tweets.sort((a, b) => b[sortBy] - a[sortBy])
+
         // toast.info('Predicting...')
 
 
@@ -137,7 +142,7 @@ const Predict = () => {
             if (k == sentimentFullList[0]) color='red'
             else if (k == sentimentFullList[1]) color='yellow'
             else color='green'
-            tmpResult.push(<Flex align="center" justify="center" mr={2} p={0}>{(percentageSA[k]*100).toFixed(2)}% <Tag colorScheme={color} variant="solid">{k}</Tag></Flex>)
+            tmpResult.push(<Flex align="center" justify="center" mr={2} p={0}>{(percentageSA[k] * 100).toFixed(2)}% <Tag colorScheme={color} variant="solid" borderRadius={100} mx={1}>{k}</Tag></Flex>)
         }
         result.push(
             <Flex flexDirection="row" flexWrap="wrap"
@@ -148,7 +153,7 @@ const Predict = () => {
         for (let c in countED){
             // console.log(`${countED[c]}`)
             if (countED[c]>0)
-                result.push(<Flex align="center" justify="center" m={0.5}><Tag colorScheme={'orange'} m={0.5} variant="solid">{c}</Tag> is detected in {countED[c]} tweets</Flex>)
+                result.push(<Flex align="center" justify="center" m={0.5}><Tag colorScheme={'orange'} m={0.5} variant="solid" borderRadius={100} mx={1}>{c}</Tag> is detected in {countED[c]} tweets</Flex>)
         }
 
         setStats(
@@ -161,14 +166,17 @@ const Predict = () => {
     const displayPredicts = () => {
 
 
-        setPredictView(<PredictView  auth={auth} tweets={tweets}
-                          pred_ed={pred_ed} pred_sa={pred_sa}/>)
+        setPredictView(<PredictView auth={auth} tweets={tweets}
+            pred_ed={pred_ed} pred_sa={pred_sa} sortBy={sortBy} />)
 
         setButtonExport(<PredictionDownload tweets={tweets} sa={pred_sa} ed={pred_ed}
                                     isMasked={isChecked('isMasked')}
                                     disabled={false}/>)
 
 
+    }
+    const callbackFunction = (a) => {
+        sortBy = a
     }
 
     return (
@@ -215,6 +223,12 @@ const Predict = () => {
                                             setBtnEnable(false)
                                         }
                                     }} />
+                                <Box ml={2}> </Box>
+                                <SelectOption title='sort by' id='SortBy'
+                                    data={['like', 'retweet', 'comment', 'combine']}
+                                    init={['like']} mode={SelectionMode.ONE} colorScheme={'twitter'}
+                                    parentCallback={a => callbackFunction(a)}
+                                />
                                 <Button
                                     m={3}
                                     // colorScheme="blue"

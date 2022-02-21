@@ -6,7 +6,7 @@ import {explainKws, isMasked} from "../utils/common";
 import {random} from "nanoid";
 import {getDefaultKws} from "../utils/db";
 import {SocialIcon} from "react-social-icons";
-import {MdOutlinePlace, MdOutlineTrendingUp} from "react-icons/md";
+import { MdOutlinePlace, MdOutlineTrendingUp, MdFavorite, MdChat, MdShare, MdRepeat, MdPriorityHigh } from "react-icons/md";
 
 
 interface Props {
@@ -14,9 +14,13 @@ interface Props {
     orig: string,
     acc: string,
     geo: string,
+    like: number,
+    retweet: number,
+    comment: number,
     engage: number,
     postSec: number,
     hash: string,
+    sortBy: string,
 }
 
 class TweetHeader extends React.Component<Props> {
@@ -53,8 +57,27 @@ class TweetHeader extends React.Component<Props> {
                         <Flex align={'center'}>
                             <MdOutlinePlace size={18}/>
                             <Text m={1} pt={1} mr={3}>{this.props.geo}</Text>
-                            <MdOutlineTrendingUp size={18}/>
-                            <Text m={1} pt={1}><b>{this.props.engage?this.props.engage.toLocaleString():''}</b></Text>
+
+                            <MdFavorite size={18} color={this.props.sortBy == 'like' ? '#1DA1F2' : 'black'} />
+                            {this.props.like ?
+                                <Box m={1} pt={1} mr={3} color={this.props.sortBy == 'like' ? '#1DA1F2' : 'black'}> {this.props.like.toLocaleString()}</Box>
+                                : <Box m={1} pt={1} mr={3} ml={-1}><MdPriorityHigh color="red" /></Box>}
+
+                            <MdRepeat size={18} color={this.props.sortBy == 'retweet' ? '#1DA1F2' : 'black'} />
+                            {this.props.retweet ?
+                                <Box m={1} pt={1} mr={3} color={this.props.sortBy == 'retweet' ? '#1DA1F2' : 'black'}> {this.props.retweet.toLocaleString()}</Box>
+                                : <Box m={1} pt={1} mr={3} ml={-1}><MdPriorityHigh color="red" /></Box>}
+
+
+                            <MdChat size={18} color={this.props.sortBy == 'comment' ? '#1DA1F2' : 'black'} />
+                            {this.props.comment
+                                ? <Box m={1} pt={1} mr={3} color={this.props.sortBy == 'comment' ? '#1DA1F2' : 'black'}> {this.props.comment.toLocaleString()}</Box>
+                                : <Box m={1} pt={1} mr={3} ml={-1}><MdPriorityHigh color="red" /></Box>}
+
+                            <MdOutlineTrendingUp size={18} color={this.props.sortBy == 'combine' ? '#1DA1F2' : 'black'} />
+                            {this.props.engage
+                                ? <Box m={1} pt={1} mr={3} color={this.props.sortBy == 'combine' ? '#1DA1F2' : 'black'}> {this.props.engage.toLocaleString()}</Box>
+                                : <Box m={1} pt={1} mr={3} ml={-1}><MdPriorityHigh color="red" /></Box>}
 
 
                         </Flex>

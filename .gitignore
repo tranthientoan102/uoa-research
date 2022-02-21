@@ -13,3 +13,4 @@ __pycache__
 **/output/
 **/checkpoints
 **.csv
+labellingWebApp/target/npmlist.json

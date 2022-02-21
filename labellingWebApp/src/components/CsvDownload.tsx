@@ -21,6 +21,9 @@ const headers = [
     { label: "text", key: "text" },
     { label: "query", key: "query" },
     { label: "location", key: "geo" },
+    { label: "like", key: "fav" },
+    { label: "retweet", key: "retweet" },
+    { label: "comment", key: "comment" },
     { label: "#LRC", key: "engage" },
 
     {label: "event", key: "event"},

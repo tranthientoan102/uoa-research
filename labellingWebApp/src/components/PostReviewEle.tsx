@@ -48,6 +48,9 @@ interface Props {
     , account: string
     , text: string
     , geo: string
+    , like: number
+    , retweet: number
+    , comment: number
     , engage: number
     , orig: string
     , postAt: number
@@ -119,8 +122,10 @@ class PostReviewEle extends React.Component<Props> {
                  id={this.state.hash} bgColor={this.state.reviewed?'yellow.50':'white'}>
 
                 <TweetHeader isMasked={isMasked(this.state.auth)}
-                     acc={this.state.account} engage={this.props.engage} geo={this.props.geo}
-                     hash={this.state.hash} orig={this.state.orig} postSec={this.state.postAt}/>
+                    acc={this.state.account} geo={this.props.geo}
+                    like={this.props.like} retweet={this.props.retweet} comment={this.props.comment} engage={this.props.engage}
+                    sortBy='like'
+                    hash={this.state.hash} orig={this.state.orig} postSec={this.state.postAt} />
 
 
                 <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">

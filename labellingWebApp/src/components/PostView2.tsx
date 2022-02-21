@@ -12,7 +12,7 @@ import {
     Tag,
     Text
 } from '@chakra-ui/react';
-import React, {useState} from 'react';
+import React, { Component, useState } from 'react';
 import {
     getDefaultEventList,
     loadUnlabelledPostByAccount,
@@ -36,7 +36,7 @@ import {
     isMasked,
     explainKws,
     // maskPersonalDetails,
-    maskPersonalDetails_AtSign, getCountRecent
+    maskPersonalDetails_AtSign, getCountRecent, findByType
 } from "../utils/common";
 import DefaultEvent, {DE} from "./DefaultEvent";
 import TagsInput2 from "./TagsInput2";
@@ -48,12 +48,13 @@ import {SocialIcon} from "react-social-icons";
 
 import {MdOutlinePlace, MdOutlineTrendingUp} from 'react-icons/md';
 import TweetHeader from "./TweetHeader";
+import SelectOption, { SelectionMode, SelectOptionProps } from './SelectOption';
 interface Props {
     auth,
 
 }
 
-class PostView2 extends React.Component<Props> {
+class PostView2 extends Component<Props> {
 // const PostView2 = (props) => {
 
     // const formData = JSON.parse(props.formData);
@@ -90,6 +91,7 @@ class PostView2 extends React.Component<Props> {
         return result
     }
 
+
     counter = 0;
     postAfter= new Date();
     state = {
@@ -102,8 +104,9 @@ class PostView2 extends React.Component<Props> {
         hasMore: true,
         loading: false,
         tweetCount: undefined,
-    }
 
+    }
+    sortBy = ''
 
     // const update = (auth, hash, rating, events, names) => {
     update = (auth, hash, rating, events, names) => {
@@ -124,6 +127,11 @@ class PostView2 extends React.Component<Props> {
                 tweetCount: tmp
             })
 
+    }
+
+    callbackFunction = (childData) => {
+        this.sortBy = childData
+        console.log(this.sortBy)
     }
 
 
@@ -147,7 +155,7 @@ class PostView2 extends React.Component<Props> {
             , this.postAfter
             , this.counter
         )
-        res = res.sort((a,b)=>{return (b['engage'] - a['engage'])})
+        res = res.sort((a, b) => { return (b[this.sortBy] - a[this.sortBy]) })
         this.counter++;
         // .then(data => result.push)
         // .finally(() => {
@@ -179,6 +187,8 @@ class PostView2 extends React.Component<Props> {
 
     render() {
         console.log(`render ${this.state.name}`)
+        // console.log(findByType(this.sortBy, SelectOption))
+
         return (
             <div>
                 <Container position="relative" maxW="12xl">
@@ -211,6 +221,11 @@ class PostView2 extends React.Component<Props> {
                             </Checkbox>
 
                         </div>
+                        <SelectOption title='sort by' id='SortBy'
+                            data={['like', 'retweet', 'comment', 'combine']}
+                            init={['like']} mode={SelectionMode.ONE} colorScheme={'twitter'}
+                            parentCallback={a => this.callbackFunction(a)}
+                        />
                         <Button
                             m={3}
                             onClick={() => {
@@ -223,7 +238,7 @@ class PostView2 extends React.Component<Props> {
                             }}
                         >
                             <p>Load more</p>
-                        </Button>
+                        </Button>                
 
                     </Flex>
                     <Flex my={2} align="center" justify="center">
@@ -233,8 +248,10 @@ class PostView2 extends React.Component<Props> {
 
                     {/* </Flex> */}
                 </Container>
+
                 <Container maxW="8xl">
                     <SimpleGrid my={2}>
+
                         <InfiniteScroll
                             dataLength={this.state.items.length}
                             next={this.fetchMoreData}
@@ -245,9 +262,15 @@ class PostView2 extends React.Component<Props> {
                                     <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
                                          id={data.hash} key={data.hash}>
 
-                                        <TweetHeader isMasked={isMasked(this.state.auth)}
-                                                     acc={data.account} engage={data.engage} geo={data.geo}
-                                                     hash={data.hash} orig={data.orig} postSec={data.postAt['seconds']}/>
+                                    <TweetHeader isMasked={isMasked(this.state.auth)}
+                                        acc={data.account}
+                                        like={data.fav} comment={data.comment} retweet={data.retweet}
+                                        engage={data.engage}
+                                        geo={data.geo}
+                                        hash={data.hash} orig={data.orig}
+                                        postSec={data.postAt['seconds']}
+                                        sortBy={this.sortBy}
+                                    />
 
                                         {/*<Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">*/}
                                         {/*    {isMasked(this.state.auth) ? maskPersonalDetails_AtSign(*/}

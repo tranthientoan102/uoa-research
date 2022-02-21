@@ -1,21 +1,11 @@
 import {
-    Box,
-    Container,
-    Divider,
     Flex,
-    Heading,
-    SimpleGrid,
     Text,
-    HStack,
-    Button,
-    Spacer,
-    Spinner,
-    Input, Grid, Textarea, IconButton
+    Grid, Textarea
 } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
 
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import { useAuth } from "../lib/auth";
 import { toast } from 'react-toastify';
@@ -27,16 +17,12 @@ import {
     getDefaultEventList,
     getDefaultKws
 } from "../utils/db";
-import TagsInput2 from "../components/TagsInput2";
-import {decrypting, getTagsInput, testEncrypt} from "../utils/common";
+import { decrypting } from "../utils/common";
 import ItemCrd from "../components/ItemCrd";
 import Pie2 from '../components/Pie2';
-interface Props {
-    data: string[]
-}
+import SelectOption, { SelectionMode } from '../components/SelectOption';
 
-const Admin = (props) => {
-    const id = 'admin'
+const Admin = () => {
     const childWidth = 1/3
 
 
@@ -44,7 +30,7 @@ const Admin = (props) => {
     // console.log(formData)
 
     toast.configure()
-    const { auth, signinWithGoogle } = useAuth();
+    const { auth } = useAuth();
     const [data, setData] = useState('');
     const [de,setDE] = useState('')
     const [dkws, setDkws] = useState('')
@@ -53,6 +39,8 @@ const Admin = (props) => {
     const [decrypted, setDecrypted] = useState([''])
     const [encrypted, setEncrypted] = useState('')
 
+    const [test, setTest] = useState('')
+
 
 
     // let de = []
@@ -60,9 +48,6 @@ const Admin = (props) => {
         return (auth != null) && auth.roles.includes('admin')
     }
 
-    const decryptData = (text) => {
-        setDecrypted(decrypting(text))
-    }
 
 
 
@@ -110,7 +95,7 @@ const Admin = (props) => {
                             })}</Text>
                         </Grid>
 
-                        <Pie2
+                        {/* <Pie2
                             // data={this.state.piedata}
                             // width={this.state.width}
                             // height={this.state.height}
@@ -124,6 +109,21 @@ const Admin = (props) => {
                             innerRadius={0}
                             outerRadius={500 / 2}
                         />
+                        <SelectOption data={['like', 'retweet', 'comment', 'combine']}
+                            init={['like']}
+                            mode={SelectionMode.ONE}
+                            colorScheme='twitter'
+                            title='sort by' id='11111111'
+                            parentCallback={a => setTest(a)}
+                        />
+                        <SelectOption data={['aaaaa', 'bbbb', 'cccc', 'dddd']}
+                            init={['aaaaa', 'cccc', 'dddd']}
+                            mode={SelectionMode.MULTI}
+                            colorScheme='twitter'
+                            title='sort by' id='111222222'
+                            parentCallback={a => setTest(a)}
+                        />
+                        {test} */}
 
                     </Flex>
                     ):('Authorities required') }
