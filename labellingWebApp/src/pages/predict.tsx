@@ -37,6 +37,7 @@ const Predict = () => {
     const { auth, signinWithGoogle } = useAuth();
     const [stats, setStats] = useState(<div/>)
     const [num, setNum] = useState(parseInt(process.env.NEXT_PUBLIC_NUM_PREDICTIONS))
+    const [numBig, setNumBig] = useState(parseInt(process.env.NEXT_PUBLIC_NUMBIG_PREDICTIONS))
     const [btnEnable, setBtnEnable] = useState(true)
 
     const [buttonExport, setButtonExport] = useState(<PredictionDownload tweets={[]} sa={[]} ed={[]}
@@ -95,7 +96,8 @@ const Predict = () => {
             })
             return res
         })
-        tweets.sort((a, b) => b[sortBy] - a[sortBy])
+        let origSortBy = (sortBy == 'like') ? 'fav' : sortBy
+        tweets.sort((a, b) => b[origSortBy] - a[origSortBy])
 
         // toast.info('Predicting...')
 
@@ -209,9 +211,26 @@ const Predict = () => {
                                         : <Checkbox colorScheme='blue' defaultIsChecked pr={4} isDisabled={true}>privacy</Checkbox>
                                 }
                                 </div>
-                                # of predctions
+                                From the first
+                                <Input p={0} pl={1} ml={1} id='numTopPrediction'
+                                    maxW={'20'}
+                                    variant='filled'
+                                    defaultValue={numBig}
+                                    onChange={(event) => {
+                                        let a = parseInt(event.target.value)
+                                        if (!isNaN(a)) {
+                                            setBtnEnable(true)
+                                            setNumBig(a)
+                                        } else {
+                                            toast.error('Invalid input')
+                                            setBtnEnable(false)
+                                        }
+                                    }}
+                                />
+                                tweets, run predctions of
                                 <Input p={0} pl={1} ml={1} id='numPrediction'
                                     maxW={'20'}
+                                    variant='filled'
                                     defaultValue={process.env.NEXT_PUBLIC_NUM_PREDICTIONS}
                                     onChange={(event) => {
                                         let a = parseInt(event.target.value)
@@ -224,11 +243,23 @@ const Predict = () => {
                                         }
                                     }} />
                                 <Box ml={2}> </Box>
-                                <SelectOption title='sort by' id='SortBy'
+                                <SelectOption title='with most' id='SortBy'
                                     data={['like', 'retweet', 'comment', 'combine']}
                                     init={['like']} mode={SelectionMode.ONE} colorScheme={'twitter'}
                                     parentCallback={a => callbackFunction(a)}
                                 />
+
+
+
+                                {/*<Button*/}
+                                {/*    m={3}*/}
+                                {/*    colorScheme="yellow"*/}
+                                {/*    onClick={() => refillData()}*/}
+                                {/*>*/}
+                                {/*    LATEST*/}
+                                {/*</Button>*/}
+                            </Flex>
+                            <Flex my={2} align="center" justify="center" >
                                 <Button
                                     m={3}
                                     // colorScheme="blue"
@@ -241,15 +272,6 @@ const Predict = () => {
                                     <p>Load & Predict</p>
                                 </Button>
                                 {buttonExport}
-
-
-                                {/*<Button*/}
-                                {/*    m={3}*/}
-                                {/*    colorScheme="yellow"*/}
-                                {/*    onClick={() => refillData()}*/}
-                                {/*>*/}
-                                {/*    LATEST*/}
-                                {/*</Button>*/}
                             </Flex>
 
 

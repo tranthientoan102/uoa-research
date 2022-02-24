@@ -501,7 +501,7 @@ export const checkExpect = (prop: string[], expected: string[], mode='in') => {
 
 }
 
-export const processPredict = async (accInputId, kwsInputId, numberPredict,) => {
+export const processPredict = async (accInputId, kwsInputId, numberPredict, sortBy) => {
 
     let tweets = []
     let pred_sa
@@ -530,6 +530,59 @@ export const processPredict = async (accInputId, kwsInputId, numberPredict,) => 
     // let pred_ed = await getEDPrediction(tweetList)
 
 
+    let promise1 = getSAPrediction(tweets)
+    let promise2 = getEDPrediction(tweets)
+    await Promise.all([promise1, promise2]).then(promises => {
+        pred_sa = promises[0].data
+        pred_ed = promises[1].data
+
+        // setText(tweets)
+        // setPred_sa(promises[0].data)
+        // setPred_ed(promises[1].data)
+    })
+
+
+
+    console.log(tweets)
+    console.log(pred_sa)
+    console.log(pred_ed)
+
+    return [tweets, pred_sa, pred_ed]
+}
+
+
+export const processPredict_fromTotalFetch = async (accInputId, kwsInputId, numberPredict, totalFetch, sortBy) => {
+
+    let tweets = []
+    let pred_sa
+    let pred_ed
+
+    console.log(`numberPredict=${numberPredict} ; totalFetch=${totalFetch}`)
+
+    await fetchData(
+        getTagsInput(accInputId, true)
+        , getKwInput(kwsInputId, false)
+        , totalFetch
+    ).then((res) => {
+        res.forEach(a => {
+            // console.log(`converting ${a.id}`)
+            // a.postAt = convertTimeToString(a.postAt)
+            // a.insertDbAt = convertTimeToString(a.insertDbAt)
+
+            // tweetList.push(a.text)
+            tweets.push(a)
+
+        })
+        return res
+
+    })
+    // toast.info('Predicting...')
+
+
+    // let pred_sa = await getSAPrediction(tweetList)
+    // let pred_ed = await getEDPrediction(tweetList)
+
+    tweets = tweets.sort((a, b) => b[sortBy] - a[sortBy]).slice(0, numberPredict)
     let promise1 = getSAPrediction(tweets)
     let promise2 = getEDPrediction(tweets)
     await Promise.all([promise1, promise2]).then(promises => {

@@ -1,17 +1,18 @@
-import { Button, Checkbox, Container, Flex, Input, Spinner, Text } from "@chakra-ui/react";
-import React, { Component, useState } from "react";
+import { Button, Container, Flex, Input, Spinner, Text } from "@chakra-ui/react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 
 import TagsInputKws from '../components/TagsInputKws'
 import TagsInput2 from '../components/TagsInput2'
 
-import { isAdmin, processPredict } from '../utils/common'
+import { processPredict_fromTotalFetch } from '../utils/common'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head';
-import Pie2 from "../components/Pie2";
+
 import SummaryView from "../components/SummaryView";
 import process from "process";
+import SelectOption, { SelectionMode } from "../components/SelectOption";
 
 
 const Summary = () => {
@@ -22,8 +23,15 @@ const Summary = () => {
     // />)
     const [sumView, setSumView] = useState(<div />)
     const [num, setNum] = useState(parseInt(process.env.NEXT_PUBLIC_NUM_PREDICTIONS))
+    const [numBig, setNumBig] = useState(parseInt(process.env.NEXT_PUBLIC_NUMBIG_PREDICTIONS))
     const [btnEnable, setBtnEnable] = useState(true)
 
+    let sortBy = ''
+    let tweets = []
+
+    const callbackFunction = (a) => {
+        sortBy = a
+    }
 
     return (
         <div>
@@ -53,7 +61,23 @@ const Summary = () => {
                                 : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
                             }
                         </div> */}
-                        # of predctions
+                        From the first
+                        <Input p={0} pl={1} ml={1} id='numTopPrediction'
+                            maxW={'20'}
+                            variant='filled'
+                            defaultValue={numBig}
+                            onChange={(event) => {
+                                let a = parseInt(event.target.value)
+                                if (!isNaN(a)) {
+                                    setBtnEnable(true)
+                                    setNumBig(a)
+                                } else {
+                                    toast.error('Invalid input')
+                                    setBtnEnable(false)
+                                }
+                            }}
+                        />
+                        tweets, run predctions of
                         <Input p={0} pl={1} ml={1} id='numPrediction'
                             maxW={'20'}
                             variant='filled'
@@ -69,6 +93,15 @@ const Summary = () => {
                                 }
                             }}
                         />
+                        <SelectOption title='with most' id='SortBy'
+                            data={['like', 'retweet', 'comment', 'combine']}
+                            init={['like']} mode={SelectionMode.ONE} colorScheme={'twitter'}
+                            parentCallback={a => callbackFunction(a)}
+                        />
+
+
+                    </Flex>
+                    <Flex my={2} align="center" justify="center" >
                         <Button
                             m={3}
                             // colorScheme="blue"
@@ -83,7 +116,7 @@ const Summary = () => {
                                             color="blue.500" />
                                     </Flex>
                                 )
-                                processPredict('searchAcc', 'searchKeySummary', num).then(res => {
+                                processPredict_fromTotalFetch('searchAcc', 'searchKeySummary', num, numBig, sortBy).then(res => {
                                     console.log(res.length)
                                     setSumView(
                                         <SummaryView tweets={res[0]} pred_sa={res[1]} pred_ed={res[2]} />
@@ -96,7 +129,6 @@ const Summary = () => {
                         >
                             <p>Load & Predict & Summary</p>
                         </Button>
-
                     </Flex>
 
 

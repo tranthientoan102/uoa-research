@@ -106,7 +106,7 @@ class PostView2 extends Component<Props> {
         tweetCount: undefined,
 
     }
-    sortBy = ''
+    sortBy = 'fav'
 
     // const update = (auth, hash, rating, events, names) => {
     update = (auth, hash, rating, events, names) => {
@@ -131,7 +131,7 @@ class PostView2 extends Component<Props> {
 
     callbackFunction = (childData) => {
         this.sortBy = childData
-        console.log(this.sortBy)
+        console.log(`sort by ${this.sortBy}`)
     }
 
 
@@ -155,7 +155,8 @@ class PostView2 extends Component<Props> {
             , this.postAfter
             , this.counter
         )
-        res = res.sort((a, b) => { return (b[this.sortBy] - a[this.sortBy]) })
+        let sortBy = this.sortBy == 'like' ? 'fav' : this.sortBy
+        res = res.sort((a, b) => b[sortBy] - a[sortBy])
         this.counter++;
         // .then(data => result.push)
         // .finally(() => {

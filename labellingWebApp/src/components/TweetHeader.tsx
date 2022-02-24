@@ -31,6 +31,7 @@ class TweetHeader extends React.Component<Props> {
 
     render() {
         // console.log(`${this.state.name}::render`)
+        let geo = this.props.geo && this.props.geo != 'unknown location' ? this.props.geo : undefined
 
         return (
             // eslint-disable-next-line react/jsx-no-undef
@@ -56,7 +57,9 @@ class TweetHeader extends React.Component<Props> {
                     >
                         <Flex align={'center'}>
                             <MdOutlinePlace size={18}/>
-                            <Text m={1} pt={1} mr={3}>{this.props.geo}</Text>
+                            {geo ? <Text m={1} pt={1} mr={3}>{this.props.geo}</Text>
+                                : <Box m={1} pt={1} mr={3} ml={-1}><MdPriorityHigh color="red" /></Box>
+                            }
 
                             <MdFavorite size={18} color={this.props.sortBy == 'like' ? '#1DA1F2' : 'black'} />
                             {this.props.like ?
