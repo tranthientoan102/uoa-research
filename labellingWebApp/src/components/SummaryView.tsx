@@ -14,24 +14,13 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-import TagInput2 from './TagsInput2';
+
 import {
-    fetchData,
-    getKwInput,
-    getTagsInput,
-    isAdmin,
-    isMasked,
-    explainKws,
-    // maskPersonalDetails,
-    maskPersonalDetails_AtSign,
-    getCountRecent,
-    getSAPrediction,
-    getEDPrediction,
-    isChecked,
     calcAmountSummary,
-    checkExpect, displayTagSentiment, displayTagED, sentimentFullList, eventFullList, eventList
+    sentimentFullList
 } from "../utils/common";
 import Pie2 from './Pie2';
+import BarChartWrapper from "./BarChartWrapper";
 
 
 interface Props {
@@ -57,10 +46,36 @@ class SummaryView extends React.Component<Props> {
 
     }
 
+    // plotly = require('plotly')('tomtran102', '93nUHvtu3eN68NFXfb8t')
+    // plot() {
+    //     var trace1 = {
+    //         x: ["giraffes", "orangutans", "monkeys"],
+    //         y: [20, 14, 23],
+    //         name: "SF Zoo",
+    //         type: "bar"
+    //     };
+    //     var trace2 = {
+    //         x: ["giraffes", "orangutans", "monkeys"],
+    //         y: [12, 18, 29],
+    //         name: "LA Zoo",
+    //         type: "bar"
+    //     };
+    //     var data = [trace1, trace2];
+    //     var layout = { barmode: "stack" };
+    //     var graphOptions = { layout: layout, filename: "stacked-bar", fileopt: "overwrite" };
+    //     this.plotly.plot(data, graphOptions, function (err, msg) {
+    //         console.log(msg);
+    //     });
+    // }
 
 
     render() {
         console.log(`${this.state.id}::render`)
+
+        // console.log(`this.plotly=${this.plotly}`)
+
+
+        // this.plot()
         let summary = calcAmountSummary(this.props.pred_sa, sentimentFullList, true)
         let sumList = []
         for (const i in summary) {
@@ -71,13 +86,22 @@ class SummaryView extends React.Component<Props> {
         // this.displayResult = this.displayPredicts()
         return (
             <div>
+                <Container id='pie' align="center" justify="center" maxW={'8xl'}>
 
-                <Container id='pie' align="center" justify="top" maxW={'8xl'}>
-                    <Pie2 data={sumList} innerRadius={0} outerRadius={Math.min(this.state.height, this.state.width) / 2}
-                        width={this.state.width} height={this.state.height} />
+                    <Flex flexDirection="row" flexWrap="wrap"  >
+                        {/* <Container id='pie' align="center" justify="top"> */}
+                        <Pie2 data={sumList} innerRadius={0} outerRadius={Math.min(this.state.height, this.state.width) / 2}
+                            width={this.state.width} height={this.state.height} />
 
-                </Container >
 
+                        {/* </Box ></Flex> */}
+
+                        <BarChartWrapper pred_sa={this.props.pred_sa} pred_ed={this.props.pred_ed}/>
+
+
+
+                    </Flex>
+                </Container>
 
             </div >
 

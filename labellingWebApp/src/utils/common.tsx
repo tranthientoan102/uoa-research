@@ -1,13 +1,12 @@
 import axios from "axios";
 import {toast} from 'react-toastify';
-import crypto from "crypto";
 import {
     loadUnlabelledPost_accs_kws
     , loadUnlabelledPostByAccount
     , host_scrapper, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw, port_scrapper
 } from "./db";
 import Axios from "axios";
-import {Box, GridItem, Tag} from "@chakra-ui/react";
+import {Tag} from "@chakra-ui/react";
 import dateformat from "dateformat";
 import React from "react";
 
@@ -477,6 +476,23 @@ export const calcAmountSummary = (input: [string], fullCate:string[], percentage
 
     })
     console.log(result)
+    return result
+}
+
+export const calcStackedSummaryED = (inputED:[][], inputSA:[], fullCat:string[], percentage:boolean)=>{
+    let result = []
+    let tmpRes = {}
+    fullCat.forEach(c=> tmpRes[c]={'name':c, 'negative':0,'neutral':0,'positive':0})
+    for (let es in inputED){
+        let sa= inputSA[es]
+        for (let e in inputED[es]){
+            // @ts-ignore
+            tmpRes[inputED[es][e]][sa]+=1
+        }
+    }
+    for (let i in tmpRes){
+        result.push(tmpRes[i])
+    }
     return result
 }
 
