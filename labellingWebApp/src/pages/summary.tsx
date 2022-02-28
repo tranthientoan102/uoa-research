@@ -29,6 +29,7 @@ const Summary = () => {
     let sortBy = ''
     let tweets = []
 
+
     const callbackFunction = (a) => {
         sortBy = a
     }
@@ -61,7 +62,7 @@ const Summary = () => {
                                 : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
                             }
                         </div> */}
-                        From the first
+                        From the latest
                         <Input p={0} pl={1} ml={1} id='numTopPrediction'
                             maxW={'20'}
                             variant='filled'
@@ -77,7 +78,7 @@ const Summary = () => {
                                 }
                             }}
                         />
-                        tweets, run predctions of
+                        scrapped tweets, run predctions of
                         <Input p={0} pl={1} ml={1} id='numPrediction'
                             maxW={'20'}
                             variant='filled'

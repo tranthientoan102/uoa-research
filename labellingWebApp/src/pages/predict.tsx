@@ -211,7 +211,7 @@ const Predict = () => {
                                         : <Checkbox colorScheme='blue' defaultIsChecked pr={4} isDisabled={true}>privacy</Checkbox>
                                 }
                                 </div>
-                                From the first
+                                From the latest
                                 <Input p={0} pl={1} ml={1} id='numTopPrediction'
                                     maxW={'20'}
                                     variant='filled'
@@ -227,7 +227,7 @@ const Predict = () => {
                                         }
                                     }}
                                 />
-                                tweets, run predctions of
+                                scrapped tweets, run predctions of
                                 <Input p={0} pl={1} ml={1} id='numPrediction'
                                     maxW={'20'}
                                     variant='filled'
