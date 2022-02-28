@@ -16,50 +16,61 @@ const headers = [
     { label: "text", key: "text" },
     { label: "sa", key: "sa" },
     { label: "ed", key: "ed" },
+    { label: "location", key: "location" },
+    { label: "#LRC", key: "#LRC" },
 
 ];
 
 interface Props {
-    text: string[],
+    tweets: any[],
     sa: string[],
     ed: string[],
-    isMasked: boolean
+    isMasked: boolean,
+    disabled: boolean
 }
 
 class PredictionDownload extends Component<Props> {
     // private csvLinkEl: React.RefObject<HTMLDivElement>;
 
-    // constructor(props) {
-    //     super(props);
-    // }
+
     state = {
         data: [],
-        text: this.props.text,
-        ed: this.props.ed,
-        sa: this.props.sa,
-        isMasked: this.props.isMasked
+        // text: this.props.text,
+        // ed: this.props.ed,
+        // sa: this.props.sa,
+        // isMasked: this.props.isMasked,
+        // disabled: this.props.disabled,
     }
     csvLinkEl = React.createRef();
 
     download = async () => {
+
+        console.log(this.props.tweets)
         // const data = await this.getData();
         let data =  []
-        for (let i = 0; i < this.state.text.length; i++){
-            let text= this.state.text[i]
+        // for (let i = 0; i < this.state.text.length; i++){
+        //     let text= this.state.text[i]
+        for (let i = 0; i < this.props.tweets.length; i++){
+            let text= this.props.tweets[i].text
             text = text.replaceAll("\"","[doubleQuote]")
                     .replaceAll("\n", "[newLine]")
-            if (this.state.isMasked){
+                    .replaceAll("&amp;","&")
+            // if (this.state.isMasked){
+            if (this.props.isMasked){
                 text = maskPersonalDetails_AtSign(text)
             }
 
             data.push({
                 text: text,
-                sa: this.state.sa[i],
-                ed: this.state.ed[i]
+                sa: this.props.sa[i],
+                ed: this.props.ed[i],
+                location: this.props.tweets[i].geo,
+                '#LRC': this.props.tweets[i].engage,
             })
 
         }
-        console.log(this.props.text)
+        console.log(this.props.tweets)
+        // console.log(this.state.text)
         this.setState({data: data}, () => {
             setTimeout(() => {
 
@@ -71,8 +82,8 @@ class PredictionDownload extends Component<Props> {
 
     render() {
         return (
-            <SimpleGrid>
-                <Button my={2} colorScheme={"green"} onClick={this.download}>
+            <div>
+                <Button my={2} colorScheme={"green"} onClick={this.download} disabled={this.props.disabled}>
                     Export to CSV
                 </Button>
                 <CSVLink
@@ -81,7 +92,7 @@ class PredictionDownload extends Component<Props> {
                         data={this.state.data}
                         ref={this.csvLinkEl}
                     />
-            </SimpleGrid>
+            </div>
 
         );
     }

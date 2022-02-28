@@ -1,14 +1,41 @@
 import axios from "axios";
 import {toast} from 'react-toastify';
-import crypto from "crypto";
 import {
     loadUnlabelledPost_accs_kws
     , loadUnlabelledPostByAccount
-    , host_scrapper, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw
+    , host_scrapper, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw, port_scrapper
 } from "./db";
 import Axios from "axios";
-import {Box, GridItem, Tag} from "@chakra-ui/react";
+import {Tag} from "@chakra-ui/react";
 import dateformat from "dateformat";
+import React from "react";
+
+
+export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
+                            'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
+                            'advocary/reform']
+export const eventFullList = [eventList, 'no event detected'].flat()
+export const sentimentFullList = ['negative', 'neutral', 'positive']
+
+
+export const findByType = (children, component) => {
+    const result = [];
+    /* This is the array of result since Article can have multiple times the same sub-component */
+    const type = [component.displayName] || [component.name];
+    /* We can store the actual name of the component through the displayName or name property of our sub-component */
+    React.Children.forEach(children, (child) => {
+        const childType =
+            child && child.type && (child.type.displayName || child.type.name);
+        if (type.includes(childType)) {
+            result.push(child);
+        }
+    });
+    /* Then we go through each React children, if one of matches the name of the sub-component we’re looking for we put it in the result array */
+    return result[0];
+};
+
+
+
 
 export const labelling = async (auth, values) => {
     try {
@@ -83,53 +110,67 @@ export const getCheckedItemFromGrid =(eleId, isTwitterAcc=false, lowering = true
 export const getKwInput= (eleId, lowering = true, withWarning=true) => {
 
     let tmpTags = getTagsInput(eleId, false, lowering, withWarning)
+
+    return tags_arrayOfArray(tmpTags)
+}
+export const tags_arrayOfArray = (tagsArray) => {
     let tags = []
-    for (let tmpTag of tmpTags){
+    for (let tmpTag of tagsArray) {
         let tmpSubTags = (tmpTag + " ").split(/\s+/)
         let subTags = []
         let insideQuoteMark = false
         let nonSepaKw = ''
         //  "christmas eve" "new year eve"
-        for (let tmptmp of tmpSubTags){
-            console.log(tmptmp)
+        for (let tmptmp of tmpSubTags) {
             if (tmptmp.startsWith('"')) {
                 // tmptmp = tmptmp.split("\"")[1]
                 insideQuoteMark = true
             }
-            if (insideQuoteMark){
-
-                if (tmptmp.endsWith('"')) {
+            if (insideQuoteMark) {
+                // console.log(tmptmp)
+                if ((tmptmp.length > 1 || nonSepaKw.length > 1) && tmptmp.endsWith('"')) {
                     // tmptmp = tmptmp.split("\"")[0]
                     insideQuoteMark = false
                     nonSepaKw += ' ' + tmptmp
                     subTags.push(nonSepaKw)
                     nonSepaKw = ''
                 } else nonSepaKw += ' ' + tmptmp
+                // console.log(nonSepaKw)
             } else {
                 // if (nonSepaKw.length != 0) {
                 //     subTags.push(nonSepaKw)
                 //     nonSepaKw = ''
                 // }
-                if (tmptmp.length > 0) subTags.push (tmptmp)
+                if (tmptmp.length > 0) subTags.push(tmptmp)
             }
         }
         tags.push(subTags)
     }
     return tags
+
+
 }
 
 
 export const explainKws = (eleId, lowering=true, outsideTagIsAND = true ) => {
-    let kwTags = getKwInput(eleId, lowering, false)
-
+    try {
+        let kwTags = getKwInput(eleId, lowering, false)
+        return explainKws_arrayOfArray(kwTags, outsideTagIsAND)
+    } catch (error) {
+        console.log(error)
+        return `error ${eleId}`
+    }
+}
+export const explainKws_arrayOfArray = (tags, outsideTagIsAND = true) => {
     let result = []
-    if (outsideTagIsAND){
-        for (const tag of kwTags){
+    if (outsideTagIsAND) {
+        for (const tag of tags) {
+            // console.log(tag)
             result.push(`(${tag.join(' OR ')})`)
         }
         return result.join(' AND ')
-    }else {
-        for (const tag of kwTags){
+    } else {
+        for (const tag of tags) {
             result.push(`(${tag.join(' AND ')})`)
         }
         return result.join(' OR ')
@@ -229,6 +270,19 @@ export const maskPersonalDetails_AtSign = (text:string) => {
     return text.replace(/(\w+)@/gi, "✱✱✱@")
                 .replace(/@(\w+)/gi, "@✱✱✱")
 }
+
+// export const maskPersonalDetails_AtSign = (text:string) => {
+//     let result = []
+//     for (let i in text){
+//         result.push(text[i].toString().replace(/(\w+)@/gi, "✱✱✱@")
+//                 .replace(/@(\w+)/gi, "@✱✱✱"))
+//     }
+//     return result
+//
+//     // return text.replace(/(\w+)@/gi, "✱✱✱@")
+//     //             .replace(/@(\w+)/gi, "@✱✱✱")
+// }
+
 export const maskPersonalDetails_names = (text:string, names:string[]) =>{
     if (names != null) {
         // console.log(`masking names: ${names.join(',')}`)
@@ -252,7 +306,8 @@ export const maskPersonalDetails_names = (text:string, names:string[]) =>{
 }
 
 export const fetchData = async (accs: string[], kws:string[][], limit= 25
-                                , postAfter = new Date(), refillCounter = 0
+    , postAfter = new Date(), refillCounter = 0
+    , sortAtt = 'engage'
 ) => {
     // setData(`loading post from ${accs} with keywords ${kws}`)
     let res = null
@@ -275,7 +330,9 @@ export const fetchData = async (accs: string[], kws:string[][], limit= 25
     }
 
     console.log(`fetched ${res.length} tweets`)
-    return res;
+
+    return res.sort((a, b) => { return (b[sortAtt] - a[sortAtt]) });
+    // return res;
 
 }
 export const refillData = async (accs:string[], kws:string[][], isPremium: boolean) => {
@@ -317,17 +374,49 @@ export const getEDPrediction = async (tweetList: string[]) => {
     let tmp = await Axios.post(`${host_ed}${port}/predict`, { text: tweetList })
     return tmp
 }
-export const displayTag = (list: string[], fullList:string[]=null, colorScheme='telegram') => {
+
+export const getCountRecent = async (kws: string[]) => {
+    // let tmp = await Axios.post(`http://${host}:8001/trigger/account`, { list: acc })
+
+    let port = host_scrapper.startsWith('https') ? '' : `:${port_scrapper}`
+    console.log(`${host_scrapper}${port}/count/recent`)
+    let data = {keyword: kws, outsideTagIsAND: true}
+    let tmp = await Axios.post(`${host_scrapper}${port}/count/recent`,  {keyword: kws, outsideTagIsAND: true})
+    return tmp
+}
+
+export const displayTag = (list: string[]
+                           , fullList:string[]=null
+                           , colorScheme='telegram'
+                           , percentage:number[]=null
+) => {
     let result = []
     if (fullList == null) {
         for (const i in list) {
-            result.push(<Tag m={1} colorScheme={colorScheme} variant="solid">{list[i]}</Tag>)
+            result.push(<Tag m={1} colorScheme={colorScheme} variant="solid" borderRadius={100}>{list[i]}</Tag>)
         }
     } else{
         for (const i in fullList) {
+            let percent = ''
+            if (percentage != null){
+                percent = percent[i]
+            }
             if (list.includes(fullList[i]))
-                result.push(<Tag m={1} colorScheme={colorScheme} variant="solid" align="center" justify="center">{fullList[i]}</Tag>)
-            else result.push(<Tag m={1} color={'gray.300'} align="center" justify="center">{fullList[i]}</Tag>)
+                result.push(
+                    <span>
+                        <Tag m={1} colorScheme={colorScheme} variant="solid" align="center" justify="center" borderRadius={100}>{fullList[i]}
+                        </Tag>
+                        {percent}
+                    </span>
+                )
+            else result.push(
+                <span>
+                    <Tag m={1} color={'gray.300'} align="center" justify="center" borderRadius={100}>{fullList[i]}
+                    </Tag>
+                    {percent}
+                </span>
+
+            )
         }
 
     }
@@ -352,3 +441,182 @@ export const convertDate = (input) => {
     }
     return result
 }
+
+export const highlightKws = (text, kws) => {
+    let result = []
+    
+    for (let i in kws){
+        // let tag = <Tag m={0} p={0} borderRadius={0} bgColor={'telegram.400'} color={'white'}>${kws[i]}</Tag>
+        //
+        // // let newPart = `${tag}${kws[i]}${tagEnd}`
+        // text = text.split(`/${kws[i]}/ig`).join(<Tag m={0} p={0} borderRadius={0} bgColor={'telegram.400'} color={'white'} key={'1'}>${kws[i]}</Tag>
+        // )
+        // console.log(text)
+        // text= text.replace(`/${kws[i]}/ig`, `<Tag m={0} p={0} borderRadius={0} bgColor={'telegram.400'} color={'white'} key={'1'}>${kws[i]}</Tag>`)
+        let textSep = text.split(kws[i])
+        for (let i in textSep){
+            result.push(textSep[i])
+            // result.push(<Tag m={0} p={0} borderRadius={0} bgColor={'telegram.400'} color={'white'} key={'1'}>${kws[i]}</Tag>)
+            result.push(<pre>${kws[i]}</pre>)
+        }
+        result.pop()
+    }
+    return result
+}
+
+export const calcAmountSummary = (input: [string], fullCate:string[], percentage:boolean) => {
+    let total = input.length
+    let result = {}
+
+
+    fullCate.forEach(c => {
+        if (percentage)
+            result[c] = (input.filter(i => i == c).length / total).toFixed(4)
+        else result[c] = input.filter(i => i == c).length
+
+    })
+    console.log(result)
+    return result
+}
+
+export const calcStackedSummaryED = (inputED:[][], inputSA:[], fullCat:string[], percentage:boolean)=>{
+    let result = []
+    let tmpRes = {}
+    fullCat.forEach(c=> tmpRes[c]={'name':c, 'negative':0,'neutral':0,'positive':0})
+    for (let es in inputED){
+        let sa= inputSA[es]
+        for (let e in inputED[es]){
+            // @ts-ignore
+            tmpRes[inputED[es][e]][sa]+=1
+        }
+    }
+    for (let i in tmpRes){
+        result.push(tmpRes[i])
+    }
+    return result
+}
+
+export const checkExpect = (prop: string[], expected: string[], mode='in') => {
+
+
+    let result = false
+    prop = [prop].flat()
+    if (expected.length == 0) result=true
+    else if (mode=='in'){
+        for (const p of prop){
+            console.log(`${p}`)
+            if (expected.includes(p)){
+                result = true
+                break
+            }
+        }
+    }
+
+    console.log(`${prop} is included in ${expected}: ${result}`)
+    return result
+
+}
+
+export const processPredict = async (accInputId, kwsInputId, numberPredict, sortBy) => {
+
+    let tweets = []
+    let pred_sa
+    let pred_ed
+
+    await fetchData(
+        getTagsInput(accInputId, true)
+        , getKwInput(kwsInputId, false)
+        , numberPredict
+    ).then((res) => {
+        res.forEach(a => {
+            // console.log(`converting ${a.id}`)
+            // a.postAt = convertTimeToString(a.postAt)
+            // a.insertDbAt = convertTimeToString(a.insertDbAt)
+
+            // tweetList.push(a.text)
+            tweets.push(a)
+
+        })
+        return res
+    })
+    // toast.info('Predicting...')
+
+
+    // let pred_sa = await getSAPrediction(tweetList)
+    // let pred_ed = await getEDPrediction(tweetList)
+
+
+    let promise1 = getSAPrediction(tweets)
+    let promise2 = getEDPrediction(tweets)
+    await Promise.all([promise1, promise2]).then(promises => {
+        pred_sa = promises[0].data
+        pred_ed = promises[1].data
+
+        // setText(tweets)
+        // setPred_sa(promises[0].data)
+        // setPred_ed(promises[1].data)
+    })
+
+
+
+    console.log(tweets)
+    console.log(pred_sa)
+    console.log(pred_ed)
+
+    return [tweets, pred_sa, pred_ed]
+}
+
+
+export const processPredict_fromTotalFetch = async (accInputId, kwsInputId, numberPredict, totalFetch, sortBy) => {
+
+    let tweets = []
+    let pred_sa
+    let pred_ed
+
+    console.log(`numberPredict=${numberPredict} ; totalFetch=${totalFetch}`)
+
+    await fetchData(
+        getTagsInput(accInputId, true)
+        , getKwInput(kwsInputId, false)
+        , totalFetch
+    ).then((res) => {
+        res.forEach(a => {
+            // console.log(`converting ${a.id}`)
+            // a.postAt = convertTimeToString(a.postAt)
+            // a.insertDbAt = convertTimeToString(a.insertDbAt)
+
+            // tweetList.push(a.text)
+            tweets.push(a)
+
+        })
+        return res
+
+    })
+    // toast.info('Predicting...')
+
+
+    // let pred_sa = await getSAPrediction(tweetList)
+    // let pred_ed = await getEDPrediction(tweetList)
+
+    tweets = tweets.sort((a, b) => b[sortBy] - a[sortBy]).slice(0, numberPredict)
+    let promise1 = getSAPrediction(tweets)
+    let promise2 = getEDPrediction(tweets)
+    await Promise.all([promise1, promise2]).then(promises => {
+        pred_sa = promises[0].data
+        pred_ed = promises[1].data
+
+        // setText(tweets)
+        // setPred_sa(promises[0].data)
+        // setPred_ed(promises[1].data)
+    })
+
+
+
+    console.log(tweets)
+    console.log(pred_sa)
+    console.log(pred_ed)
+
+    return [tweets, pred_sa, pred_ed]
+}
+
+

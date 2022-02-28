@@ -1,5 +1,18 @@
-import {Box, Button, Checkbox, Container, Divider, Flex, Grid, SimpleGrid, Spinner, Tag, Text} from '@chakra-ui/react';
-import React, {useState} from 'react';
+import {
+    Box,
+    Button,
+    Checkbox,
+    Container,
+    Divider,
+    Flex,
+    Grid,
+    HStack,
+    SimpleGrid,
+    Spinner,
+    Tag,
+    Text
+} from '@chakra-ui/react';
+import React, { Component, useState } from 'react';
 import {
     getDefaultEventList,
     loadUnlabelledPostByAccount,
@@ -7,7 +20,7 @@ import {
     updateLabel,
     loadUnlabelledPost_accs_kws,
     refillDb_kw,
-    refillDb_acc_kws, loadLabelledPostByLabelledBy
+    refillDb_acc_kws, loadLabelledPostByLabelledBy, getDefaultKws
 } from '../utils/db';
 import {useAuth} from "../lib/auth";
 import {toast} from 'react-toastify';
@@ -22,22 +35,26 @@ import {
     isAdmin,
     isMasked,
     explainKws,
-    maskPersonalDetails,
-    maskPersonalDetails_AtSign
+    // maskPersonalDetails,
+    maskPersonalDetails_AtSign, getCountRecent, findByType
 } from "../utils/common";
 import DefaultEvent, {DE} from "./DefaultEvent";
 import TagsInput2 from "./TagsInput2";
 import TagsInputKws from "./TagsInputKws";
-import TweetAnnotation from "./TweetAnnotation";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {random} from "nanoid";
+import PostView2Decoration from "./PostView2Decoration";
+import {SocialIcon} from "react-social-icons";
 
+import {MdOutlinePlace, MdOutlineTrendingUp} from 'react-icons/md';
+import TweetHeader from "./TweetHeader";
+import SelectOption, { SelectionMode, SelectOptionProps } from './SelectOption';
 interface Props {
     auth,
 
 }
 
-class PostView2 extends React.Component<Props> {
+class PostView2 extends Component<Props> {
 // const PostView2 = (props) => {
 
     // const formData = JSON.parse(props.formData);
@@ -74,6 +91,7 @@ class PostView2 extends React.Component<Props> {
         return result
     }
 
+
     counter = 0;
     postAfter= new Date();
     state = {
@@ -81,12 +99,14 @@ class PostView2 extends React.Component<Props> {
         auth: this.props.auth,
 
         items: [],
-        loadEachTime: 3,
+        loadEachTime: 20,
         de: this.getDE(),
         hasMore: true,
         loading: false,
-    }
+        tweetCount: undefined,
 
+    }
+    sortBy = 'fav'
 
     // const update = (auth, hash, rating, events, names) => {
     update = (auth, hash, rating, events, names) => {
@@ -96,6 +116,22 @@ class PostView2 extends React.Component<Props> {
         } else {
             toast.error('Please login to start labelling')
         }
+    }
+
+    getCount = async () => {
+        let tmp = 0
+        await getCountRecent(getKwInput('searchKey', false, !this.state.loading)).then(data => {
+            tmp = data.data
+        })
+         this.setState({
+                tweetCount: tmp
+            })
+
+    }
+
+    callbackFunction = (childData) => {
+        this.sortBy = childData
+        console.log(`sort by ${this.sortBy}`)
     }
 
 
@@ -113,12 +149,14 @@ class PostView2 extends React.Component<Props> {
         }
         let result = this.state.items
         let res = await fetchData(
-            getTagsInput('searchAcc', true)
-            , getKwInput('searchKey', false)
+            getTagsInput('searchAcc', true, false, !this.state.loading)
+            , getKwInput('searchKey', false, !this.state.loading)
             , this.state.loadEachTime
             , this.postAfter
             , this.counter
         )
+        let sortBy = this.sortBy == 'like' ? 'fav' : this.sortBy
+        res = res.sort((a, b) => b[sortBy] - a[sortBy])
         this.counter++;
         // .then(data => result.push)
         // .finally(() => {
@@ -150,10 +188,12 @@ class PostView2 extends React.Component<Props> {
 
     render() {
         console.log(`render ${this.state.name}`)
+        // console.log(findByType(this.sortBy, SelectOption))
+
         return (
             <div>
-                <Container position="relative" maxW="8xl">
-                    <Flex my={2} align="center" justify="center">
+                <Container position="relative" maxW="12xl">
+                    <Flex my={2} align="top" justify="center">
                         <Container mx={2} p={0}>
                             <Text>Twitter account</Text>
                             <TagInput2 id="searchAcc" defaultEvents={[]} tags={[]}/>
@@ -162,6 +202,7 @@ class PostView2 extends React.Component<Props> {
                             <Text>Keyword</Text>
                             <TagsInputKws id="searchKey" tags={[]}
                                           outsideIsAND={true}
+                                // items={this.kw}
                             />
                         </Container>
 
@@ -175,27 +216,43 @@ class PostView2 extends React.Component<Props> {
                         </div>
                         <div id="isPremium">
 
-                                <Checkbox colorScheme='blue' isDisabled={!isAdmin(this.state.auth)} mx={2} color={'twitter.600'}>
-                                    <b>PREMIUM SEARCH</b>
-                                </Checkbox>
+                            <Checkbox colorScheme='blue' isDisabled={!isAdmin(this.state.auth)} mx={2}
+                                      color={'twitter.600'}>
+                                <b>PREMIUM SEARCH</b>
+                            </Checkbox>
 
                         </div>
+                        <SelectOption title='sort by' id='SortBy'
+                            data={['like', 'retweet', 'comment', 'combine']}
+                            init={['like']} mode={SelectionMode.ONE} colorScheme={'twitter'}
+                            parentCallback={a => this.callbackFunction(a)}
+                        />
                         <Button
                             m={3}
                             onClick={() => {
                                 this.counter=0;
+                                this.setState({
+                                    tweetCount: undefined
+                                })
+                                this.getCount()
                                 this.fetchMoreData()
                             }}
                         >
                             <p>Load more</p>
-                        </Button>
+                        </Button>                
+
+                    </Flex>
+                    <Flex my={2} align="center" justify="center">
+                        {this.state.tweetCount ? `appears on Twitter ${this.state.tweetCount} times in last 7 days` : ''}
                     </Flex>
 
 
                     {/* </Flex> */}
                 </Container>
+
                 <Container maxW="8xl">
-                    <SimpleGrid my={2} align="center">
+                    <SimpleGrid my={2}>
+
                         <InfiniteScroll
                             dataLength={this.state.items.length}
                             next={this.fetchMoreData}
@@ -205,27 +262,32 @@ class PostView2 extends React.Component<Props> {
                             {this.state.items.map(data => (
                                     <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
                                          id={data.hash} key={data.hash}>
-                                        {isMasked(this.state.auth) ? '' :
-                                            <Text color="blue.300">
-                                                <a href={data.orig}>{data.orig}</a>
-                                            </Text>}
-                                        <Text colorScheme="teal">
-                                            {isMasked(this.state.auth) ? '' :
-                                                <b>{data.account}</b>}
-                                            {(new Date(data.postAt['seconds'] * 1000).toString())}
 
-                                        </Text>
-                                        <Text color="teal">
-                                            {data.hash}
-                                        </Text>
-                                        <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
-                                            {isMasked(this.state.auth) ? maskPersonalDetails_AtSign(data.text) : data.text}
-                                        </Text>
+                                    <TweetHeader isMasked={isMasked(this.state.auth)}
+                                        acc={data.account}
+                                        like={data.fav} comment={data.comment} retweet={data.retweet}
+                                        engage={data.engage}
+                                        geo={data.geo}
+                                        hash={data.hash} orig={data.orig}
+                                        postSec={data.postAt['seconds']}
+                                        sortBy={this.sortBy}
+                                    />
+
+                                        {/*<Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">*/}
+                                        {/*    {isMasked(this.state.auth) ? maskPersonalDetails_AtSign(*/}
+                                        {/*                                            highlightKws(data.text*/}
+                                        {/*                                                        , getKwInput('searchKey', false)))*/}
+                                        {/*                                : data.text}*/}
+
+                                        {/*</Text>*/}
+                                        <PostView2Decoration text={data.text} hash={data.hash}
+                                                             kws={getKwInput('searchKey', false, !this.state.loading)}
+                                        />
 
                                         <div id={data.hash + '_events'}>
                                             {this.state.de.map(de => (
                                                 <Checkbox mr={4} mb={2} fontSize={12} colorScheme='blue'
-                                                    key={data.hash+ '_events_' + de.name}
+                                                          key={data.hash + '_events_' + de.name}
                                                 >
                                                     {de.name}
                                                 </Checkbox>))
@@ -285,6 +347,7 @@ class PostView2 extends React.Component<Props> {
                 </Container>
             </div>
         );
+
     }
 }
 

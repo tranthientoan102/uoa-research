@@ -37,6 +37,7 @@ import {
 } from "../utils/common";
 import {CheckIcon, SearchIcon} from "@chakra-ui/icons";
 import { SocialIcon } from 'react-social-icons';
+import TweetHeader from "./TweetHeader";
 
 
 
@@ -46,6 +47,11 @@ interface Props {
     , hash: string
     , account: string
     , text: string
+    , geo: string
+    , like: number
+    , retweet: number
+    , comment: number
+    , engage: number
     , orig: string
     , postAt: number
     , rating: string
@@ -115,27 +121,13 @@ class PostReviewEle extends React.Component<Props> {
             <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl"
                  id={this.state.hash} bgColor={this.state.reviewed?'yellow.50':'white'}>
 
-                <Flex colorScheme="teal" justify="left" align="center" style={{ height: 32 }}>
+                <TweetHeader isMasked={isMasked(this.state.auth)}
+                    acc={this.state.account} geo={this.props.geo}
+                    like={this.props.like} retweet={this.props.retweet} comment={this.props.comment} engage={this.props.engage}
+                    sortBy='like'
+                    hash={this.state.hash} orig={this.state.orig} postSec={this.state.postAt} />
 
-                        <Tag colorScheme={"twitter"} mr={2} p={0}
-                                borderRadius={100}
-                        >
-                            <SocialIcon network="twitter" style={{ height: 32, width: 32 }} />
-                            <Text justify="center"
-                                  pl={this.state.isMasked ?0: 1}
-                                  pr={this.state.isMasked ?0: 3}
-                            >
-                                <b>{this.state.isMasked ? '': this.state.account}</b>
-                            </Text>
-                        </Tag>
-                        <Text py={'1fr'}>
-                            {(new Date(this.state.postAt * 1000).toString())}
-                        </Text>
 
-                </Flex>
-                <Text color="teal">
-                    {this.state.hash}
-                </Text>
                 <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
                     {this.state.isMasked ? maskPersonalDetails_AtSign(this.state.text) : this.state.text}
                 </Text>

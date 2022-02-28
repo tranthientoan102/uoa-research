@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Divider, Flex, Heading, Link } from "@chakra-ui/layout";
-import {Image, Input} from "@chakra-ui/react"
+import {Image, Input, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/react"
 // import { useRouter } from "next/dist/client/router";
 import { useRouter } from "next/router";
 import { useAuth } from "../lib/auth";
@@ -12,7 +12,7 @@ const Navbar: React.FC<{}> = () => {
     console.log(router.asPath)
     return (
         <>
-            <Flex justify="space-between" m={1}  align="center" di>
+            <Flex justify="space-between" m={1}  align="center">
                 <Flex>
                     <Heading onClick={() => router.push('/')} as="button" mx={2}>
                         {process.env.NEXT_PUBLIC_NAME}
@@ -21,14 +21,24 @@ const Navbar: React.FC<{}> = () => {
                 </Flex>
                 <Box my={1}>
                     {auth ? (
-                        <Box p={2}>
+                        <Flex p={2} flexDirection="row" flexWrap="wrap" justify="right">
+                            <Link
+                                p={2}
+                                onClick={() => {
+                                    router.push('/summary')
+                                }}
+                                bg={(router.asPath == '/summary') ? 'yellowgreen' : 'white'}
+                                color={(router.asPath == '/summary') ? 'black' : 'black'}
+                            >
+                                Summary
+                            </Link>
                             <Link
                                 p={2}
                                 onClick={() => {
                                     console.log('going /')
                                     router.push('/')
                                 }}
-                                bg={(router.asPath=='/')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/')? 'white':'black'}
                             >
                                 Annotation
@@ -40,7 +50,7 @@ const Navbar: React.FC<{}> = () => {
                                     console.log('going /review')
                                     router.push('/review')
                                 }}
-                                bg={(router.asPath=='/review')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/review')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/review')? 'white':'black'}
                             >
                                 Review
@@ -52,7 +62,7 @@ const Navbar: React.FC<{}> = () => {
                                     console.log('going /predict')
                                     router.push('/predict')
                                 }}
-                                bg={(router.asPath=='/predict')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/predict')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/predict')? 'white':'black'}
 
                             >
@@ -64,7 +74,7 @@ const Navbar: React.FC<{}> = () => {
                                     console.log('going /download')
                                     router.push('/download')
                                 }}
-                                bg={(router.asPath=='/download')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/download')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/download')? 'white':'black'}
                             >
                                 Download
@@ -76,7 +86,7 @@ const Navbar: React.FC<{}> = () => {
                                     console.log('going /admin')
                                     router.push('/admin')
                                 }}
-                                bg={(router.asPath=='/admin')? 'twitter.600':'white'}
+                                bg={(router.asPath=='/admin')? 'dodgerblue':'white'}
                                 color={(router.asPath=='/admin')? 'white':'black'}
                             >
                                 Admin
@@ -84,11 +94,21 @@ const Navbar: React.FC<{}> = () => {
                             <Link p={2} onClick={() => signOut()} bg={'tomato'} color={'white'}>
                                 {auth.email.split('@')[0]} | Logout
                             </Link>
-                        </Box>
+                        </Flex>
                     ) : (
-                        <Box p={2}>
+                        <Flex p={2}>
                             <Link
                                 p={2}
+                                    onClick={() => {
+                                        router.push('/summary')
+                                    }}
+                                    bg={(router.asPath == '/summary') ? 'yellowgreen' : 'white'}
+                                    color={(router.asPath == '/summary') ? 'white' : 'black'}
+                                >
+                                    Summary
+                                </Link>
+                                <Link
+                                    p={2}
                                 onClick={() => router.push('/signin')}
                                 fontWeight={
                                     router.pathname === '/signin' ? 'extrabold' : 'normal'
@@ -96,7 +116,7 @@ const Navbar: React.FC<{}> = () => {
                             >
                                 Sign In
                             </Link>
-                        </Box>
+                        </Flex>
                     )}
                 </Box>
             </Flex>

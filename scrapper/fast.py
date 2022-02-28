@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import multiprocessing
 
 import main2
+import main3
+
 
 class MyFast (FastAPI):
     cache = {}
@@ -175,6 +177,17 @@ async def searchCombine(initConfig):
     print(f'found {len(hashList)} tweets')
     return hashList
 
+@app.post("/count/recent")
+async def countRecent(initConfig=Body(...)):
+    default = getDefaultRunConfig()
+    default['twitter']['runMode'] = 'countRecent'
+
+    print(initConfig)
+    default['twitter']['countRecent']['account'] = []
+    default['twitter']['countRecent']['keyword'] = initConfig['keyword']
+    default['twitter']['outsideTagIsAND'] = initConfig['outsideTagIsAND']
+
+    return main3.get_recent_tweets_count(default)
 
 def findElementFromList(eleList, destList):
 

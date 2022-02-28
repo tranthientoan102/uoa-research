@@ -1,15 +1,9 @@
 import {
-    Box,
     Container,
-    Divider,
     Flex,
-    Heading,
-    SimpleGrid,
     Text,
-    HStack,
     Button,
-    Spacer,
-    Checkbox, Grid, Spinner
+    Checkbox, Spinner, Tag, Input, Box
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import React, { useState } from 'react';
@@ -17,26 +11,23 @@ import Navbar from '../components/Navbar';
 import { useAuth } from "../lib/auth";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import TagsInput2 from "../components/TagsInput2";
 import {
-    convertTimeToString, displayTag, displayTagSentiment, displayTagED, explainKws,
     fetchData, getEDPrediction, getKwInput,
     getSAPrediction,
     getTagsInput,
     isAdmin,
-    isMasked, maskPersonalDetails_AtSign, isChecked
+    isMasked, isChecked, calcAmountSummary, sentimentFullList,
 } from "../utils/common";
-import {downloadData} from "../utils/db";
 
 import TagInput2 from "../components/TagsInput2";
 import TagsInputKws from "../components/TagsInputKws";
 import PredictionDownload from "../components/PredictionDownload";
+import PredictView from "../components/PredictView";
+import SelectOption, { SelectionMode } from '../components/SelectOption';
 
-interface Props {
-    data: string[]
-}
 
-const Predict = (props) => {
+
+const Predict = () => {
     const id = 'Predict'
 
     // const formData = JSON.parse(props.formData);
@@ -44,64 +35,79 @@ const Predict = (props) => {
 
     toast.configure()
     const { auth, signinWithGoogle } = useAuth();
-    const [data, setData] = useState("init data");
-    const [downloadAvailable, setDownloadAvailable] = useState(false)
+    const [stats, setStats] = useState(<div/>)
+    const [num, setNum] = useState(parseInt(process.env.NEXT_PUBLIC_NUM_PREDICTIONS))
+    const [numBig, setNumBig] = useState(parseInt(process.env.NEXT_PUBLIC_NUMBIG_PREDICTIONS))
+    const [btnEnable, setBtnEnable] = useState(true)
 
-    const [text, setText] = useState([])
-    // const [ pred_sa, setPred_sa] = useState([])
-    // const [ pred_ed, setPred_ed] = useState([])
+    const [buttonExport, setButtonExport] = useState(<PredictionDownload tweets={[]} sa={[]} ed={[]}
+                                                    isMasked={true}
+                                                    disabled={true}/>)
+    const [predictView, setPredictView] = useState(<div/>)
 
+    let numberPredict = 25
 
-    let tweetList = []
+    let tweets = []
+    let pred_sa
+    let pred_ed
+
+    let sortBy = ''
+
+    const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
+                   'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
+        'advocary/reform']
+    const eventFullList = [eventList, 'no event detected'].flat()
+    const sentimentFullList = ['negative', 'neutral', 'positive']
 
     const processPredict = async () => {
-        let result = []
-        // let tweetList = []
 
-        // let eventFullList = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate', 'friendly']
-        let eventFullList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
-                       'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
-            'advocary/reform', 'no event detected']
-
-        let sentimentFullList = ['negative', 'neutral', 'positive']
+        setButtonExport(<PredictionDownload tweets={[]} sa={[]} ed={[]}
+                                                    isMasked={true}
+                                                    disabled={true}/>)
         // @ts-ignore
-        setData(<Flex my={2} align="center" justify="center" >Loading tweets ...
+        setStats(<Flex my={2} align="center" justify="center" > Loading stats
                     <Spinner size="md" m={1} thickness="4px"
                               speed="0.65s"
                               emptyColor="gray.200"
                               color="blue.500"/>
                     </Flex>)
-        let tweets = await fetchData(
-                                        getTagsInput('searchAcc',true )
-                                        , getKwInput('searchKeyPredict', false)
-                                        , 25
-                                    ).then((res) => {
+
+        // @ts-ignore
+        setPredictView(<Flex my={2} align="center" justify="center" > Loading predictions
+                    <Spinner size="md" m={1} thickness="4px"
+                              speed="0.65s"
+                              emptyColor="gray.200"
+                              color="blue.500"/>
+                    </Flex>)
+
+        await fetchData(
+            getTagsInput('searchAcc', true)
+            , getKwInput('searchKeyPredict', false)
+            , num
+        ).then((res) => {
             res.forEach(a =>{
                 // console.log(`converting ${a.id}`)
                 // a.postAt = convertTimeToString(a.postAt)
                 // a.insertDbAt = convertTimeToString(a.insertDbAt)
 
-                tweetList.push(a.text)
+                // tweetList.push(a.text)
+                tweets.push(a)
 
             })
             return res
         })
+        let origSortBy = (sortBy == 'like') ? 'fav' : sortBy
+        tweets.sort((a, b) => b[origSortBy] - a[origSortBy])
+
         // toast.info('Predicting...')
 
-        // @ts-ignore
-        setData(<Flex my={2} align="center" justify="center" >Running Prediction for {tweets.length} tweets
-                    <Spinner size="md" m={1} thickness="4px"
-                              speed="0.65s"
-                              emptyColor="gray.200"
-                              color="blue.500"/>
-                    </Flex>)
+
         // let pred_sa = await getSAPrediction(tweetList)
         // let pred_ed = await getEDPrediction(tweetList)
 
-        let pred_sa
-        let pred_ed
-        let promise1 = getSAPrediction(tweetList)
-        let promise2 = getEDPrediction(tweetList)
+
+        let promise1 = getSAPrediction(tweets)
+        let promise2 = getEDPrediction(tweets)
         await Promise.all([promise1, promise2]).then(promises=>{
             pred_sa= promises[0].data
             pred_ed = promises[1].data
@@ -117,56 +123,62 @@ const Predict = (props) => {
         console.log(pred_sa)
         console.log(pred_ed)
 
-        result.push(<PredictionDownload text={tweetList} sa={pred_sa} ed={pred_ed} isMasked={isChecked('isMasked')} />)
+        displayStats()
+        displayPredicts()
 
-        for (const i in tweets) {
-            let tweet = tweets[i]
-            result.push(
-                <Box align="left" m={3} borderWidth="1px" borderRadius="lg" p={6} boxShadow="xl" id={tweet.hash}>
-                    {isMasked(auth) ? '' :
-                        <Text color="blue.300">
-                            <a href={tweet.orig}>{tweet.orig}</a>
-                        </Text>}
-                    <Text colorScheme="teal">
-                        {isMasked(auth) ? '' :
-                            <b>{tweet.account}</b>} {(new Date(tweet.postAt['seconds'] * 1000).toString())}
-                    </Text>
-                    <Text color="teal">
-                        {tweet.hash}
-                    </Text>
-                    <Text color="gray.500" my={2} fontSize="2xl" maxW="6xl">
-                        {isMasked(auth) ? maskPersonalDetails_AtSign(tweet.text): tweet.text}
-                    </Text>
-                    <Flex align="center" justify="center">
-                        {/*Sentiment: {displayTagSentiment([pred_sa.data[i]], sentimentFullList)}*/}
-                        Sentiment: {displayTagSentiment([pred_sa[i]], sentimentFullList)}
-                    </Flex>
+    }
 
-                    <Container position="relative" maxW="6xl">
+    const displayStats = () => {
+        setButtonExport(<PredictionDownload tweets={tweets} sa={pred_sa} ed={pred_ed}
+                                                    isMasked={isChecked('isMasked')}
+                                                    disabled={false}/>)
 
-                        <Flex flexDirection="row" flexWrap="wrap"
-                            // templateColumns={'repeat(5,auto)'}
-                              templateRows={'repeat(3,auto)'} align="center" justify="center">
-                            Event:{
-                                // (pred_ed.data[i].length>0)? displayTagED(pred_ed.data[i], eventFullList)
-                                //     : displayTagED(['no event detected'], eventFullList)
-                                (pred_ed[i].length>0)? displayTagED(pred_ed[i], eventFullList)
-                                    : displayTagED(['no event detected'], eventFullList)
-                            }
-                        </Flex>
-                    </Container>
-                </Box>
-            )
+        let percentageSA = calcAmountSummary(pred_sa, sentimentFullList, true)
+        let countED = calcAmountSummary(pred_ed.flat(), eventFullList, false)
+
+        let result = []
+        result.push(<Text mt={4}>Among the {tweets.length} latest tweets, there are predicted to have</Text>)
+        let tmpResult = []
+        for (let k in percentageSA){
+            let color = ''
+            if (k == sentimentFullList[0]) color='red'
+            else if (k == sentimentFullList[1]) color='yellow'
+            else color='green'
+            tmpResult.push(<Flex align="center" justify="center" mr={2} p={0}>{(percentageSA[k] * 100).toFixed(2)}% <Tag colorScheme={color} variant="solid" borderRadius={100} mx={1}>{k}</Tag></Flex>)
         }
-        // @ts-ignore
-        setData(result)
+        result.push(
+            <Flex flexDirection="row" flexWrap="wrap"
+                              align="center" justify="center" pb={3}>
+                {tmpResult}
+            </Flex>
+        )
+        for (let c in countED){
+            // console.log(`${countED[c]}`)
+            if (countED[c]>0)
+                result.push(<Flex align="center" justify="center" m={0.5}><Tag colorScheme={'orange'} m={0.5} variant="solid" borderRadius={100} mx={1}>{c}</Tag> is detected in {countED[c]} tweets</Flex>)
+        }
 
-        console.log(`done download data`)
+        setStats(
+            <div>
+                {result}
+            </div>
+        )
+    }
 
-        // return result
+    const displayPredicts = () => {
 
 
+        setPredictView(<PredictView auth={auth} tweets={tweets}
+            pred_ed={pred_ed} pred_sa={pred_sa} sortBy={sortBy} />)
 
+        setButtonExport(<PredictionDownload tweets={tweets} sa={pred_sa} ed={pred_ed}
+                                    isMasked={isChecked('isMasked')}
+                                    disabled={false}/>)
+
+
+    }
+    const callbackFunction = (a) => {
+        sortBy = a
     }
 
     return (
@@ -180,7 +192,7 @@ const Predict = (props) => {
                 {auth?(
                     <div>
                         <Container position="relative" maxW="8xl">
-                            <Flex  my={2} align="center" justify="center" >
+                            <Flex  my={2} align="top" justify="center" >
 
                                 <Container mx={2} p={0}>
                                     <Text>Twitter account</Text>
@@ -191,23 +203,52 @@ const Predict = (props) => {
                                     <Text>Keyword</Text>
                                     <TagsInputKws id="searchKeyPredict" tags={[]} outsideIsAND={true}/>
                                 </Container>
-
+                            </Flex>
+                            <Flex  my={2} align="center" justify="center" >
                                 <div id="isMasked">
                                 {isAdmin(auth) ?
-                                    <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
-                                    : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
+                                        <Checkbox colorScheme='blue' defaultIsChecked pr={4}>privacy</Checkbox>
+                                        : <Checkbox colorScheme='blue' defaultIsChecked pr={4} isDisabled={true}>privacy</Checkbox>
                                 }
                                 </div>
-                                <Button
-                                    m={3}
-                                    // colorScheme="blue"
-                                    // background="gray"
-                                    // color="lightgreen"
-                                    onClick={() => processPredict()}
-                                    colorScheme={'telegram'}
-                                >
-                                    <p>Load & Predict</p>
-                                </Button>
+                                From the latest
+                                <Input p={0} pl={1} ml={1} id='numTopPrediction'
+                                    maxW={'20'}
+                                    variant='filled'
+                                    defaultValue={numBig}
+                                    onChange={(event) => {
+                                        let a = parseInt(event.target.value)
+                                        if (!isNaN(a)) {
+                                            setBtnEnable(true)
+                                            setNumBig(a)
+                                        } else {
+                                            toast.error('Invalid input')
+                                            setBtnEnable(false)
+                                        }
+                                    }}
+                                />
+                                scrapped tweets, run predctions of
+                                <Input p={0} pl={1} ml={1} id='numPrediction'
+                                    maxW={'20'}
+                                    variant='filled'
+                                    defaultValue={process.env.NEXT_PUBLIC_NUM_PREDICTIONS}
+                                    onChange={(event) => {
+                                        let a = parseInt(event.target.value)
+                                        if (!isNaN(a)) {
+                                            setBtnEnable(true)
+                                            setNum(a)
+                                        } else {
+                                            toast.error('Invalid input')
+                                            setBtnEnable(false)
+                                        }
+                                    }} />
+                                <Box ml={2}> </Box>
+                                <SelectOption title='with most' id='SortBy'
+                                    data={['like', 'retweet', 'comment', 'combine']}
+                                    init={['like']} mode={SelectionMode.ONE} colorScheme={'twitter'}
+                                    parentCallback={a => callbackFunction(a)}
+                                />
+
 
 
                                 {/*<Button*/}
@@ -218,15 +259,36 @@ const Predict = (props) => {
                                 {/*    LATEST*/}
                                 {/*</Button>*/}
                             </Flex>
+                            <Flex my={2} align="center" justify="center" >
+                                <Button
+                                    m={3}
+                                    // colorScheme="blue"
+                                    // background="gray"
+                                    // color="lightgreen"
+                                    onClick={() => processPredict()}
+                                    colorScheme={'twitter'}
+                                    disabled={!btnEnable}
+                                >
+                                    <p>Load & Predict</p>
+                                </Button>
+                                {buttonExport}
+                            </Flex>
+
 
 
                             {/* </Flex> */}
                         </Container>
-                        <Container maxW="8xl">
-                            <SimpleGrid my={2} align="center" >
-                                <div>{data}</div>
-                            </SimpleGrid>
+
+
+                        <Container maxW="8xl" align="center" >
+                            {stats}
                         </Container>
+
+                        <Container maxW="8xl" align="center" >
+                            {predictView}
+                        </Container>
+
+
                     </div >
 
                     ):(

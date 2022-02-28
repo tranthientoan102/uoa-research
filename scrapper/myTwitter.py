@@ -106,6 +106,11 @@ class MyTweet2:
         self.postAt = None
         self.hash = None
         self.text = None
+        self.retweet = 0
+        self.fav = 0
+        self.comment = 0
+        self.engage = 0
+        self.geo = 'unknown location'
         self.query = ''
         self.rating = None
         self.event = []
@@ -129,6 +134,14 @@ class MyTweet2:
             elif 'extended_tweet' in initDict.keys() : tmpText = initDict['extended_tweet']['full_text']
             else: tmpText = initDict['text']
             self.text = tmpText
+
+            self.retweet = initDict['retweet_count']
+            self.fav = initDict['favorite_count']
+            self.comment = initDict['reply_count'] if 'reply_count' in initDict.keys() else 0
+            self.engage = self.retweet + self.fav + self.comment
+            self.geo = 'unknown location'
+            if initDict['place']:
+                self.geo = f'{initDict["place"]["full_name"]}, {initDict["place"]["country"]}'
 
 
             self.query = query
@@ -167,6 +180,13 @@ class MyTweet2:
             , 'postAt'    : self.postAt
             , 'hash'      : self.hash
             , 'text'      : self.text
+
+            , 'retweet'   : self.retweet
+            , 'fav'       : self.fav
+            , 'comment'   : self.comment
+            , 'engage'    : self.engage
+            , 'geo'       : self.geo
+
             , 'query'     : self.query
             , 'rating'    : self.rating
             , 'event'     : self.event

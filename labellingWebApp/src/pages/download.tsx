@@ -96,17 +96,17 @@ const Download = (props) => {
                 <Navbar />
                 {auth?(
                     <Container maxW="6xl" pt={6}>
-                    <Flex>
-                        <Container maxW="6xl" pl={0} pr={2}><TagsInput2 id={id} tags={[]} defaultEvents={[]} /></Container>
-                        <div id="isMasked">
-                        {isAdmin(auth) ?
-                            <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
-                            : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
-                        }
-                        </div>
-                    </Flex>
-                    <CsvDownload auth={auth} id={id}/>
-                </Container>
+                        <Flex>
+                            <Container maxW="6xl" pl={0} pr={2}><TagsInput2 id={id} tags={[]} defaultEvents={[]} /></Container>
+                            <div id="isMasked">
+                            {isAdmin(auth) ?
+                                <Checkbox colorScheme='blue' defaultIsChecked>privacy</Checkbox>
+                                : <Checkbox colorScheme='blue' defaultIsChecked isDisabled={true}>privacy</Checkbox>
+                            }
+                            </div>
+                        </Flex>
+                        <CsvDownload auth={auth} id={id}/>
+                    </Container>
                 ):(
                     <Container>Please log in for start using tool</Container>
                 )}

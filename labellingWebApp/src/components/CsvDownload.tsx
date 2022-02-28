@@ -20,7 +20,12 @@ const headers = [
     {label: "insertDbAt", key: "insertDbAt"},
     { label: "text", key: "text" },
     { label: "query", key: "query" },
-    
+    { label: "location", key: "geo" },
+    { label: "like", key: "fav" },
+    { label: "retweet", key: "retweet" },
+    { label: "comment", key: "comment" },
+    { label: "#LRC", key: "engage" },
+
     {label: "event", key: "event"},
     {label: "rating", key: "rating"},
     { label: "labelledBy", key: "labelledBy" },
@@ -78,10 +83,12 @@ class CsvDownload extends Component<Props> {
             res.forEach(a => {
                 // console.log(`converting ${a.id}`)
                 // console.log(a.masking)
+
                 a.postAt = convertTimeToString(a.postAt)
                 a.insertDbAt = convertTimeToString(a.insertDbAt)
                 a.text = a.text.replaceAll("\"","[doubleQuote]")
                     .replaceAll("\n", "[newLine]")
+                    .replaceAll("&amp;","&")
                 if (isMasked(this.props.auth)){
                     a.account = encrypting(a.account[0])
                     a.labelledBy =  encrypting(a.labelledBy)

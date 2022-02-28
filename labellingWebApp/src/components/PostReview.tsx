@@ -136,7 +136,7 @@ class PostReview extends React.Component<Props> {
         return (
             <div>
                 <Container maxW="8xl">
-                    <SimpleGrid my={2} align="center">
+                    <SimpleGrid my={2} >
                         <InfiniteScroll
                             dataLength={this.state.items.length}
                             next={this.fetchMoreData}
@@ -156,7 +156,11 @@ class PostReview extends React.Component<Props> {
                                     labelledBy={data.labelledBy}
                                     rating={data.rating}
                                     account={data.account}
-                                />
+                                    like={data.fav}
+                                    comment={data.comment}
+                                    retweet={data.retweet}
+                                    engage={data.engage}
+                                    geo={data.geo} />
                             )
                             )}
 
@@ -167,9 +171,9 @@ class PostReview extends React.Component<Props> {
                                     emptyColor="gray.200"
                                     color="blue.500"
                                 /> : (
-                                        <Container position="relative" maxW="8xl" align="center" justify="center">
+                                        <Grid position="relative" maxW="8xl" align="center" justify="center">
                                             <Text fontWeight={600} fontSize='2xl' m={10}>End of annotations</Text>
-                                        </Container>
+                                        </Grid>
                             )}
                         </Flex>
 
