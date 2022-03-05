@@ -52,6 +52,8 @@ const Admin = () => {
 
 
 
+
+
     return (
         <div>
             <Head>
@@ -95,35 +97,7 @@ const Admin = () => {
                             })}</Text>
                         </Grid>
 
-                        {/* <Pie2
-                            // data={this.state.piedata}
-                            // width={this.state.width}
-                            // height={this.state.height}
-                            // innerRadius={0}
-                            // outerRadius={this.state.height / 2}
-                            data={[{ name: 'apple', value: 10 / 130 }
-                                , { name: 'banana', value: 20 / 130 }
-                                , { name: 'melon', value: 100 / 130 }]}
-                            width={700}
-                            height={500}
-                            innerRadius={0}
-                            outerRadius={500 / 2}
-                        />
-                        <SelectOption data={['like', 'retweet', 'comment', 'combine']}
-                            init={['like']}
-                            mode={SelectionMode.ONE}
-                            colorScheme='twitter'
-                            title='sort by' id='11111111'
-                            parentCallback={a => setTest(a)}
-                        />
-                        <SelectOption data={['aaaaa', 'bbbb', 'cccc', 'dddd']}
-                            init={['aaaaa', 'cccc', 'dddd']}
-                            mode={SelectionMode.MULTI}
-                            colorScheme='twitter'
-                            title='sort by' id='111222222'
-                            parentCallback={a => setTest(a)}
-                        />
-                        {test} */}
+
 
                     </Flex>
                     ):('Authorities required') }

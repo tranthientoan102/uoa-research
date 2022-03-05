@@ -135,7 +135,7 @@ const Summary = () => {
 
 
                 </Container>
-                <Container position="relative" maxW="8xl">
+                <Container position="relative" maxW="8xl" mb={10}>
                     {sumView}
                 </Container>
             </main>
