@@ -17,7 +17,7 @@ import {
     getDefaultEventList,
     getDefaultKws
 } from "../utils/db";
-import { decrypting } from "../utils/common";
+import { decrypting, parseTagFromFile } from "../utils/common";
 import ItemCrd from "../components/ItemCrd";
 import Pie2 from '../components/Pie2';
 import SelectOption, { SelectionMode } from '../components/SelectOption';
@@ -70,19 +70,28 @@ const Admin = () => {
                     <Flex pt={6} px={4} flexDirection="row" flexWrap="wrap" justify="center" align="start">
 
                         <Grid width={childWidth} align="center" justify="center" px={5} >
-                            <ItemCrd  auth={auth} compTittle={'Load Default Event'}
-                                      createFnc={createDefaultEvent}
-                                      getFnc={getDefaultEventList}
-                                      deleteFnc={deleteDefaultEvent}
-                                      inputId={'defaultEvent'}/>
+                            <ItemCrd
+                                auth={auth} compTittle={'Load Default Event'}
+                                createFnc={createDefaultEvent}
+                                getFnc={getDefaultEventList}
+                                deleteFnc={deleteDefaultEvent}
+                                inputId={'defaultEvent'}
+                                enableImport={false}
+                                importFnc={null}
+                            />
                         </Grid>
 
                         <Grid width={childWidth} align="center" justify="center" px={5}>
-                            <ItemCrd  auth={auth} compTittle={'Load Default Keywords'}
-                                      createFnc={createDefaultKws}
-                                      getFnc={getDefaultKws}
-                                      deleteFnc={deleteDefaultKws}
-                                      inputId={'defaultKeywords'}/>
+                            <ItemCrd
+                                auth={auth} compTittle={'Load Default Keywords'}
+                                createFnc={createDefaultKws}
+                                getFnc={getDefaultKws}
+                                deleteFnc={deleteDefaultKws}
+                                inputId={'defaultKeywords'}
+                                enableImport={true}
+                                importFnc={parseTagFromFile}
+                            />
+
                         </Grid>
 
 

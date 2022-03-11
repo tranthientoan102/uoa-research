@@ -457,8 +457,12 @@ export const deleteDefaultEvent = async (hash: string) => {
     }
 
 }
-
-export const createDefaultKws = async (kwsList: string[], auth?) => {
+export const createDefaultKws = async (input, auth?) => {
+    if (input.constructor == Object) {
+        createDefaultKws_dic(input, auth)
+    } else createDefaultKws_list(input, auth)
+}
+export const createDefaultKws_list = async (kwsList: string[], auth?) => {
     var collectionPath = '/default_kws'
     var fire = await firebase.firestore()
     var crypto = require('crypto')
@@ -467,6 +471,21 @@ export const createDefaultKws = async (kwsList: string[], auth?) => {
             id: crypto.createHash('md5').update(e).digest('hex'),
             name: e,
             createdBy: auth?auth.email:'testAcc'
+        }
+        fire.doc(`${collectionPath}/${doc.id}`).set(doc)
+    }
+
+}
+export const createDefaultKws_dic = async (kwsDict: {}, auth?) => {
+    var collectionPath = '/default_kws'
+    var fire = await firebase.firestore()
+    var crypto = require('crypto')
+    for (const cat in kwsDict) {
+        let doc = {
+            id: crypto.createHash('md5').update(cat).digest('hex'),
+            name: cat,
+            val: kwsDict[cat],
+            createdBy: auth ? auth.email : 'testAcc'
         }
         fire.doc(`${collectionPath}/${doc.id}`).set(doc)
     }

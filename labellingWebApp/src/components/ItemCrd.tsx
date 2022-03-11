@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {createDefaultEvent, getDefaultEventList} from "../utils/db";
 import {Box, Button, Flex, Grid, SimpleGrid, Spinner} from "@chakra-ui/react";
 import {DeleteIcon} from "@chakra-ui/icons";
-import {getTagsInput} from "../utils/common";
+import { getTagsInput, parseTag } from "../utils/common";
 import TagsInput2 from "./TagsInput2";
 import {toast} from "react-toastify";
 
@@ -14,6 +14,8 @@ interface Props {
     createFnc,
     getFnc,
     deleteFnc,
+    enableImport,
+    importFnc,
 
 }
 
@@ -31,7 +33,8 @@ class ItemCrd extends React.Component<Props> {
     }
 
     compTittle = this.props.compTittle
-    itemList= []
+    itemList = []
+    itemDict = {}
     inputId = this.props.inputId
 
     createFnc = this.props.createFnc
@@ -44,6 +47,10 @@ class ItemCrd extends React.Component<Props> {
 
     }
 
+    importCallback = (res) => {
+        this.itemDict = Object.assign({}, this.itemDict, res)
+        console.log(this.itemDict)
+    }
 
 
     getFnc= async (sleep?) => {
@@ -108,14 +115,21 @@ class ItemCrd extends React.Component<Props> {
 
                         ))}
                     </Grid>
-                    <TagsInput2 id={this.inputId} tags={[]} defaultEvents={[]}/>
+                    <TagsInput2 id={this.inputId} tags={[]} defaultEvents={[]} />
+                    {this.props.enableImport ? <input type="file" onChange={e => {
+                        this.itemDict = this.props.importFnc(e, this.importCallback)
+                    }
+                    } multiple={true} /> : ''}
                     <Button my={2} colorScheme='twitter' onClick={() => {
                             console.log(this.inputId)
-                            this.createFnc(getTagsInput(this.inputId), this.state.auth)
+                        this.createFnc(getTagsInput(this.inputId), this.state.auth)
+                        this.createFnc(this.itemDict, this.state.auth)
                             this.getFnc()
                     }}>
                         +
                     </Button>
+
+
                 </SimpleGrid>
             )
 
