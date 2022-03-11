@@ -10,7 +10,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PostView from '../components/PostView';
 import signin from "./signin";
-import {redirect} from "next/dist/server/api-utils";
 import PostView2 from "../components/PostView2";
 
 const Home = (props) => {
