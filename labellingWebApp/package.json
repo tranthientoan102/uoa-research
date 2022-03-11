@@ -7,7 +7,7 @@
     "dev2": "rm .env; cp development.env .env;  next dev",
     "dev3": "rm .env; cp production.env .env;  next dev",
     "build": "rm .env; cp tmp.env .env; next build",
-    "build2": "rm .env; cp development.env .env; next build",
+    "build2": "nvm use v14; rm .env; cp development.env .env; next build",
     "build3": "rm .env; cp production.env .env; next build",
     "buildStart": "npm run build && npm run start",
     "buildStart2": "npm run build2 && npm run start",
@@ -31,7 +31,7 @@
     "firebase-admin": "^9.11.1",
     "formik": "^2.2.9",
     "framer-motion": "^4.1.17",
-    "next": "10.2.0",
+    "next": "11.1.0",
     "plotly": "^1.0.6",
     "react": "17.0.2",
     "react-autosuggest": "^10.1.0",
@@ -50,6 +50,7 @@
     "@types/node": "^16.9.1",
     "@types/react": "^17.0.21",
     "eslint": "7.32.0",
+    "eslint-config-next": "11.1.0",
     "typescript": "^4.4.3"
   }
 }
