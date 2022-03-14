@@ -484,7 +484,7 @@ export const createDefaultKws_dic = async (kwsDict: {}, auth?) => {
         let doc = {
             id: crypto.createHash('md5').update(cat).digest('hex'),
             name: cat,
-            val: kwsDict[cat],
+            val: kwsDict[cat].filter(x => x.length > 0),
             createdBy: auth ? auth.email : 'testAcc'
         }
         fire.doc(`${collectionPath}/${doc.id}`).set(doc)

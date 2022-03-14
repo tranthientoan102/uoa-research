@@ -645,7 +645,7 @@ export const parseTagFromFile = (e, callback) => {
 
 export const parseTag = (content) => {
     let result = {}
-    for (let row of content.split('\n')) {
+    for (let row of content.split(/\r?\n/)) {
         let [cat, kw, rel] = row.split(',')
         if (!cat) break
 
