@@ -88,10 +88,19 @@ class TagsInputKws extends React.Component<Props> {
                     <Link pt={2} fontSize={13} colorScheme='blue' key={i.id}
                         onClick={() => {
                             let a = this.state.tags
-                            if (a.includes(i.name)) {
-                                a = a.filter(x => x != i.name)
-                            } else a = [a, i.name].flat()
 
+                            if (i.val) {
+                                for (let c of i.val) {
+                                    if (a.includes(c)) {
+                                        a = a.filter(x => x != c)
+                                    } else a = [a, c].flat()
+
+                                }
+                            } else {
+                                if (a.includes(i.name)) {
+                                    a = a.filter(x => x != i.name)
+                                } else a = [a, i.name].flat()
+                            }
                             console.log(a)
                             this.handleTagsinput(a)
 

@@ -619,4 +619,50 @@ export const processPredict_fromTotalFetch = async (accInputId, kwsInputId, numb
     return [tweets, pred_sa, pred_ed]
 }
 
+export const parseTagFromFile = (e, callback) => {
+    let result = {}
+    const files = e.target.files;
+
+    for (let f of files) {
+        let fileReader = new FileReader();
+        let tmp
+        fileReader.readAsText(f, "UTF-8");
+        // fileReader.onload = e => {
+        //     tmp = parseTag(e.target.result)
+        //     console.log(tmp)
+        //     result = Object.assign({}, result, tmp)
+        // };
+        fileReader.onload = e => {
+            tmp = parseTag(e.target.result)
+            // console.log(tmp)
+            result = Object.assign({}, result, tmp)
+            callback(result)
+        };
+    }
+    return result
+
+}
+
+export const parseTag = (content) => {
+    let result = {}
+    for (let row of content.split(/\r?\n/)) {
+        let [cat, kw, rel] = row.split(',')
+        if (!cat) break
+
+        if (!result[cat]) {
+            result[cat] = ['',]
+        }
+        if (rel.toLowerCase() == 'and') {
+            result[cat].push(kw)
+        } else result[cat][0] += ` "${kw}"`
+    }
+
+    return result
+
+}
+
+
+
+
+
 

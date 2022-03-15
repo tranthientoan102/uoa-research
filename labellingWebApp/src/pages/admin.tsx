@@ -17,7 +17,7 @@ import {
     getDefaultEventList,
     getDefaultKws
 } from "../utils/db";
-import { decrypting } from "../utils/common";
+import { decrypting, parseTagFromFile } from "../utils/common";
 import ItemCrd from "../components/ItemCrd";
 import Pie2 from '../components/Pie2';
 import SelectOption, { SelectionMode } from '../components/SelectOption';
@@ -52,6 +52,8 @@ const Admin = () => {
 
 
 
+
+
     return (
         <div>
             <Head>
@@ -68,19 +70,28 @@ const Admin = () => {
                     <Flex pt={6} px={4} flexDirection="row" flexWrap="wrap" justify="center" align="start">
 
                         <Grid width={childWidth} align="center" justify="center" px={5} >
-                            <ItemCrd  auth={auth} compTittle={'Load Default Event'}
-                                      createFnc={createDefaultEvent}
-                                      getFnc={getDefaultEventList}
-                                      deleteFnc={deleteDefaultEvent}
-                                      inputId={'defaultEvent'}/>
+                            <ItemCrd
+                                auth={auth} compTittle={'Load Default Event'}
+                                createFnc={createDefaultEvent}
+                                getFnc={getDefaultEventList}
+                                deleteFnc={deleteDefaultEvent}
+                                inputId={'defaultEvent'}
+                                enableImport={false}
+                                importFnc={null}
+                            />
                         </Grid>
 
                         <Grid width={childWidth} align="center" justify="center" px={5}>
-                            <ItemCrd  auth={auth} compTittle={'Load Default Keywords'}
-                                      createFnc={createDefaultKws}
-                                      getFnc={getDefaultKws}
-                                      deleteFnc={deleteDefaultKws}
-                                      inputId={'defaultKeywords'}/>
+                            <ItemCrd
+                                auth={auth} compTittle={'Load Default Keywords'}
+                                createFnc={createDefaultKws}
+                                getFnc={getDefaultKws}
+                                deleteFnc={deleteDefaultKws}
+                                inputId={'defaultKeywords'}
+                                enableImport={true}
+                                importFnc={parseTagFromFile}
+                            />
+
                         </Grid>
 
 
@@ -95,35 +106,7 @@ const Admin = () => {
                             })}</Text>
                         </Grid>
 
-                        {/* <Pie2
-                            // data={this.state.piedata}
-                            // width={this.state.width}
-                            // height={this.state.height}
-                            // innerRadius={0}
-                            // outerRadius={this.state.height / 2}
-                            data={[{ name: 'apple', value: 10 / 130 }
-                                , { name: 'banana', value: 20 / 130 }
-                                , { name: 'melon', value: 100 / 130 }]}
-                            width={700}
-                            height={500}
-                            innerRadius={0}
-                            outerRadius={500 / 2}
-                        />
-                        <SelectOption data={['like', 'retweet', 'comment', 'combine']}
-                            init={['like']}
-                            mode={SelectionMode.ONE}
-                            colorScheme='twitter'
-                            title='sort by' id='11111111'
-                            parentCallback={a => setTest(a)}
-                        />
-                        <SelectOption data={['aaaaa', 'bbbb', 'cccc', 'dddd']}
-                            init={['aaaaa', 'cccc', 'dddd']}
-                            mode={SelectionMode.MULTI}
-                            colorScheme='twitter'
-                            title='sort by' id='111222222'
-                            parentCallback={a => setTest(a)}
-                        />
-                        {test} */}
+
 
                     </Flex>
                     ):('Authorities required') }
