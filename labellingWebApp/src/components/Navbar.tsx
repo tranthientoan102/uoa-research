@@ -5,12 +5,32 @@ import {Image, Input, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/rea
 import { useRouter } from "next/router";
 import { useAuth } from "../lib/auth";
 
+const roles ={
+    "visitor":{
+        "summary":true
+    },
+    "user" :{
+        "summary":true,
+        "predict":true,
+        "download":true
+    },
+    "annotator":{
+        "annotation":true
+    },
+    "reviewer":{
+        "review": true
+    },
+    "admin":{
+        "admin":true
+    }
 
+}
 const Navbar: React.FC<{}> = () => {
     const { auth, signOut } = useAuth();
     const router = useRouter();
+    // console.log(auth)
     console.log(router.asPath)
-
+    console.log(roles)
     const isAuthoriesed = (auth) =>{
         return (auth != null) && auth.roles.includes('admin')
     }
