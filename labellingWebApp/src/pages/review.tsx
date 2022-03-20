@@ -23,6 +23,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { createDefaultEvent, deleteDefaultEvent, getAllLabeller, getDefaultEventList } from "../utils/db";
 import {getCheckedItemFromGrid, getTagsInput, isAdmin} from "../utils/common";
 import PostReview from "../components/PostReview";
+import {findaccess} from "../utils/common";
 
 interface Props {
     data: string[]
@@ -114,7 +115,7 @@ const Review = (props) => {
                 <Navbar />
                 <div>
 
-                    {isAuthoriesed(auth) ? (
+                    {findaccess(auth,"reviewer","review")? (
                         <Container position="relative" maxW="8xl">
                             <Flex bg={'gray.50'} m={2} p={2}>
 

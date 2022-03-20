@@ -22,6 +22,7 @@ import ItemCrd from "../components/ItemCrd";
 import Pie2 from '../components/Pie2';
 import SelectOption, { SelectionMode } from '../components/SelectOption';
 
+
 const Admin = () => {
     const childWidth = 1/3
 

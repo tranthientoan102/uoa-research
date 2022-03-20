@@ -22,6 +22,7 @@ import {convertTimeToString, getTagsInput, isAdmin, isMasked} from "../utils/com
 import {downloadData} from "../utils/db";
 import CsvDownload from '../components/CsvDownload'
 import { CSVLink, CSVDownload } from "react-csv";
+import {findaccess} from "../utils/common";
 
 interface Props {
     data: string[]
@@ -94,7 +95,7 @@ const Download = (props) => {
             </Head>
             <main>
                 <Navbar />
-                {auth?(
+                {findaccess(auth,"user","download")?(
                     <Container maxW="6xl" pt={6}>
                         <Flex>
                             <Container maxW="6xl" pl={0} pr={2}><TagsInput2 id={id} tags={[]} defaultEvents={[]} /></Container>
