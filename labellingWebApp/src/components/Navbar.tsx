@@ -4,7 +4,7 @@ import {Image, Input, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/rea
 // import { useRouter } from "next/dist/client/router";
 import { useRouter } from "next/router";
 import { useAuth } from "../lib/auth";
-import {findAccess,pagesName} from "../utils/common";
+import {findAccess} from "../utils/common";
 const Navbar: React.FC<{}> = () => {
     const { auth, signOut } = useAuth();
     const router = useRouter();
@@ -32,7 +32,7 @@ const Navbar: React.FC<{}> = () => {
                         >
                             Summary
                         </Link>
-                        { (findAccess(auth,"annotator","annotation")) ? <Link
+                        { (findAccess(auth)) ? <Link
                             p={2}
                             onClick={() => {
                                 console.log('going /')
@@ -43,7 +43,7 @@ const Navbar: React.FC<{}> = () => {
                         >
                             Annotation
                         </Link>:null}
-                        { (findAccess(auth,"reviewer","review")) ? <Link
+                        { (findAccess(auth,"review")) ? <Link
                             p={2}
                             // href='/review'
                             onClick={() => {
@@ -56,7 +56,7 @@ const Navbar: React.FC<{}> = () => {
                             Review
                         </Link> :null}
 
-                        { (findAccess(auth,"user","predict")) ?<Link
+                        { (findAccess(auth,"predict")) ?<Link
                             // href='/predict'
                             p={2}
                             onClick={()=> {
@@ -69,7 +69,7 @@ const Navbar: React.FC<{}> = () => {
                         >
                             Prediction
                         </Link> :null}
-                        { (findAccess(auth,"user","download")) ? <Link
+                        { (findAccess(auth,"download")) ? <Link
                             p={2}
                             onClick={() => {
                                 console.log('going /download')
@@ -80,7 +80,7 @@ const Navbar: React.FC<{}> = () => {
                         >
                             Download
                         </Link>:null}
-                        { (findAccess(auth,"admin","admin")) ? <Link
+                        { (findAccess(auth,"admin")) ? <Link
                             // href='/admin'
                             p={2}
                             onClick={()=> {

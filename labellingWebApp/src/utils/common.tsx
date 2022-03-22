@@ -16,7 +16,6 @@ export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 
                             'advocary/reform']
 export const eventFullList = [eventList, 'no event detected'].flat()
 export const sentimentFullList = ['negative', 'neutral', 'positive']
-export const pagesName =["summary","predict","download","annotation","review","admin"];
 
 export const roles ={
     visitor:{
@@ -36,15 +35,21 @@ export const roles ={
     admin:{
         "admin":true
     }
-
 }
 
-export const findAccess = (auth,targetRoles,pages)=>{
+export const findAccess = (auth,pages='annotation')=>{
+
     if(auth==null){
         return false;
     }
     else{
-        return auth.roles.includes(targetRoles) && (roles[targetRoles][pages] || roles["user"][pages]);
+        for(let i =0 ;i<auth.roles.length;i++){
+            if(roles[auth.roles[i]][pages]){
+                return true;
+            }
+        }
+        // return auth.roles.includes(targetRoles) && ( || roles["user"][pages]);
+        return false;
     }
 }
 

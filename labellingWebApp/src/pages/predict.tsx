@@ -189,7 +189,7 @@ const Predict = () => {
             </Head>
             <main>
                 <Navbar />
-                {findAccess(auth,"user","predict")?(
+                {findAccess(auth,"predict")?(
                     <div>
                         <Container position="relative" maxW="8xl">
                             <Flex  my={2} align="top" justify="center" >

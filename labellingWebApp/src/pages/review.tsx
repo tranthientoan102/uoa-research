@@ -115,7 +115,7 @@ const Review = (props) => {
                 <Navbar />
                 <div>
 
-                    {findAccess(auth,"reviewer","review")? (
+                    {findAccess(auth,"review")? (
                         <Container position="relative" maxW="8xl">
                             <Flex bg={'gray.50'} m={2} p={2}>
 

@@ -95,7 +95,7 @@ const Download = (props) => {
             </Head>
             <main>
                 <Navbar />
-                {findAccess(auth,"user","download")?(
+                {findAccess(auth,"download")?(
                     <Container maxW="6xl" pt={6}>
                         <Flex>
                             <Container maxW="6xl" pl={0} pr={2}><TagsInput2 id={id} tags={[]} defaultEvents={[]} /></Container>
