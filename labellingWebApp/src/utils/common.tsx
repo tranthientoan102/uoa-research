@@ -16,6 +16,7 @@ export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 
                             'advocary/reform']
 export const eventFullList = [eventList, 'no event detected'].flat()
 export const sentimentFullList = ['negative', 'neutral', 'positive']
+export const pagesName =["summary","predict","download","annotation","review","admin"];
 
 export const roles ={
     visitor:{
@@ -38,7 +39,7 @@ export const roles ={
 
 }
 
-export const findaccess = (auth,targetRoles,pages)=>{
+export const findAccess = (auth,targetRoles,pages)=>{
     if(auth==null){
         return false;
     }
