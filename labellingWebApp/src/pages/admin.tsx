@@ -21,6 +21,7 @@ import { decrypting, parseTagFromFile } from "../utils/common";
 import ItemCrd from "../components/ItemCrd";
 import Pie2 from '../components/Pie2';
 import SelectOption, { SelectionMode } from '../components/SelectOption';
+import Crd from "../components/KwdCrd";
 
 
 const Admin = () => {
@@ -83,7 +84,7 @@ const Admin = () => {
                         </Grid>
 
                         <Grid width={childWidth} align="center" justify="center" px={5}>
-                            <ItemCrd
+                            <Crd
                                 auth={auth} compTittle={'Load Default Keywords'}
                                 createFnc={createDefaultKws}
                                 getFnc={getDefaultKws}

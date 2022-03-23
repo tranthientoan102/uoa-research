@@ -29,7 +29,7 @@ class ItemCrd extends React.Component<Props> {
         // itemList: [],
         //
         // compTittle: this.props.compTittle,
-   
+   data:[]
 
     }
 
