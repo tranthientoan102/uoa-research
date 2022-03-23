@@ -22,7 +22,8 @@ const Navbar: React.FC<{}> = () => {
                 </Flex>
                 <Box my={1}>
                     <Flex p={2} flexDirection="row" flexWrap="wrap" justify="right">
-                        <Link 
+
+                        {findAccess(auth,"summary") ?(<Link 
                             p={2}
                             onClick={()=>{
                                 router.push('/summary')
@@ -31,7 +32,8 @@ const Navbar: React.FC<{}> = () => {
                             color ={(router.asPath =='/summary')?'black' : 'black'}
                         >
                             Summary
-                        </Link>
+                        </Link>) :null}
+                        
                         { (findAccess(auth)) ? <Link
                             p={2}
                             onClick={() => {

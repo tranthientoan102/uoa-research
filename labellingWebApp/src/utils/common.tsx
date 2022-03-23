@@ -22,7 +22,6 @@ export const roles ={
         "summary":true
     },
     user :{
-        "summary":true,
         "predict":true,
         "download":true
     },
