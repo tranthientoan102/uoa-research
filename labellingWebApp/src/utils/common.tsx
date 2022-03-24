@@ -17,6 +17,42 @@ export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 
 export const eventFullList = [eventList, 'no event detected'].flat()
 export const sentimentFullList = ['negative', 'neutral', 'positive']
 
+export const roles ={
+    visitor:{
+        "summary":true
+    },
+    user :{
+        "summary":true,
+        "predict":true,
+        "download":true
+    },
+    annotator:{
+        "annotation":true
+    },
+    reviewer:{
+        "review": true
+    },
+    admin:{
+        "admin":true
+    }
+}
+
+export const findAccess = (auth,pages='annotation')=>{
+
+    if(auth==null){
+        return false;
+    }
+    else{
+        for(let i =0 ;i<auth.roles.length;i++){
+            if(roles[auth.roles[i]][pages]){
+                return true;
+            }
+        }
+        // return auth.roles.includes(targetRoles) && ( || roles["user"][pages]);
+        return false;
+    }
+}
+
 
 export const findByType = (children, component) => {
     const result = [];

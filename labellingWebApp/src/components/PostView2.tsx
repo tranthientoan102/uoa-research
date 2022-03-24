@@ -36,7 +36,7 @@ import {
     isMasked,
     explainKws,
     // maskPersonalDetails,
-    maskPersonalDetails_AtSign, getCountRecent, findByType
+    maskPersonalDetails_AtSign, getCountRecent, findByType, findAccess
 } from "../utils/common";
 import DefaultEvent, {DE} from "./DefaultEvent";
 import TagsInput2 from "./TagsInput2";
@@ -56,7 +56,6 @@ interface Props {
 
 class PostView2 extends Component<Props> {
 // const PostView2 = (props) => {
-
     // const formData = JSON.parse(props.formData);
     // console.log(formData)
     // toast.configure()
@@ -192,7 +191,7 @@ class PostView2 extends Component<Props> {
 
         return (
             <div>
-                <Container position="relative" maxW="12xl">
+                {(findAccess(this.state.auth)) ? (<Container position="relative" maxW="12xl">
                     <Flex my={2} align="top" justify="center">
                         <Container mx={2} p={0}>
                             <Text>Twitter account</Text>
@@ -248,7 +247,13 @@ class PostView2 extends Component<Props> {
 
 
                     {/* </Flex> */}
-                </Container>
+                </Container>) :
+                
+                (<Container position="relative" maxW="12xl">
+                        <Text fontWeight={600} fontSize='4xl'>Authorities required</Text>
+                            Contact your Admin for more details
+                </Container>)}
+                
 
                 <Container maxW="8xl">
                     <SimpleGrid my={2}>

@@ -24,7 +24,7 @@ import TagsInputKws from "../components/TagsInputKws";
 import PredictionDownload from "../components/PredictionDownload";
 import PredictView from "../components/PredictView";
 import SelectOption, { SelectionMode } from '../components/SelectOption';
-
+import {findAccess} from "../utils/common";
 
 
 const Predict = () => {
@@ -189,7 +189,7 @@ const Predict = () => {
             </Head>
             <main>
                 <Navbar />
-                {auth?(
+                {findAccess(auth,"predict")?(
                     <div>
                         <Container position="relative" maxW="8xl">
                             <Flex  my={2} align="top" justify="center" >
