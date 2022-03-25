@@ -20,9 +20,9 @@ const headers = [
 
 
 
-class Crd extends ItemCrd{
+class KwdCrd extends ItemCrd{
     csvLinkEl = React.createRef();
-    
+data=[]    
     
 // extend itemcard 
 // use stringReplace function to replace any punctuation in the keyword
@@ -49,8 +49,10 @@ class Crd extends ItemCrd{
         //get all the keyword, and return objects of each keyword
 
        
-        let defKws = await getDefaultKws()
-        
+        // let defKws = await this.props.getFnc()
+
+        // use the itemlist to get data/ get data from itemlist
+        let defKws = this.itemList        
         
         
         for(let key in defKws) {
@@ -102,12 +104,10 @@ class Crd extends ItemCrd{
     downloadReport = async (z) => {
 
         //get the data 
-        let data =  await this.getvalue(z);
+        this.data =  await this.getvalue(z);
         
         
-       
-
-        this.setState({data: data}, () => {
+        this.setState({data: this.data}, () => {
             setTimeout(() => {
 
                 // @ts-ignore
@@ -163,7 +163,7 @@ class Crd extends ItemCrd{
                                         
                                         // filename="Clue_Mediator_Report_Async.csv"
                                         filename = 'keyword.csv'
-                                        data={this.state.data}
+                                        data={this.data}
                                         ref={this.csvLinkEl}
                     />
                                     </Flex>
@@ -195,4 +195,4 @@ class Crd extends ItemCrd{
 
 
 }
-export default Crd
+export default KwdCrd
