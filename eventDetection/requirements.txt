@@ -1,0 +1,10 @@
+uvicorn
+fastapi
+numpy
+pandas
+sklearn
+torch
+torchmetrics
+pytorch-lightning==1.5.5
+transformers
+gdown

@@ -1,0 +1,7 @@
+{
+    "runningModel": {
+        "base_model_name" : "bert-base-uncased",
+        "path": "./models/ed_best_model_state.bin",
+        "runOnCPU": true
+    }
+}

@@ -1,0 +1,70 @@
+{
+    "maxScrolling": 200,
+    "scrapFrom": "twitter",
+    "twitter": {
+        "auth": {
+            "bearer_token": "AAAAAAAAAAAAAAAAAAAAAB%2FfcQEAAAAAQAg9dWRylOELOJhSH2eugbrODdA%3DUAjctahnrtLA4tdGaRJDfHWvkuOBHPBUGG2wjY7OGWvCA6un43",
+            "consumer_key": "PfbjCqq5DB6uXD1howZX1MuZP",
+            "consumer_secret": "xz3wDMudHR1IIDe586Ad0cRMtyAS7iiB9H6miCG3uFROgHfnuB",
+            "access_token": "1328186910548758528-1NeLYtEqXPBdvVq0OUGFJEBOzFkhmB",
+            "access_token_secret": "RHId1udtLQLfiDwSkEkNX9WxQ7kF4pN6agTWM2u1QDWKe"
+        },
+        "tweetLoad": 750,
+        "runMode": "full",
+        "account": ["abcaustralia"],
+        "keyword": [["sydney"]],
+        "full": {
+            "tweetLoad": 50,
+            "account": [
+                "ABCaustralia",
+                "abcnews",
+                "9NewsAUS",
+                "10NewsFirst",
+                "SBSNews",
+                "GuardianAus",
+                "SkyNewsAust",
+                "AustralianLabor",
+                "LiberalAus"
+            ],
+            "keyword": [["auspol", "vote", "election", "Liberal", "Labor"]]
+        },
+        "30days": {
+            "tweetLoad": 1000,
+            "account": [
+                "ABCaustralia",
+                "abcnews",
+                "9NewsAUS",
+                "10NewsFirst",
+                "SBSNews",
+                "GuardianAus",
+                "SkyNewsAust",
+                "AustralianLabor",
+                "LiberalAus"
+            ],
+            "keyword": [["auspol", "ausvotes"]],
+            "fromDate": "2022-05-18",
+            "toDate": "2022-05-18"
+        },
+        "searchRecent": {
+            "tweetLoad": 2000,
+            "account": [
+                "ABCaustralia",
+                "abcnews",
+                "9NewsAUS",
+                "10NewsFirst",
+                "SBSNews",
+                "GuardianAus",
+                "SkyNewsAust",
+                "AustralianLabor",
+                "LiberalAus"
+            ],
+            "keyword": [["auspol", "ausvotes"]]
+        },
+        "countRecent": {
+            "account": [],
+            "keyword": ["sydney"]
+        },
+        "outsideTagIsAND": true,
+        "hashtag": ["#healthcare", "#COVID19vaccine"]
+    }
+}

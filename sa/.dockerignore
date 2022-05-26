@@ -1,0 +1,5 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+/output/210930_a8778125
+/output/211130-a5952
+/output/*.zip

@@ -1,0 +1,67 @@
+{
+    "maxScrolling": 200,
+    "scrapFrom": "twitter",
+    "twitter": {
+        "auth": {
+            "bearer_token" : "AAAAAAAAAAAAAAAAAAAAAEjWTgEAAAAAmF2H4wRcIDJHMe6x7dXZlrk7jEQ%3DFzx6yzXxhyJ5x1a8Qw5i4GC9RXrLBFU8GQdYCZzya8oiSxL3nv",
+            "consumer_key" : "lgBu13nhDXA1sYkHpMn6gZdnH",
+            "consumer_secret": "spagOJXGx3NSVAp9jccWAYIXHEBhmNJuBqfHUoFNvd6svZlxXE",
+            "access_token": "1221687331452674049-CEsgd7VOyISy6EK6YivTLgiWQ5lzYA",
+            "access_token_secret": "9W2JuomO2xWCoRLQsM8oIQiYzoYMNZoIrsnJRo869Nj2w"
+        },
+        "tweetLoad": 750,
+        "runMode": "full",
+        "account": [
+            "abcaustralia"
+        ],
+        "keyword": [
+            ["sydney"]
+        ],
+        "full": {
+            "tweetLoad": 50,
+            "account": [
+                "ABCaustralia"
+                , "abcnews"
+                , "9NewsAUS"
+                , "10NewsFirst"
+                , "SBSNews"
+                , "GuardianAus"
+                , "SkyNewsAust"
+                , "AustralianLabor"
+                , "LiberalAus"
+            ],
+            "keyword": [
+               ["auspol", "vote", "election" , "Liberal", "Labor"]
+            ]
+        },
+        "30days": {
+            "tweetLoad": 1000,
+            "account": [
+                "ABCaustralia"
+                , "abcnews"
+                , "9NewsAUS"
+                , "10NewsFirst"
+                , "SBSNews"
+                , "GuardianAus"
+                , "SkyNewsAust"
+                , "AustralianLabor"
+                , "LiberalAus"
+            ],
+            "keyword": [
+               ["auspol", "vote", "election" , "Liberal", "Labor"]
+            ]
+        },
+        "countRecent": {
+            "account": [
+            ],
+            "keyword": [
+               "sydney"
+            ]
+        },
+        "outsideTagIsAND": true,
+        "hashtag": [
+            "#healthcare",
+            "#COVID19vaccine"
+        ]
+    }
+}
