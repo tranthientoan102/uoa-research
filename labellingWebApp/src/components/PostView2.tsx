@@ -34,9 +34,10 @@ import {
     getTagsInput,
     isAdmin,
     isMasked,
+    getDate,
     explainKws,
     // maskPersonalDetails,
-    maskPersonalDetails_AtSign, getCountRecent, findByType
+    maskPersonalDetails_AtSign, getCountRecent, findByType, findAccess, isChecked
 } from "../utils/common";
 import DefaultEvent, {DE} from "./DefaultEvent";
 import TagsInput2 from "./TagsInput2";
@@ -56,7 +57,6 @@ interface Props {
 
 class PostView2 extends Component<Props> {
 // const PostView2 = (props) => {
-
     // const formData = JSON.parse(props.formData);
     // console.log(formData)
     // toast.configure()
@@ -122,8 +122,8 @@ class PostView2 extends Component<Props> {
         let tmp = 0
         await getCountRecent(getKwInput('searchKey', false, !this.state.loading)).then(data => {
             tmp = data.data
-        })
-         this.setState({
+        }).catch(e => {})
+        this.setState({
                 tweetCount: tmp
             })
 
@@ -148,11 +148,16 @@ class PostView2 extends Component<Props> {
             // console.log(this.postAfter)
         }
         let result = this.state.items
+        let toDate = getDate('gettoDate',false,true)
+        if (this.postAfter < toDate) toDate = this.postAfter
+
         let res = await fetchData(
             getTagsInput('searchAcc', true, false, !this.state.loading)
             , getKwInput('searchKey', false, !this.state.loading)
             , this.state.loadEachTime
-            , this.postAfter
+            , getDate('getfromDate',true,true)
+            , toDate
+            , false
             , this.counter
         )
         let sortBy = this.sortBy == 'like' ? 'fav' : this.sortBy
@@ -192,7 +197,7 @@ class PostView2 extends Component<Props> {
 
         return (
             <div>
-                <Container position="relative" maxW="12xl">
+                {(findAccess(this.state.auth)) ? (<Container position="relative" maxW="12xl">
                     <Flex my={2} align="top" justify="center">
                         <Container mx={2} p={0}>
                             <Text>Twitter account</Text>
@@ -227,6 +232,15 @@ class PostView2 extends Component<Props> {
                             init={['like']} mode={SelectionMode.ONE} colorScheme={'twitter'}
                             parentCallback={a => this.callbackFunction(a)}
                         />
+                        <Flex  my={2} align="center" justify="center" >
+                                <form>
+                                    <label>From: </label>
+                                    <input type="date" id='getfromDate'></input>
+                                    <label>Until:</label>
+                                    <input type="date" id='gettoDate'></input>
+                                </form>
+
+                        </Flex>
                         <Button
                             m={3}
                             onClick={() => {
@@ -248,7 +262,13 @@ class PostView2 extends Component<Props> {
 
 
                     {/* </Flex> */}
-                </Container>
+                </Container>) :
+
+                (<Container position="relative" maxW="12xl">
+                        <Text fontWeight={600} fontSize='4xl'>Authorities required</Text>
+                            Contact your Admin for more details
+                </Container>)}
+
 
                 <Container maxW="8xl">
                     <SimpleGrid my={2}>

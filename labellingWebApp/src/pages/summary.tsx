@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import TagsInputKws from '../components/TagsInputKws'
 import TagsInput2 from '../components/TagsInput2'
 
-import { processPredict_fromTotalFetch } from '../utils/common'
+import { findAccess, processPredict_fromTotalFetch } from '../utils/common'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Head from 'next/head';
@@ -13,11 +13,11 @@ import Head from 'next/head';
 import SummaryView from "../components/SummaryView";
 import process from "process";
 import SelectOption, { SelectionMode } from "../components/SelectOption";
-
+import { useAuth } from "../lib/auth";
 
 const Summary = () => {
     toast.configure()
-
+    const { auth, signOut } = useAuth();
     // const [sumView, setSumView] = useState(<Pie2 data={[]} innerRadius={100} outerRadius={0}
     //     width={300} height={300}
     // />)
@@ -42,7 +42,7 @@ const Summary = () => {
             </Head>
             <main>
                 <Navbar />
-                <Container position="relative" maxW="8xl">
+                {(findAccess(auth,"summary")) ? (<Container position="relative" maxW="8xl">
                     <Flex my={2} align="top" justify="center" >
 
                         <Container mx={2} p={0}>
@@ -134,7 +134,16 @@ const Summary = () => {
 
 
 
-                </Container>
+                    </Container>) :(
+                        <Container position="relative" maxW="8xl">
+                            <Text fontWeight={600} fontSize='4xl'>Please log in for start using tool</Text>
+                        </Container>
+
+                    )
+
+
+                    }
+
                 <Container position="relative" maxW="8xl" mb={10}>
                     {sumView}
                 </Container>

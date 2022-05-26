@@ -16,7 +16,7 @@ const Signin = (props) => {
     const router = useRouter()
 
     if (auth) {
-        router.push((router.query.next as string) || '/')
+        router.push('/summary')
     }
 
     return (

@@ -3,48 +3,68 @@
     "scrapFrom": "twitter",
     "twitter": {
         "auth": {
-            "bearer_token" : "AAAAAAAAAAAAAAAAAAAAAEjWTgEAAAAAmF2H4wRcIDJHMe6x7dXZlrk7jEQ%3DFzx6yzXxhyJ5x1a8Qw5i4GC9RXrLBFU8GQdYCZzya8oiSxL3nv",
-            "consumer_key" : "lgBu13nhDXA1sYkHpMn6gZdnH",
-            "consumer_secret": "spagOJXGx3NSVAp9jccWAYIXHEBhmNJuBqfHUoFNvd6svZlxXE",
-            "access_token": "1221687331452674049-CEsgd7VOyISy6EK6YivTLgiWQ5lzYA",
-            "access_token_secret": "9W2JuomO2xWCoRLQsM8oIQiYzoYMNZoIrsnJRo869Nj2w"
+            "bearer_token": "AAAAAAAAAAAAAAAAAAAAAB%2FfcQEAAAAAQAg9dWRylOELOJhSH2eugbrODdA%3DUAjctahnrtLA4tdGaRJDfHWvkuOBHPBUGG2wjY7OGWvCA6un43",
+            "consumer_key": "PfbjCqq5DB6uXD1howZX1MuZP",
+            "consumer_secret": "xz3wDMudHR1IIDe586Ad0cRMtyAS7iiB9H6miCG3uFROgHfnuB",
+            "access_token": "1328186910548758528-1NeLYtEqXPBdvVq0OUGFJEBOzFkhmB",
+            "access_token_secret": "RHId1udtLQLfiDwSkEkNX9WxQ7kF4pN6agTWM2u1QDWKe"
         },
         "tweetLoad": 750,
-        "runMode": "keyword",
-        "account": [
-            "abcaustralia"
-        ],
-        "keyword": [
-            ["sydney"]
-        ],
+        "runMode": "full",
+        "account": ["abcaustralia"],
+        "keyword": [["sydney"]],
         "full": {
-            "tweetLoad": 1250,
+            "tweetLoad": 50,
             "account": [
-                "abcaustralia"
+                "ABCaustralia",
+                "abcnews",
+                "9NewsAUS",
+                "10NewsFirst",
+                "SBSNews",
+                "GuardianAus",
+                "SkyNewsAust",
+                "AustralianLabor",
+                "LiberalAus"
             ],
-            "keyword": [
-                ["vaccine"]
-            ]
+            "keyword": [["auspol", "vote", "election", "Liberal", "Labor"]]
         },
         "30days": {
-            "tweetLoad": 1250,
+            "tweetLoad": 1000,
             "account": [
+                "ABCaustralia",
+                "abcnews",
+                "9NewsAUS",
+                "10NewsFirst",
+                "SBSNews",
+                "GuardianAus",
+                "SkyNewsAust",
+                "AustralianLabor",
+                "LiberalAus"
             ],
-            "keyword": [
-               "sydney"
-            ]
+            "keyword": [["auspol", "ausvotes"]],
+            "fromDate": "2022-05-18",
+            "toDate": "2022-05-18"
+        },
+        "searchRecent": {
+            "tweetLoad": 2000,
+            "account": [
+                "ABCaustralia",
+                "abcnews",
+                "9NewsAUS",
+                "10NewsFirst",
+                "SBSNews",
+                "GuardianAus",
+                "SkyNewsAust",
+                "AustralianLabor",
+                "LiberalAus"
+            ],
+            "keyword": [["auspol", "ausvotes"]]
         },
         "countRecent": {
-            "account": [
-            ],
-            "keyword": [
-               "sydney"
-            ]
+            "account": [],
+            "keyword": ["sydney"]
         },
         "outsideTagIsAND": true,
-        "hashtag": [
-            "#healthcare",
-            "#COVID19vaccine"
-        ]
+        "hashtag": ["#healthcare", "#COVID19vaccine"]
     }
 }

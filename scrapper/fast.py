@@ -126,22 +126,21 @@ async def triggerCombine(initConfig=Body(...)):
     return "PROCESSING"
 
 @app.post("/trigger/full")
-async def triggerFull(initConfig=Body(...)):
+async def triggerFull(initConfig = Body(...)):
     default = getDefaultRunConfig()
 
-    # {"account": ["@sahealth","@7newsadelaide"], "keyword": ["mask"]}
-    # {"account": ["@7newsadelaide"], "keyword": ["restriction"]}
-    # {"account": ["@ap","@afp"], "keyword": ["BREAKING"]}
-
-    # update = json.loads(initConfig)
-    # print(update['account'])
-
+    # {"account": [], "keyword": [["vaccine"]], "fromDate": "2022-01-01T23:00:00.000",
+    #  "toDate" : "2022-01-02T00:00:00.000", "outsideTagIsAND": true}
     print(initConfig)
+    if isinstance(initConfig, ((bytes, bytearray))):
+        initConfig = json.loads(initConfig)
 
     default['twitter']['runMode'] = 'full'
     # default['twitter']['account'] = update['account'].__str__().replace('@','')
     default['twitter']['full']['account'] = []
     default['twitter']['full']['keyword'] = initConfig['keyword']
+    default['twitter']['full']['fromDate'] = initConfig['fromDate'] if 'fromDate' in initConfig.keys() else None
+    default['twitter']['full']['toDate'] = initConfig['toDate'] if 'toDate' in initConfig.keys() else None
     default['twitter']['outsideTagIsAND'] = initConfig['outsideTagIsAND']
 
     if len(initConfig['account']) > 0:

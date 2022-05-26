@@ -152,9 +152,9 @@ class MyTweet2:
 
     def parseFromCSV(self, csvData: list):
         i = 0
-        self.hash = csvData[i];
+        self.hash = csvData[i]
         i += 1
-        self.account = csvData[i];
+        self.account = csvData[i]
         i += 1
         # 2021-11-13T01:25:11.000Z
         # tmpTime = csvData[i]; i += 1
@@ -176,6 +176,7 @@ class MyTweet2:
     def to_dict(self):
         return {
             'account'     : self.account
+            , 'id'        : self.id
             , 'orig'      : self.orig
             , 'postAt'    : self.postAt
             , 'hash'      : self.hash
@@ -188,10 +189,10 @@ class MyTweet2:
             , 'geo'       : self.geo
 
             , 'query'     : self.query
-            , 'rating'    : self.rating
-            , 'event'     : self.event
-            , 'labelledBy': self.labelledBy
-            , 'insertDbAt': self.insertDbAt
+            # , 'rating'    : self.rating
+            # , 'event'     : self.event
+            # , 'labelledBy': self.labelledBy
+            # , 'insertDbAt': self.insertDbAt
         }
 
 

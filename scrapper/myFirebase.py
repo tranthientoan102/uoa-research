@@ -57,7 +57,7 @@ class MyFirebaseService:
 
     # def insertData(self, data: MyTweet):
     def insertData(self, data):
-        data.insertDbAt = datetime.datetime.now()
+        # data.insertDbAt = datetime.datetime.now()
         self.getCollectionRef().document(data.hash).set(data.to_dict())
 
     def update(self, hash, data):

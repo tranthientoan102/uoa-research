@@ -97,24 +97,37 @@ export const refillDb_kw = async (kws:string[][], isPremium: boolean, outsideTag
     return tmp
 }
 
-export const refillDb_acc_kws = async (acc: string[], kws:string[][], isPremium: boolean, outsideTagIsAND= true) => {
+export const refillDb_acc_kws = async (acc: string[], kws:string[][], isPremium: boolean
+                                       , fromDate_string:string=null, toDate_string:string=null, outsideTagIsAND= true) => {
 
     // let data = JSON.stringify({"account": acc, "keyword": kw})
 
     let port = host_scrapper.startsWith('https')?'':`:${port_scrapper}`
+    let api = isPremium?'/trigger/full':'/trigger/combine'
     // let tmp = await Axios.post(`${host_scrapper}${port}/trigger/combine`
     //                             , {account: acc, keyword: kws, outsideTagIsAND: outsideTagIsAND})
 
+    let data = {
+                account: acc, keyword: kws
+                , fromDate: fromDate_string, toDate: toDate_string
+                , outsideTagIsAND: outsideTagIsAND
+            }
+    console.log(data)
 
     // console.log(`isPremium = ${isPremium}`)
-    let tmp = await Axios(
-        {
-            method: 'post',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            url: `${host_scrapper}${port}/trigger/combine`,
-            data: {account: acc, keyword: kws, outsideTagIsAND: outsideTagIsAND}
-
-    })
+    // let tmp = await Axios(
+    //     {
+    //         method: 'post',
+    //         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    //         url: `${host_scrapper}${port}${api}`,
+    //         data: {
+    //             account: acc, keyword: kws
+    //             , from: fromDate_string, to: toDate_string
+    //             , outsideTagIsAND: outsideTagIsAND
+    //         }
+    //
+    // })
+    let tmp = await Axios.post(`${host_scrapper}${port}${api}`, data)
 
     return tmp
 }
@@ -157,7 +170,7 @@ export const loadUnlabelledPost = async () => {
     let loadUnlabelled = null
 
     try {
-        let dataRef = await buildGETQuery_unlabelled([], null, expectingPost)
+        let dataRef = await buildGETQuery_unlabelled([], null,null, expectingPost)
             .get()
         loadUnlabelled = dataRef.docs.map((doc) => (
             { id: doc.id, ...doc.data() })
@@ -176,11 +189,11 @@ export const loadUnlabelledPost = async () => {
 }
 
 
-export const loadUnlabelledPostByAccount = async (accs: string[], postAfter=new Date() , limit = expectingPost) => {
+export const loadUnlabelledPostByAccount = async (accs: string[],fromDate =null, toDate=new Date() , limit = expectingPost) => {
     let result = []
 
     try {
-        let dataRef = await buildGETQuery_unlabelled(accs, postAfter, limit).get()
+        let dataRef = await buildGETQuery_unlabelled(accs,fromDate,toDate, limit).get()
         result = dataRef.docs.map((doc) => (
             { id: doc.id, ...doc.data() })
         )
@@ -191,9 +204,11 @@ export const loadUnlabelledPostByAccount = async (accs: string[], postAfter=new 
         console.log('Error occurred: ' + err)
     }
 }
+
+
 export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][]
                                                   , limit= expectingPost
-                                                  , postAfter = new Date()) => {
+                                                  ,fromDate, toDate = new Date()) => {
     console.log(`load unlabelled post By ${accs} with keywords ${kws}`)
 
     let result = []
@@ -203,7 +218,7 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][
 
     while (result.length < limit) {
         // console.log('query by date: ' + postAfter)
-        let data = await loadUnlabelledPostByAccount(accs, postAfter, dbLookupLimit)
+        let data = await loadUnlabelledPostByAccount(accs, fromDate,toDate, dbLookupLimit)
         if (data.length == 0) break
         for (const doc of data){
             if (checkDocIncludesKws(doc.text, kws)) {
@@ -211,7 +226,7 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][
             }
             if (result.length == limit) break
         }
-        postAfter = new Date(data[data.length - 1].postAt['seconds'] * 1000)
+        toDate = new Date(data[data.length - 1].postAt['seconds'] * 1000)
 
     }
 
@@ -219,7 +234,6 @@ export const loadUnlabelledPost_accs_kws = async (accs: string[], kws: string[][
     // console.log(`finish load ${result.length} unlabelled post By ${accs} with keywords ${kws}`)
     return result
 }
-
 export const loadLabelledPostByLabelledBy = async ( reviewer: string
                                                     , labelledBy: string[]
                                                     , limit= expectingPost
@@ -535,7 +549,7 @@ export const downloadData = async (auth, accounts: string[], limit:number, label
         console.log('Error occurred: ' + err)
     }
 }
-function buildGETQuery_unlabelled (accounts: string[], postAfter, limit) {
+function buildGETQuery_unlabelled (accounts: string[],fromDate,toDate, limit) {
 
     let dataRef = firebase.firestore().collection("tweets_health")
     let query = dataRef.where("rating", '==', -10)
@@ -543,8 +557,13 @@ function buildGETQuery_unlabelled (accounts: string[], postAfter, limit) {
     if (accounts.length > 0){
         query = query.where("account", 'array-contains-any', accounts)
     }
-    if (postAfter!= null){
-        query = query.where("postAt", "<", postAfter)
+
+    if(fromDate==null){
+        query = query.where("postAt", "<",toDate)
+    }
+    else{
+        query = query.where("postAt",">",fromDate)
+        query = query.where("postAt","<",toDate)
     }
     if (limit != null){
         query = query.limit(limit)
@@ -552,7 +571,6 @@ function buildGETQuery_unlabelled (accounts: string[], postAfter, limit) {
     return query.orderBy("postAt",'desc')
     // return query
 }
-
 
 
 function buildGETQuery_hash_unlabelled (hashList: string[], limit) {

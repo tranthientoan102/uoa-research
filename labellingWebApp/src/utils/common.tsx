@@ -6,9 +6,11 @@ import {
     , host_scrapper, host_sa, host_ed, port_sa, port_ed, refillDb_acc_kws, refillDb_acc, refillDb_kw, port_scrapper
 } from "./db";
 import Axios from "axios";
-import {Tag} from "@chakra-ui/react";
+import {flexbox, Tag} from "@chakra-ui/react";
 import dateformat from "dateformat";
 import React from "react";
+import { date } from "yup";
+import { Form } from "formik";
 
 
 export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
@@ -16,6 +18,42 @@ export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 
                             'advocary/reform']
 export const eventFullList = [eventList, 'no event detected'].flat()
 export const sentimentFullList = ['negative', 'neutral', 'positive']
+
+export const roles ={
+    visitor:{
+        "summary":true
+    },
+    user :{
+        "summary":true,
+        "predict":true,
+        "download":true
+    },
+    annotator:{
+        "annotation":true
+    },
+    reviewer:{
+        "review": true
+    },
+    admin:{
+        "admin":true
+    }
+}
+
+export const findAccess = (auth,pages='annotation')=>{
+
+    if(auth==null){
+        return false;
+    }
+    else{
+        for(let i =0 ;i<auth.roles.length;i++){
+            if(roles[auth.roles[i]][pages]){
+                return true;
+            }
+        }
+        // return auth.roles.includes(targetRoles) && ( || roles["user"][pages]);
+        return false;
+    }
+}
 
 
 export const findByType = (children, component) => {
@@ -113,6 +151,21 @@ export const getKwInput= (eleId, lowering = true, withWarning=true) => {
 
     return tags_arrayOfArray(tmpTags)
 }
+
+export const getDate=(eleId,toOrfrom,exclusive)=>{
+    var temp = new Date((document.getElementById(eleId) as HTMLInputElement).value)
+    // True = fromDate false = toDate
+    if(toOrfrom){
+        console.log("from =" + temp)
+        return (isNaN(temp.getMonth())) ? null : temp
+    }
+    else{
+        temp =(isNaN(temp.getMonth())) ? new Date() : temp
+        temp = isExclusive(temp,exclusive)
+        console.log("after ="+ temp)
+    }
+    return temp
+}
 export const tags_arrayOfArray = (tagsArray) => {
     let tags = []
     for (let tmpTag of tagsArray) {
@@ -198,6 +251,7 @@ export const isMasked = (auth) => {
 export const isAdmin = (auth) => {
     return auth.roles.includes('admin')
 }
+
 export const isChecked = (id) => {
     let result = false
     let ele = document.getElementById(id)
@@ -305,37 +359,54 @@ export const maskPersonalDetails_names = (text:string, names:string[]) =>{
     return text
 }
 
+export const isExclusive = (date,exclusive)=>{
+    if(exclusive){
+        console.log("change ="+new Date(date.getFullYear(),date.getMonth(),date.getDate()-1,23,59,59))
+        return new Date(date.getFullYear(),date.getMonth(),date.getDate()-1,23,59,59)
+    }
+    return new Date(date.getFullYear(),date.getMonth(),date.getDate(),23,59,59)
+}
+
 export const fetchData = async (accs: string[], kws:string[][], limit= 25
-    , postAfter = new Date(), refillCounter = 0
+    ,fromDate=null, toDate = new Date(),exclusive =false ,refillCounter = 0
     , sortAtt = 'engage'
 ) => {
     // setData(`loading post from ${accs} with keywords ${kws}`)
-    let res = null
+    console.log(`fetchData >> accs:${accs}; kws:${kws}, ${fromDate?.toISOString()} -> ${toDate?.toISOString()}`)
 
+    let res = null
     if (kws.length == 0){
-        res = await loadUnlabelledPostByAccount(accs, null, limit)
-    }else res = await loadUnlabelledPost_accs_kws(accs, kws, limit, postAfter)
+        res = await loadUnlabelledPostByAccount(accs,fromDate,toDate,limit)
+    }else res = await loadUnlabelledPost_accs_kws(accs, kws, limit,fromDate, toDate)
+    
 
     let isOldData = true
-    let isReachLimit = false
-    if (res.length > 0) {
-        let latestDate = new Date(res[0].postAt['seconds'] * 1000)
-        // @ts-ignore
-        isOldData = ((new Date()) - latestDate) / (1000 * 3600 * 24) > .5
-        isReachLimit = res.length >= limit
+    let isReachLimit = res.length >= limit
+    if (fromDate == null){
+        if (res.length > 0) {
+            let latestDate = new Date(res[0].postAt['seconds'] * 1000)
+            // @ts-ignore
+            isOldData = ((new Date()) - latestDate) / (1000 * 3600 * 24) > .5
+            // isReachLimit = res.length >= limit
+        }
+        if ((refillCounter == 0) && (isOldData || !isReachLimit)) {
+            toast.info('Auto scrapping latest tweets', { autoClose: 20000 })
+            refillData(accs,kws, isChecked('isPremium'), null, null)
+        }
+    } else {
+        if (refillCounter==0 && !isReachLimit)
+            refillData(accs,kws, isChecked('isPremium'), fromDate, toDate)
     }
-    if ((refillCounter == 0) && (isOldData || !isReachLimit)) {
-        toast.info('Auto scrapping latest tweets', { autoClose: 20000 })
-        refillData(accs,kws, isChecked('isPremium'))
-    }
-
     console.log(`fetched ${res.length} tweets`)
 
-    return res.sort((a, b) => { return (b[sortAtt] - a[sortAtt]) });
-    // return res;
+    // return res.sort((a, b) => { return (b[sortAtt] - a[sortAtt]) });
+    return res;
 
 }
-export const refillData = async (accs:string[], kws:string[][], isPremium: boolean) => {
+
+export const refillData = async (accs:string[], kws:string[][], isPremium: boolean
+                                 , fromDate: Date, toDate: Date
+) => {
     // setData("...preparing db...")
     //
     // let accs = getTagsInput('searchAcc',true)
@@ -343,12 +414,22 @@ export const refillData = async (accs:string[], kws:string[][], isPremium: boole
 
     // let isWaiting = true
 
+    let fromDate_string = null
+    let toDate_string = null
+    if (fromDate && toDate){
+        fromDate_string = fromDate.toISOString().slice(0,-1)
+        toDate_string = toDate.toISOString().slice(0,-1)
+        console.log(`from ${fromDate_string} to ${toDate_string}`)
+    }
+
     if (accs.length > 0 && kws.length > 0) {
         // refillDbWithAccount(accs.join(','))
-        refillDb_acc_kws(accs, kws, isPremium)
+        refillDb_acc_kws(accs, kws, isPremium, fromDate_string, toDate_string)
     } else {
         if (accs.length > 0) refillDb_acc(accs.join(','))
-        else if (kws.length > 0) refillDb_kw(kws, isPremium)
+        // else if (kws.length > 0) refillDb_kw(kws, isPremium)
+        else if (kws.length > 0)
+            refillDb_acc_kws([], kws, isPremium,fromDate_string, toDate_string)
         else {
             toast.error('Please check your input')
             // isWaiting = false

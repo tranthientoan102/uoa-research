@@ -4,22 +4,13 @@ import {Image, Input, Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/rea
 // import { useRouter } from "next/dist/client/router";
 import { useRouter } from "next/router";
 import { useAuth } from "../lib/auth";
-
-
+import {findAccess} from "../utils/common";
 const Navbar: React.FC<{}> = () => {
     const { auth, signOut } = useAuth();
     const router = useRouter();
+    // console.log(auth)
     console.log(router.asPath)
 
-    const isAuthoriesed = (auth) =>{
-        return (auth != null) && auth.roles.includes('admin')
-    }
-    const access2Review =(auth) =>{
-        return auth!=null && (auth.roles.includes("admin")|| auth.roles.includes("reviewer"))
-    }
-    const access2AnPrDl = (auth)=>{
-        return auth!=null && (auth.roles.includes("admin")|| auth.roles.includes("reviewer")|| auth.roles.includes("annotator"))
-    }
     return (
         <>
             <Flex justify="space-between" m={1}  align="center">
@@ -31,7 +22,8 @@ const Navbar: React.FC<{}> = () => {
                 </Flex>
                 <Box my={1}>
                     <Flex p={2} flexDirection="row" flexWrap="wrap" justify="right">
-                        <Link 
+
+                        {findAccess(auth,"summary") ?(<Link 
                             p={2}
                             onClick={()=>{
                                 router.push('/summary')
@@ -40,8 +32,9 @@ const Navbar: React.FC<{}> = () => {
                             color ={(router.asPath =='/summary')?'black' : 'black'}
                         >
                             Summary
-                        </Link>
-                        { (access2AnPrDl(auth)) ? <Link
+                        </Link>) :null}
+                        
+                        { (findAccess(auth)) ? <Link
                             p={2}
                             onClick={() => {
                                 console.log('going /')
@@ -52,7 +45,7 @@ const Navbar: React.FC<{}> = () => {
                         >
                             Annotation
                         </Link>:null}
-                        { (access2Review(auth)) ? <Link
+                        { (findAccess(auth,"review")) ? <Link
                             p={2}
                             // href='/review'
                             onClick={() => {
@@ -65,7 +58,7 @@ const Navbar: React.FC<{}> = () => {
                             Review
                         </Link> :null}
 
-                        { (access2AnPrDl(auth)) ?<Link
+                        { (findAccess(auth,"predict")) ?<Link
                             // href='/predict'
                             p={2}
                             onClick={()=> {
@@ -78,7 +71,7 @@ const Navbar: React.FC<{}> = () => {
                         >
                             Prediction
                         </Link> :null}
-                        { (access2AnPrDl(auth)) ? <Link
+                        { (findAccess(auth,"download")) ? <Link
                             p={2}
                             onClick={() => {
                                 console.log('going /download')
@@ -89,7 +82,7 @@ const Navbar: React.FC<{}> = () => {
                         >
                             Download
                         </Link>:null}
-                        { (isAuthoriesed(auth)) ? <Link
+                        { (findAccess(auth,"admin")) ? <Link
                             // href='/admin'
                             p={2}
                             onClick={()=> {

@@ -24,7 +24,7 @@ import TagsInputKws from "../components/TagsInputKws";
 import PredictionDownload from "../components/PredictionDownload";
 import PredictView from "../components/PredictView";
 import SelectOption, { SelectionMode } from '../components/SelectOption';
-
+import {findAccess,getDate} from "../utils/common";
 
 
 const Predict = () => {
@@ -84,6 +84,9 @@ const Predict = () => {
             getTagsInput('searchAcc', true)
             , getKwInput('searchKeyPredict', false)
             , num
+            ,getDate('getfromDate',true,false)
+            ,getDate('gettoDate',false,false)
+
         ).then((res) => {
             res.forEach(a =>{
                 // console.log(`converting ${a.id}`)
@@ -189,7 +192,7 @@ const Predict = () => {
             </Head>
             <main>
                 <Navbar />
-                {auth?(
+                {findAccess(auth,"predict")?(
                     <div>
                         <Container position="relative" maxW="8xl">
                             <Flex  my={2} align="top" justify="center" >
@@ -258,6 +261,15 @@ const Predict = () => {
                                 {/*>*/}
                                 {/*    LATEST*/}
                                 {/*</Button>*/}
+                            </Flex>
+                            <Flex  my={2} align="center" justify="center" >
+                                <form>
+                                    <label>From: </label>
+                                    <input type="date" id='getfromDate'></input>
+                                    <label>Until:</label>
+                                    <input type="date" id='gettoDate'></input>
+                                </form>
+
                             </Flex>
                             <Flex my={2} align="center" justify="center" >
                                 <Button

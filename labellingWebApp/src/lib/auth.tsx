@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { Context, createContext, useContext, useEffect, useState } from 'react';
 import { updateAuthUser } from '../utils/db';
 import firebase from './firebase';
@@ -34,12 +35,14 @@ const formatAuthState = (user: firebase.User): Auth => ({
     photoUrl: user.photoURL,
     token: '',
     level: 0,
-    roles: ['user']
+    roles: ['visitor']
 })
 
 function UserProvideAuth() {
     const [auth, setAuth] = useState<Auth | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+
+    const router = useRouter()
 
     const handleAuthChange = async (authState: firebase.User | null) => {
         if (!authState) {
@@ -52,6 +55,7 @@ function UserProvideAuth() {
         setLoading(false);
         formattedAuth = await updateAuthUser({ ...formattedAuth});
         setAuth(formattedAuth);
+        router.push('/summary')
     };
 
     const signedIn = async (
@@ -63,6 +67,7 @@ function UserProvideAuth() {
         }
         const authUser = formatAuthState(response.user);
         console.log(authUser.uid)
+        router.push((router.query.next as string) || '/summary')
         // await addUser({ ...authUser, provider });
     };
 
