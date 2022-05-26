@@ -3,7 +3,7 @@ import tweepy
 
 import myFirebase
 from myTwitter import *
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 
@@ -11,34 +11,22 @@ import json
 
 def run(runConfig, scrapFrom='twitter', demoMode=False):
 
+    # with open('./config/backup_run.json') as f:
+    # # with open('./config/run.json') as f:
+    #     authConfig = json.load(f)
+
     auth = tweepy.OAuthHandler(
-            runConfig[scrapFrom]["auth"]["consumer_key"]
-            , runConfig[scrapFrom]["auth"]["consumer_secret"]
+            authConfig[scrapFrom]["auth"]["consumer_key"]
+            , authConfig[scrapFrom]["auth"]["consumer_secret"]
     )
     auth.set_access_token(
-            runConfig[scrapFrom]["auth"]["access_token"]
-            , runConfig[scrapFrom]["auth"]["access_token_secret"]
+            authConfig[scrapFrom]["auth"]["access_token"]
+            , authConfig[scrapFrom]["auth"]["access_token_secret"]
     )
 
     api = tweepy.API(auth)
     myfirebase = myFirebase.MyFirebaseService()
 
-    # logFile = open('output/log.txt', 'w')
-
-    # for status in tweepy.Cursor(api.user_timeline
-    #         , screen_name='@sahealth'
-    #         , tweet_mode="extended"
-    #         , exclude_replies=True
-    #         ).items(10):
-    #     print(status._json, file = demo)
-    #     print(status.full_text + '\n' + endTweetMark, file = demo)
-    #     print('.')
-
-    # queries = buildTwitterUrl_advanced(
-    #         runConfig[scrapFrom]['account']
-    #         , runconfig[scrapFrom]['keyword']
-    #         , withBase=False
-    # )
 
     query = ''
     apiMethod = None
@@ -66,17 +54,43 @@ def run(runConfig, scrapFrom='twitter', demoMode=False):
                        , runConfig[scrapFrom]['tweetLoad']
                        , datetime.now())
     elif runMode == 'full':
-        acc = runConfig[scrapFrom][runMode]['account'][0] if len(runConfig[scrapFrom][runMode]['account']) > 0 else ''
+        # acc = runConfig[scrapFrom][runMode]['account'][0] if len(runConfig[scrapFrom][runMode]['account']) > 0 else ''
         subRun_acc_kws_full(api, myfirebase
-                            , acc
+                            , runConfig[scrapFrom][runMode]['account']
                             , runConfig[scrapFrom][runMode]['keyword']
                             , runConfig[scrapFrom]['outsideTagIsAND']
                             , runConfig[scrapFrom][runMode]['tweetLoad']
-                            , datetime.now()
-                            , False
+
+                            , runConfig[scrapFrom][runMode]['fromDate']
+                            , runConfig[scrapFrom][runMode]['toDate']
+
+                            , demoMode
                             )
+    elif runMode == '30days':
+        subRun_acc_kws_30(api, myfirebase
+                          , runConfig[scrapFrom][runMode]['account']
+                          , runConfig[scrapFrom][runMode]['keyword']
+                          , runConfig[scrapFrom]['outsideTagIsAND']
+                          , runConfig[scrapFrom][runMode]['tweetLoad']
+
+                          , runConfig[scrapFrom][runMode]['fromDate']
+                          , runConfig[scrapFrom][runMode]['toDate']
+
+                          , demoMode
+                          )
     else:
-        subRun_acc_kws_30(api, myfirebase)
+        subRun_acc_kws_recent(api, myfirebase
+                          , runConfig[scrapFrom][runMode]['account']
+                          , runConfig[scrapFrom][runMode]['keyword']
+                          , runConfig[scrapFrom]['outsideTagIsAND']
+                          , runConfig[scrapFrom][runMode]['tweetLoad']
+
+                        #   , runConfig[scrapFrom][runMode]['fromDate']
+                        #   , runConfig[scrapFrom][runMode]['toDate']
+
+                          , demoMode
+                          )
+
 
 def subRun_kws(api, myfirebase, kws, outsideTagIsAND, expectingCount, startTime, demoMode):
     query = buildQuery(kws, outsideTagIsAND )
@@ -175,17 +189,24 @@ def subRun_acc_kws(api, myfirebase, acc, kws, outsideTagIsAND, expectingCount, s
     print(f'done scrapping {counter} tweets from @{acc} with {kws} in {(endTime - startTime).total_seconds()}s')
 
 def subRun_acc_kws_full(api, myfirebase
-                            , acc, kws, outsideTagIsAND, expectingCount, startTime, demoMode
+                            , acc, kws, outsideTagIsAND, expectingCount, fromDate, toDate, demoMode
                         ):
     counter = 0
     # query = f'({buildQuery(kws, outsideTagIsAND )}) (from:{acc})'
     maxTweetId = None
 
+    if fromDate: fromDate = datetime.fromisoformat(fromDate).strftime('%Y%m%d%H%M')
+    if toDate: toDate = datetime.fromisoformat(toDate).strftime('%Y%m%d%H%M')
+
     queryKws = buildQuery(kws, outsideTagIsAND )
-    fromAcc = f'(from:{acc})' if len(acc) > 0 else ''
+
+    # fromAcc = f'(from:{acc})' if len(acc) > 0 else ''
+    fromAcc = f"({' OR '.join(list(map(lambda x: f'from:{x}', acc)))})"
+    # fromAcc = ' OR '.join(list(map(lambda x: f'from:{x}', acc)))
+
     query = f'{queryKws} {fromAcc}'
 
-    print(f'init Tweepy search FULL: {query}')
+    print(f'init Tweepy search FULL: {query} ; {fromDate} -> {toDate}')
     # toDate = datetime.now()
     try:
         # iter=0
@@ -195,7 +216,8 @@ def subRun_acc_kws_full(api, myfirebase
         for status in tweepy.Cursor(api.search_full_archive
                                         , label='aiml'
                                         , query=query
-                                        # , fromDate='201501010000'
+                                        , fromDate=fromDate
+                                        , toDate=toDate
                                         # , maxResults= expectingCount
                                         # , tweet_mode="extended"
                                     ).items(expectingCount):
@@ -223,33 +245,130 @@ def subRun_acc_kws_full(api, myfirebase
         print(e)
 
 def subRun_acc_kws_30(api, myfirebase
-                        # , acc, kws, outsideTagIsAND, expectingCount, startTime, demoMode
+                        , accs, kws, outsideTagIsAND, expectingCount, fromDate, toDate, demoMode
                         ):
     counter = 0
     # query = f'({buildQuery(kws, outsideTagIsAND )}) (from:{acc})'
     maxTweetId = None
     print(f'init Tweepy search 30 days')
-    kws='"apple"'
-    expectingCount = 100
-    toDate = datetime.now()
+
+    if fromDate: fromDate = datetime.fromisoformat(fromDate).strftime('%Y%m%d%H%M')
+    else:
+        fd = datetime.now() - timedelta(days=14)
+        fromDate = fd.strftime('%Y%m%d%H%M')
+
+    if toDate: toDate = datetime.fromisoformat(toDate).strftime('%Y%m%d%H%M')
+    else:
+        td = datetime.now() - timedelta(days=7)
+        toDate = td.strftime('%Y%m%d%H%M')
+
+    queryKws = buildQuery(kws, outsideTagIsAND )
+
+    fromAccs = buildQuery_accs(accs)
+    # fromAcc = ' OR '.join(list(map(lambda x: f'from:{x}', acc)))
+
+    query = f'{queryKws} {fromAccs}'
+
+    print(f'init Tweepy search 30 days: {query} ; from {fromDate} to {toDate}')
+
+
+    # expectingCount = 100
+    # toDate = datetime.now()
     try:
 
         totalCounter = 0
-        f = open('./output/my_file.txt', 'w')
+        fname = f"./output/30-{datetime.now().strftime('%Y%m%d%H%M')}.txt"
+        f = open(fname, 'w')
+
         for status in tweepy.Cursor(api.search_30_day
                 , label='30days'
-                , query=kws
-                # , fromDate='201101012315'
-                # , tweet_mode="extended"
-                # , max_id=maxTweetId
-                                    # , exclude_replies = True
-        ).items(1000):
-            # tweet = MyTweet2().parse(status._json, kws)
-            # print(tweet.to_dict())
-            f.write(str(status))
-            print('...')
+                , query=query
+                , fromDate=fromDate
+                , toDate=toDate
+
+        ).items(expectingCount):
+            totalCounter += 1
+
+
+            # fname = f'./output/30-{datetime.now()}.txt'
+            if demoMode:
+                f.write(f'{str(status)}\n')
+            else:
+                try:
+                    tweet = MyTweet2().parse(status._json, query)
+                    if not myfirebase.checkExisted(tweet.hash):
+                        tmp = f'{queryKws} -> {tweet.hash} , {tweet.postAt}'
+                        print(tmp)
+                        f.write(tmp+'\n')
+                        myfirebase.insertData(tweet)
+                        counter += 1
+                except Exception as e:
+                    fname = datetime.now()
+                    with open(f'./output/exception_{fname}.txt', 'w') as file:
+                        file.write(f'{status._json}\n{e}\n\n')
+
+        f.close()
+        print(f'inserted {counter}/{totalCounter} tweets ')
+
     except Exception as e:
         print(e)
+
+def subRun_acc_kws_recent(api, myfirebase
+                        , accs, kws, outsideTagIsAND, expectingCount
+                        # , fromDate, toDate
+                        , demoMode
+                        ):
+    counter = 0
+    # query = f'({buildQuery(kws, outsideTagIsAND )}) (from:{acc})'
+    maxTweetId = None
+    print(f'init Tweepy SearchRecent')
+    queryKws = buildQuery(kws, outsideTagIsAND )
+
+    fromAccs = buildQuery_accs(accs)
+    # fromAcc = ' OR '.join(list(map(lambda x: f'from:{x}', acc)))
+
+    query = f'{queryKws} {fromAccs}'
+
+    print(f'init Tweepy search RECENT: {query}, {expectingCount=}')
+
+    try:
+
+        totalCounter = 0
+        fname = f"./output/recent-{datetime.now().strftime('%Y%m%d%H%M')}.txt"
+        f = open(fname, 'w')
+
+        for status in tweepy.Cursor(api.search_tweets
+                , q=query
+                , tweet_mode="extended"
+                , lang='en'
+                # , result_type='popular'
+        ).items(expectingCount):
+            totalCounter += 1
+
+            if demoMode:
+                f.write(f'{str(status)}\n')
+            else:
+                try:
+                    tweet = MyTweet2().parse(status._json, query)
+                    if not myfirebase.checkExisted(tweet.hash):
+                        tmp = f'{queryKws} -> {tweet.hash} , {tweet.postAt}'
+                        print(tmp)
+                        f.write(tmp+'\n')
+                        myfirebase.insertData(tweet)
+                        counter += 1
+                except Exception as e:
+                    fname = datetime.now()
+                    with open(f'./output/exception_{fname}.txt', 'w') as file:
+                        file.write(f'{status._json}\n{e}\n\n')
+
+        f.close()
+        print(f'inserted {counter}/{totalCounter} tweets ')
+
+    except Exception as e:
+        print(e)
+
+
+
 
 
 def checkTextIncludeKeywords(text, keywords):
@@ -273,8 +392,10 @@ def buildQuery( kwTags, outsideTagIsAND):
             tmp = ' '.join(kwTag)
             result.append(f'({tmp})')
         return ' OR '.join(result)
+def buildQuery_accs (accs):
+    return f"({' OR '.join(list(map(lambda x: f'from:{x}', accs)))})" if len(accs) > 0 else ''
 
-def testAccQuota():
+def checkAccQuota():
     with open('./config/run.json') as f:
         runConfig = json.load(f)
         scrapFrom= 'twitter'
@@ -291,25 +412,76 @@ def testAccQuota():
         print(api.rate_limit_status())
 
 
-
-if __name__ == '__main__':
+def buildConfig_30(fromDate, toDate):
     with open('./config/run.json') as f:
         runconfig = json.load(f)
-        # runconfig['twitter']['runMode'] = 'full'
-        # # runconfig['twitter']['account'] = ['elonmusk']
-        # runconfig['twitter']['full']['account'] = ''
-        # runconfig['twitter']['full']['keyword'] = [['"national medicines policy"']]
+        runMode = '30days'
+        runconfig['twitter']['runMode'] = runMode
+        runconfig['twitter'][runMode]['account'] = [
+                "ABCaustralia"
+                , "abcnews"
+                , "9NewsAUS"
+                , "10NewsFirst"
+                , "SBSNews"
+                , "GuardianAus"
+                , "SkyNewsAust"
+                , "AustralianLabor"
+                , "LiberalAus"
+            ]
+        # runconfig['twitter'][runMode]['account'] = []
+        runconfig['twitter'][runMode]['keyword'] = [
+                ["auspol", "ausvotes"]
+        ]
+        fromDateStr = fromDate.isoformat().split('T')[0]
+        toDateStr = toDate.isoformat().split('T')[0]
+        runconfig['twitter'][runMode]['fromDate'] = f'{fromDateStr}T00:00:00'
+        runconfig['twitter'][runMode]['toDate'] = f'{toDateStr}T23:59:59'
+    return runconfig
 
-        runconfig['twitter']['runMode'] = 'account'
-        # runconfig['twitter']['account'] = ['elonmusk']
-        # runconfig['twitter']['keyword']['keyword'] = [['"national medicines policy"']]
+def buildConfig_searchRecent():
+    with open('./config/run.json') as f:
+        runconfig = json.load(f)
+        runMode = 'searchRecent'
+        runconfig['twitter']['runMode'] = runMode
 
+        runconfig['twitter'][runMode]['account'] = [
+                "ABCaustralia"
+                , "abcnews"
+                , "9NewsAUS"
+                , "10NewsFirst"
+                , "SBSNews"
+                , "GuardianAus"
+                , "SkyNewsAust"
+                , "AustralianLabor"
+                , "LiberalAus"
+        ]
+        # runconfig['twitter'][runMode]['account'] = []
 
-        run(runconfig, demoMode=False)
+    return runconfig
 
-        # runconfig['twitter']['runMode'] = 'keyword'
-        # runconfig['twitter']['keyword'] = [['"medicine policy"']]
-        # run(runconfig, demoMode=True)
+def run30():
+    # fromDateStr = ''
+    delta = 30
+    toDate = datetime.fromisoformat('2022-05-26')
+    fromDate = toDate - timedelta(days=delta)
 
+    runconfig = buildConfig_30(fromDate, toDate)
+    run(runconfig, demoMode=False)
+
+def runSearchRecent():
+    runconfig = buildConfig_searchRecent()
+
+    run(runconfig, demoMode=False)
+
+if __name__ == '__main__':
+    run30()
+    # runSearchRecent()
     # testAccQuota()
+
+    # print(datetime.now().isoformat())
+    # dt = datetime.fromisoformat('2022-05-18')
+    # dt2 = dt -timedelta(days=2)
+    # print(dt2.isoformat())
+
+
 
