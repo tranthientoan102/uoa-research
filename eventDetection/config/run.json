@@ -1,7 +1,7 @@
 {
     "runningModel": {
         "base_model_name" : "bert-base-uncased",
-        "path": "./checkpoints/best_checkpoints.ckpt",
+        "path": "./checkpoints/best-checkpoint.ckpt",
         "runOnCPU": true
     }
 }
