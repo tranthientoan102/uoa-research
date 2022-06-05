@@ -3,4 +3,6 @@ fastapi
 torch
 torchmetrics
 transformers
+pandas
+pytorch-lightning==1.5.5
 gdown

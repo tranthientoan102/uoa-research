@@ -22,6 +22,6 @@ RUN mkdir checkpoints
 RUN gdown $modelID -O ./checkpoints/best_checkpoints.ckpt
 
 # Run the application in the port 8002
-# uvicorn --host 0.0.0.0 --port 8002 fast_ed2:app --reload
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8002", "fast_ed2:app"]
+# uvicorn --host 0.0.0.0 --port 8002 fast_ed:app --reload
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8002", "fast_ed:app"]
 #CMD ["uvicorn", "fast:app"]
