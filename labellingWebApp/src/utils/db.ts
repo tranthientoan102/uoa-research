@@ -6,18 +6,10 @@ import {toast} from 'react-toastify';
 
 
 toast.configure()
-// dotenv.config()
-// require('dotenv').config({path: './config/.e2222nv.development.dev'})
 
 const expectingPost = 30
 const dbLookupLimit = 500
 
-// export const host = 'localhost'
-// export const host = '20.37.47.186'
-// export const host_sa = '20.37.47.186'
-// export const port_sa = 8001
-// export const host_ed = '20.37.47.186'
-// export const port_ed = 8002
 
 export const host_scrapper = process.env.NEXT_PUBLIC_HOST_SCRAPPER
 export const port_scrapper = process.env.NEXT_PUBLIC_PORT_SCRAPPER
