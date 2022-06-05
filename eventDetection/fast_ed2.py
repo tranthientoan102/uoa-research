@@ -17,7 +17,7 @@ from transformers import BertTokenizer, BertForSequenceClassification, Trainer
 
 import detector
 from EDModel import EDModel
-from ModelNeroED import ModelNeroED
+from ModelED import ModelED
 
 
 class FastED2 (FastAPI):
@@ -32,7 +32,7 @@ class FastED2 (FastAPI):
         path = f"{self.config['runningModel']['path']}"
 
         self.tokenizer = BertTokenizer.from_pretrained(base_model_name)
-        self.model = ModelNeroED(base_model_name, path)
+        self.model = ModelED(base_model_name, path)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         # self.model = self.model.to(device)
 
