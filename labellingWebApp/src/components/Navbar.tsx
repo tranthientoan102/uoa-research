@@ -34,29 +34,30 @@ const Navbar: React.FC<{}> = () => {
                             Summary
                         </Link>) :null}
                         
-                        { (findAccess(auth)) ? <Link
-                            p={2}
-                            onClick={() => {
-                                console.log('going /')
-                                router.push('/')
-                            }}
-                            bg={(router.asPath=='/')? 'dodgerblue':'white'}
-                            color={(router.asPath=='/')? 'white':'black'}
-                        >
-                            Annotation
-                        </Link>:null}
-                        { (findAccess(auth,"review")) ? <Link
-                            p={2}
-                            // href='/review'
-                            onClick={() => {
-                                console.log('going /review')
-                                router.push('/review')
-                            }}
-                            bg={(router.asPath=='/review')? 'dodgerblue':'white'}
-                            color={(router.asPath=='/review')? 'white':'black'}
-                        >
-                            Review
-                        </Link> :null}
+                        {/*{ (findAccess(auth)) ? <Link*/}
+                        {/*    p={2}*/}
+                        {/*    onClick={() => {*/}
+                        {/*        console.log('going /')*/}
+                        {/*        router.push('/')*/}
+                        {/*    }}*/}
+                        {/*    bg={(router.asPath=='/')? 'dodgerblue':'white'}*/}
+                        {/*    color={(router.asPath=='/')? 'white':'black'}*/}
+                        {/*>*/}
+                        {/*    Annotation*/}
+                        {/*</Link>:null}*/}
+
+                        {/*{ (findAccess(auth,"review")) ? <Link*/}
+                        {/*    p={2}*/}
+                        {/*    // href='/review'*/}
+                        {/*    onClick={() => {*/}
+                        {/*        console.log('going /review')*/}
+                        {/*        router.push('/review')*/}
+                        {/*    }}*/}
+                        {/*    bg={(router.asPath=='/review')? 'dodgerblue':'white'}*/}
+                        {/*    color={(router.asPath=='/review')? 'white':'black'}*/}
+                        {/*>*/}
+                        {/*    Review*/}
+                        {/*</Link> :null}*/}
 
                         { (findAccess(auth,"predict")) ?<Link
                             // href='/predict'

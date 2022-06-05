@@ -55,7 +55,7 @@ function UserProvideAuth() {
         setLoading(false);
         formattedAuth = await updateAuthUser({ ...formattedAuth});
         setAuth(formattedAuth);
-        router.push('/summary')
+        router.push('/predict')
     };
 
     const signedIn = async (

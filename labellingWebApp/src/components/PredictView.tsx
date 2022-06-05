@@ -128,8 +128,9 @@ class PredictView extends React.Component<Props> {
                                 Event:{
                                 // (pred_ed.data[i].length>0)? displayTagED(pred_ed.data[i], eventFullList)
                                 //     : displayTagED(['no event detected'], eventFullList)
-                                (this.props.pred_ed[i].length > 0) ? displayTagED(this.props.pred_ed[i], eventFullList)
-                                    : displayTagED(['no event detected'], eventFullList)
+                                displayTagED(this.props.pred_ed[i], eventFullList)
+                                // (this.props.pred_ed[i].length > 0) ? displayTagED(this.props.pred_ed[i], eventFullList)
+                                //     : displayTagED([], eventFullList)
                             }
                             </Flex>
                         </Container>

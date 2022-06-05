@@ -16,7 +16,7 @@ import {
     getSAPrediction,
     getTagsInput,
     isAdmin,
-    isMasked, isChecked, calcAmountSummary, sentimentFullList,
+    isMasked, isChecked, calcAmountSummary, sentimentFullList, eventFullList,
 } from "../utils/common";
 
 import TagInput2 from "../components/TagsInput2";
@@ -25,6 +25,8 @@ import PredictionDownload from "../components/PredictionDownload";
 import PredictView from "../components/PredictView";
 import SelectOption, { SelectionMode } from '../components/SelectOption';
 import {findAccess,getDate} from "../utils/common";
+
+
 
 
 const Predict = () => {
@@ -53,11 +55,13 @@ const Predict = () => {
 
     let sortBy = ''
 
-    const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
-                   'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
-        'advocary/reform']
-    const eventFullList = [eventList, 'no event detected'].flat()
-    const sentimentFullList = ['negative', 'neutral', 'positive']
+    // const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
+    //                'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
+    //     'advocary/reform']
+    // const eventFullList = [eventList, 'no event detected'].flat()
+
+
+    // const sentimentFullList = ['negative', 'neutral', 'positive']
 
     const processPredict = async () => {
 
@@ -100,7 +104,7 @@ const Predict = () => {
             return res
         })
         let origSortBy = (sortBy == 'like') ? 'fav' : sortBy
-        tweets.sort((a, b) => b[origSortBy] - a[origSortBy])
+        // tweets.sort((a, b) => b[origSortBy] - a[origSortBy])
 
         // toast.info('Predicting...')
 

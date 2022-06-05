@@ -13,10 +13,11 @@ import { date } from "yup";
 import { Form } from "formik";
 
 
-export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
-                            'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
-                            'advocary/reform']
-export const eventFullList = [eventList, 'no event detected'].flat()
+// export const eventList = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
+//                             'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
+//                             'advocary/reform']
+export const eventList = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
+export const eventFullList = [eventList, 'friendly'].flat()
 export const sentimentFullList = ['negative', 'neutral', 'positive']
 
 export const roles ={
@@ -39,20 +40,22 @@ export const roles ={
     }
 }
 
-export const findAccess = (auth,pages='annotation')=>{
+export const findAccess = (auth,page='annotation')=>{
 
-    if(auth==null){
-        return false;
-    }
-    else{
-        for(let i =0 ;i<auth.roles.length;i++){
-            if(roles[auth.roles[i]][pages]){
-                return true;
-            }
-        }
-        // return auth.roles.includes(targetRoles) && ( || roles["user"][pages]);
-        return false;
-    }
+    // if(auth==null){
+    //     return false;
+    // }
+    // else{
+    //     for(let i =0 ;i<auth.roles.length;i++){
+    //         if(roles[auth.roles[i]][pages]){
+    //             return true;
+    //         }
+    //     }
+    //     // return auth.roles.includes(targetRoles) && ( || roles["user"][pages]);
+    //     return false;
+    // }
+    if (page == 'admin') return auth?auth.roles.includes('admin'):false
+    else return true
 }
 
 
@@ -243,13 +246,14 @@ export const convertTimeToString = (time) => {
 }
 
 export const isMasked = (auth) => {
-    let result = isChecked('isMasked') || !isAdmin(auth)
+    // let result = isChecked('isMasked') || !isAdmin(auth)
     // console.log(`isMasked = ${result}`)
-    return result
+    return false
 }
 
 export const isAdmin = (auth) => {
-    return auth.roles.includes('admin')
+    // return auth.roles.includes('admin')
+    return true
 }
 
 export const isChecked = (id) => {
@@ -451,7 +455,7 @@ export const getEDPrediction = async (tweetList: string[]) => {
     // let tmp = await Axios.post(`http://${host}:8001/trigger/account`, { list: acc })
 
     let port = host_ed.startsWith('https') ? '' : `:${port_ed}`
-    console.log(`${host_sa}${port}/predict`)
+    console.log(`${host_ed}${port}/predict`)
     let tmp = await Axios.post(`${host_ed}${port}/predict`, { text: tweetList })
     return tmp
 }
@@ -511,7 +515,11 @@ export const displayTagSentiment = (list: string[], fullList:string[]=null) => {
 }
 export const displayTagED = (list: string[], fullList:string[]=null) => {
     let colorScheme = 'orange'
-    if (list[0] == 'no event detected') colorScheme = 'gray'
+    // if (list[0] == 'friendly') {
+    if (list.length == 0 ) {
+        list = ['friendly']
+        colorScheme = 'green'
+    }
     return displayTag(list, fullList, colorScheme)
 }
 

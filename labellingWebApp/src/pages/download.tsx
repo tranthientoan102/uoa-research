@@ -18,7 +18,7 @@ import { useAuth } from "../lib/auth";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TagsInput2 from "../components/TagsInput2";
-import {convertTimeToString, getTagsInput, isAdmin, isMasked} from "../utils/common";
+import {convertTimeToString, findAccess, getTagsInput, isAdmin, isMasked} from "../utils/common";
 import {downloadData} from "../utils/db";
 import CsvDownload from '../components/CsvDownload'
 import { CSVLink, CSVDownload } from "react-csv";
@@ -94,7 +94,7 @@ const Download = (props) => {
             </Head>
             <main>
                 <Navbar />
-                {auth?(
+                {findAccess(auth,'download')?(
                     <Container maxW="6xl" pt={6}>
                         <Flex>
                             <Container maxW="6xl" pl={0} pr={2}><TagsInput2 id={id} tags={[]} defaultEvents={[]} /></Container>
