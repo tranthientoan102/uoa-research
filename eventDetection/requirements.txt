@@ -5,4 +5,5 @@ torchmetrics
 transformers
 pandas
 pytorch-lightning==1.5.5
+protobuf==3.17.3
 gdown
