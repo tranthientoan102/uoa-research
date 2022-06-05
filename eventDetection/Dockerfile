@@ -19,7 +19,7 @@ COPY ./ .
 
 ENV modelID=1mxob0DOdkvIc6E25BrQCDVPEoF5-FY7i
 RUN mkdir checkpoints
-RUN gdown $modelID -O ./checkpoints/best_checkpoints.ckpt
+RUN gdown $modelID -O ./checkpoints/best_checkpoint.ckpt
 RUN python3 afterSetup.py
 
 # Run the application in the port 8002
