@@ -20,6 +20,7 @@ COPY ./ .
 ENV modelID=1mxob0DOdkvIc6E25BrQCDVPEoF5-FY7i
 RUN mkdir checkpoints
 RUN gdown $modelID -O ./checkpoints/best_checkpoints.ckpt
+RUN python afterSetup.py
 
 # Run the application in the port 8002
 # uvicorn --host 0.0.0.0 --port 8002 fast_ed:app --reload
