@@ -7,11 +7,13 @@ from transformers import BertTokenizer, BertModel
 
 
 
-class ModelNeroED:
+class ModelED:
     def __init__(self, base_model_name, path, max_len=300, batch_size=16):
-        self.class_names = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
-                       'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
-                       'advocary/reform']
+        # self.class_names = ['cancer journey', 'qum', 'health inequity/disparity', 'patient centricity', 'phc',
+        #                'innovation/innovative therapies', 'affordability', 'initiatives/education', 'timely access',
+        #                'advocary/reform']
+        self.class_names = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
+
         self.THRESHOLD = 0
         self.tokenizer = BertTokenizer.from_pretrained(base_model_name)
         self.model = SentimentClassifier(len(self.class_names), base_model_name)
@@ -120,7 +122,7 @@ if __name__ == '__main__':
     base_model_name = "bert-base-uncased"
     # num_labels = len(self.class_names)
     path = "./checkpoints/ed_best_model_state.bin"
-    model = ModelNeroED(base_model_name, path)
+    model = ModelED(base_model_name, path)
 
     allData = ['''The National Medicines Policy Review will start in August. This is the first time it has ever been reviewed. One of the key elements will be making sure the NMP has a strong patient focus. #MedicinesMatter [newLine][newLine]https://t.co/eOyG9rltpd https://t.co/AMAWQA3iB2''', '''It's the end of the road for an Australian relic - the Prince Alfred Bridge in Gundagai. The timber crossing, the longest in the Southern Hemisphere, is being demolished but will always retain an important place in our country's history.  https://t.co/39AyjPfSVs #7NEWS https://t.co/XQTBBFXofm
 ''']
