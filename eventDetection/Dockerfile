@@ -11,6 +11,7 @@ WORKDIR /app/src
 
 # Copy everything from ./src directory to /app in the container
 # COPY ./src .
+
 COPY requirements.txt /app/src
 #RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 RUN pip install -r requirements.txt
