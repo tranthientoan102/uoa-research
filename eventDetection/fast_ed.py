@@ -63,7 +63,7 @@ async def predictTweet(data=Body(...)):
     # for a in data['text']: print(f'***{a}\n')
     try:
         for i in range(len(data['text'])):
-            text = data['text'][i]
+            text = data['text'][i]['text']
             encoding = app.model.tokenizer.encode_plus(
                     text,
                     add_special_tokens=True,
