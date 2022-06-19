@@ -180,8 +180,8 @@ def main():
         tweetBerTopic = loadTrainedBerTopicModel_clean() if modelName == 'tweetBerTopic_clean' else loadTrainedBerTopicModel_raw()
 
         st.header('Overview')
-        st.plotly_chart(tweetBerTopic.visualize_topics())
-        st.plotly_chart(tweetBerTopic.visualize_barchart(height=400, width=300, n_words=10))
+        st.plotly_chart(tweetBerTopic.visualize_topics(), use_container_width=True)
+        st.plotly_chart(tweetBerTopic.visualize_barchart(height=400, width=300, n_words=10), use_container_width=True)
 
         st.header('Details')
         totalTopics = len(tweetBerTopic.get_topic_info())
@@ -203,10 +203,11 @@ def main():
         #               ))
 
         st.table(df)
-        st.plotly_chart(tweetBerTopic.visualize_hierarchy(top_n_topics=showingTopics))
+        st.plotly_chart(tweetBerTopic.visualize_hierarchy(top_n_topics=showingTopics), use_container_width=True)
 
 
-
+        st.header('Topic\'s similarity matrix')
+        st.plotly_chart(tweetBerTopic.visualize_heatmap(), use_container_width=True)
 
 
 
@@ -240,6 +241,8 @@ def main():
         st.plotly_chart(fig, use_container_width=True)
 
 
+
+
     elif section == 'similar topics':
 
 
@@ -247,7 +250,8 @@ def main():
         # with st.spinner(f'Load BerTopic model...'):
         #     tweetBerTopic = loadTrainedBerTopicModel(modelName)
         # st.success(f'Model {modelName} is loaded')
-        tweetBerTopic = loadTrainedBerTopicModel_clean() if modelName == 'tweetBerTopic_clean' else loadTrainedBerTopicModel_raw()
+        tweetBerTopic = loadTrainedBerTopicModel_clean() if modelName == 'tweetBerTopic_clean' \
+                            else loadTrainedBerTopicModel_raw()
         fullTopic = tweetBerTopic.get_topic_info().set_index('Topic')
         for id in fullTopic.index:
             newName = ', '.join(list(map(lambda x: x[0], tweetBerTopic.get_topic(id))))
@@ -258,20 +262,35 @@ def main():
         #                                 , options=['a']
         #                             )
 
-        kw = st.text_input('')
+        kw = st.text_input('BERTopic.find_topics', value='Anthony Albanese')
         kwTopics, kwProbs = tweetBerTopic.find_topics(kw, top_n=10)
+        # fullTopic['Prob'] = kwProbs
         filterDf = fullTopic.loc[kwTopics, :]
-
-        # filterDf.assign({'Prob': prob})
-        filterDf['Prob'] = kwTopics
+        filterDf['Probs']= kwProbs
 
         st.table(filterDf)
 
         st.header('Similar topics from text')
-        text = st.text_input('',key='predictText')
-        textTopic, textProb = tweetBerTopic.transform([text])
-        textFilterDf = fullTopic.loc[textTopic, :]
-        st.table(textFilterDf)
+        defaultValue = ['gasoline prices are over 2 AUD now'
+                                    ,'the liberal has lost the 2022 election'
+                                    ,'the labor has won the 2022 election'
+                                    ,'how amazing today is']
+        # textList = cleaningStringList(st.text_area('BERTopic.transform',key='predictText'
+        #                                            , value=defaultValue
+        #                                            ).split('\n'))
+        textList = st.text_area('BERTopic.transform',key='predictText'
+                                                    , value='\n'.join( defaultValue)
+                                                    , height=200
+                                                   ).split('\n')
+        textTopic, textProb = tweetBerTopic.transform(textList)
+        st.table(textTopic)
+        # textProb
+
+        for id,_ in enumerate(textList):
+            st.info(textList[id])
+            possitiveTopic = fullTopic.loc[0:]
+            possitiveTopic['Probs'] = textProb[id]
+            st.table(possitiveTopic.sort_values(by=['Probs'], ascending=False)[:5])
 
 if __name__ == "__main__":
     main()
