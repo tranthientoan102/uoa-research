@@ -30,5 +30,5 @@ RUN python afterSetup.py
 
 # Run the application in the port 8000
 # uvicorn --host 0.0.0.0 --port 8000 fast:app --reload
-CMD ["streamlit", "run", "main.py", "--server.port", "9999"]
+CMD ["streamlit", "run", "main.py", "--server.port", "9999", "--server.enableCORS=false", "--server.enableXsrfProtection=false"]
 #CMD ["uvicorn", "fast:app"]
