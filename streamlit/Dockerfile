@@ -3,7 +3,7 @@ FROM python:3.8.1
 
 ENV PYTHONUNBUFFERED 1
 # Expose the port 8000 in which our application runs
-EXPOSE 8000
+EXPOSE 9999
 # Make /app as a working directory in the container
 WORKDIR /app/src
 # Copy requirements from host, to docker container in /app
@@ -30,5 +30,5 @@ RUN python afterSetup.py
 
 # Run the application in the port 8000
 # uvicorn --host 0.0.0.0 --port 8000 fast:app --reload
-CMD ["streamlit", "run", "main.py", "--server.port", "9999", "--server.enableCORS=false", "--server.enableXsrfProtection=false"]
+CMD ["streamlit", "run", "main.py", "--server.port", "9999", "--server.enableCORS=false", "--server.enableXsrfProtection=false", "--health-check-url=health-check"]
 #CMD ["uvicorn", "fast:app"]
