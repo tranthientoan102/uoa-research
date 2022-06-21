@@ -12,6 +12,7 @@ WORKDIR /app/src
 
 COPY requirements.txt /app/src
 RUN pip install -r requirements.txt
+RUN find /usr/local/lib/python3.8/site-packages/streamlit -type f ( -iname *.py -o -iname *.js ) -print0 | xargs -0 sed -i 's/healthz/health-check/g'
 #RUN pip install -r requirements.txt
 
 # Copy everything from ./src directory to /app in the container
@@ -30,5 +31,5 @@ RUN python afterSetup.py
 
 # Run the application in the port 8000
 # uvicorn --host 0.0.0.0 --port 8000 fast:app --reload
-CMD ["streamlit", "run", "main.py", "--server.port", "9999", "--server.enableCORS=false", "--server.enableXsrfProtection=false", "--health-check-url=health-check"]
+CMD ["streamlit", "run", "main.py", "--server.port", "9999", "--server.enableCORS=false", "--server.enableXsrfProtection=false"]
 #CMD ["uvicorn", "fast:app"]
